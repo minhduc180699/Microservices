@@ -1,0 +1,231 @@
+{
+  "global": {
+    "title": "DeepSignal",
+    "browsehappy": "<strong>오래된</strong> 브라우저를 사용하고 있군요. <a href=\"http://browsehappy.com/?locale=en\">브라우저를 업그레이드</a>해서 더욱 풍부한 경험을 즐기세요.",
+    "buttons": {
+      "save": "저장",
+      "cancel": "취소",
+      "ok": "확인",
+      "yes": "예",
+      "settings": "설정"
+    },
+    "header": {
+      "search": "검색",
+      "learn": "학습",
+      "feed": "Feed<i>({{feedCount}})</i>",
+      "people": "People<i>({{peopleCount}})</i>",
+      "signal": "Signal<i>({{signalCount}})</i>",
+      "intelligence": "Insight"
+    },
+    "menu": {
+      "home": "홈",
+      "feed": "Feed",
+      "people": "People",
+      "signal": "Signal",
+      "my-ai": "My AI",
+      "intelligence": "Insight",
+      "settings": "<span class=\"icon-area\"><i class=\"icon-setting\"></i></span>설정",
+      "archives": {
+        "archive": "아카이브",
+        "activity": "활동 기록",
+        "favorites": "즐겨찾기",
+        "bookmark": "북마크",
+        "like": "좋아요",
+        "share": "공유",
+        "memo": "메모",
+        "follow": "팔로우",
+        "admin": "관리자",
+        "administration": "관리"
+      },
+      "connectomes": {
+        "connectome": "커넥톰",
+        "social": "소셜커넥톰",
+        "basicinfo": "커넥톰 기본정보",
+        "settings": "<span class=\"icon-area\"><i class=\"icon-setting\"></i> </span>커넥톰 설정"
+      },
+      "learningCenter": "학습 센터",
+      "entities": {
+        "main": "Entities"
+      },
+      "account": {
+        "main": "계정",
+        "settings": "설정",
+        "password": "비밀번호",
+        "sessions": "세션",
+        "login": "로그인",
+        "logout": "로그아웃",
+        "register": "회원가입"
+      },
+      "admin": {
+        "main": "관리자",
+        "tracker": "사용자 트래커",
+        "metrics": "메트릭스",
+        "health": "상태 확인",
+        "configuration": "설정",
+        "logs": "로그",
+        "apidocs": "API",
+        "heatmap": "히트맵",
+        "database": "데이터베이스",
+        "userManagement": "사용자 관리",
+        "jhipster-needle-menu-add-admin-element": "JHipster will add additional menu entries here (do not translate!)"
+      },
+      "language": "언어",
+      "notification": "공고"
+    },
+    "form": {
+      "username.label": "로그인 아이디",
+      "username.placeholder": "로그인 아이디",
+      "currentpassword.label": "현재 비밀번호",
+      "currentpassword.placeholder": "비밀번호를 입력하세요",
+      "newpassword.label": "새 비밀번호",
+      "newpassword.placeholder": "새 비밀번호를 입력하세요",
+      "confirmpassword.label": "새 비밀번호 확인",
+      "confirmpassword.placeholder": "새 비밀번호 확인",
+      "email.label": "이메일",
+      "email.placeholder": "이메일을 입력하세요"
+    },
+    "messages": {
+      "info": {
+        "authenticated": {
+          "prefix": "",
+          "link": "로그인",
+          "suffix": "을 원하시면, 기본 계정을 사용할 수 있습니다:<br/>- 관리자 (아이디=\"admin\", 비밀번호=\"admin\") <br/>- 사용자 (아이디=\"user\", 비밀번호=\"user\")."
+        },
+        "register": {
+          "noaccount": "아직 계정이 없습니까?",
+          "link": "새로운 계정을 등록하세요"
+        }
+      },
+      "error": {
+        "dontmatch": "비밀번호가 일치하지 않습니다!"
+      },
+      "validate": {
+        "newpassword": {
+          "required": "비밀번호 입력이 필요합니다.",
+          "minlength": "비밀번호는 최소 4자 이상이어야 합니다",
+          "maxlength": "비밀번호는 최대 50자 까지입니다.",
+          "strength": "비밀번호 길이:"
+        },
+        "confirmpassword": {
+          "required": "확인할 비밀번호 입력이 필요합니다.",
+          "minlength": "확인할 비밀번호는 최소 4자 이상이어야 합니다",
+          "maxlength": "확인할 비밀번호는 최대 50자 까지입니다"
+        },
+        "email": {
+          "required": "이메일 입력이 필요합니다.",
+          "invalid": "잘못된 이메일입니다.",
+          "minlength": "이메일은 최소 5자 이상이어야 합니다",
+          "maxlength": "이메일은 최대 50자 까지입니다.",
+          "already-exist": "이미 사용 중인 이메일입니다. 다른 이메일 주소를 선택하세요."
+        }
+      }
+    },
+    "field": {
+      "id": "아이디"
+    },
+    "ribbon": {
+      "dev": "개발"
+    },
+    "item-count": "{{total}}개 항목 중 {{first}} - {{second}}개 표시중."
+  },
+  "entity": {
+    "action": {
+      "addblob": "Blob 추가",
+      "addimage": "이미지 추가",
+      "back": "뒤로",
+      "cancel": "취소",
+      "delete": "삭제",
+      "edit": "수정",
+      "open": "열기",
+      "save": "저장",
+      "view": "보기"
+    },
+    "detail": {
+      "field": "필드",
+      "value": "값"
+    },
+    "delete": {
+      "title": "삭제 확인"
+    },
+    "validation": {
+      "required": "필수항목입니다.",
+      "minlength": "최소 {{min}}자 이상 입력해야 합니다.",
+      "maxlength": "최대 {{max}}자 이하까지만 입력 가능합니다.",
+      "min": "최소 {{min}} 이상의 값만 입력 가능합니다.",
+      "max": "최대 {{max}} 이하의 값만 입력 가능합니다.",
+      "minbytes": "최소 {{min}} 바이트 이상이어야 합니다.",
+      "maxbytes": "최대 {{max}} 바이트 미만이어야 합니다.",
+      "pattern": "{{pattern}} 패턴에 따라 입력해야 합니다.",
+      "number": "숫자만 입력 가능합니다.",
+      "datetimelocal": "날짜와 시간만 입력 가능합니다."
+    }
+  },
+  "error": {
+    "internalServerError": "내부 서버 에러가 발생",
+    "server.not.reachable": "서버에 연결할 수 없음",
+    "url.not.found": "찾을 수 없음",
+    "NotNull": "{{fieldName}} 항목은 빈 값을 받지 않습니다!",
+    "Size": "{{fieldName}} 항목은 최댓값/최솟갚 기준을 충족하지 않습니다!",
+    "userexists": "이미 사용중인 사용자 이름 입니다!",
+    "emailexists": "이미 사용중인 이메일 입니다!",
+    "idexists": "{{entityName}}은 이미 존재하는 아이디입니다",
+    "idnull": "인식 불가능한 아이디",
+    "idinvalid": "인식 불가능한 아이디",
+    "idnotfound": "아이디를 찾을 수 없습니다.",
+    "file": {
+      "could.not.extract": "파일을 찾을 수 없음",
+      "not.image": "\"{{ fileType }}\" 파일이 아닌 이미지 파일이 필요"
+    }
+  },
+  "footer": "하단영역",
+  "nav-left": {
+    "notice": "공지사항",
+    "information": "이용안내",
+    "my-membership": "나의 멤버십",
+    "connectome-management": "커넥톰 관리",
+    "payment-history": "결제내역",
+    "inquiries": "문의내역",
+    "user-account-info": "사용자 계정 정보",
+    "question": "문의"
+  },
+  "ds-feed": {
+    "comment": "댓글",
+    "like": "좋아요",
+    "dislike": "싫어요",
+    "view-original-text": "원문보기"
+  },
+  "footerGlobal": {
+    "term-of-use": "이용약관",
+    "privacy-policy": "개인정보처리방침",
+    "saltlux": "(주)솔트룩스",
+    "ceo": "대표이사 : 이경일",
+    "business-location": "사업장 소재지 : 서울시 강남구 언주로 538 대웅빌딩 3층~5층 (06147)",
+    "registration": "사업자등록번호 : 102-81-13061",
+    "customer-center": "고객센터 : 02.2193.1600",
+    "fax": "팩스 : 02.3402.0082",
+    "email": "이메일 : marketing@saltlux.com",
+    "info": " 솔트룩스 정보",
+    "deepSignal": "DeepSignal",
+    "business-information": "DeepSignal 사업자 정보"
+  },
+  "alarmNotice": {
+    "notice": "알림",
+    "notification": "알림설정"
+  },
+  "favorites": {
+    "favorites": "즐겨찾기",
+    "all-favorites": "즐겨찾기 전체 보기"
+  },
+  "search-layer": {
+    "recent-search": "최근 검색어",
+    "delete-all": "전체 삭제"
+  },
+  "notice": {
+    "notice": "공지사항",
+    "placeHolder": "공지사항을 검색해 주세요",
+    "search": "검색하기",
+    "all": "전체",
+    "notification": "공지",
+    "event": "이벤트"
+  }
+}

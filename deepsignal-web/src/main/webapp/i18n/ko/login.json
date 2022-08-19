@@ -1,0 +1,35 @@
+{
+  "login": {
+    "title": "인증",
+    "signin": "로그인",
+    "form": {
+      "password": "비밀번호",
+      "password.placeholder": "당신의 비밀번호",
+      "rememberme": "자동 로그인",
+      "button": "로그인",
+      "phonenumber": "전화번호",
+      "send": "보내다",
+      "code": "암호",
+      "code.placeholder": "코드를 입력",
+      "confirm": "확인하다",
+      "ainame": "AI 이름",
+      "ainame.placeholder": "커넥톰 선택"
+    },
+    "messages": {
+      "error": {
+        "authentication": "<strong>인증 실패!</strong> 로그인 정보를 확인하고 다시 시도해 주세요.",
+        "phone": "입력하신 전화번호가 정확하지 않습니다.",
+        "phone.maxlength": "이 필드는 50자를 초과할 수 없습니다.",
+        "code": "입력한 코드가 올바르지 않습니다.",
+        "code.maxlength": "이 필드는 10자를 초과할 수 없습니다."
+      }
+    },
+    "password": {
+      "forgot": "비밀번호를 잊으셨나요?"
+    },
+    "join": "DeepSignal 회원가입",
+    "notjoin": "아직 가입하지 않았나요?",
+    "signUp": "회원가입",
+    "changeLanguage": "언어 선택"
+  }
+}

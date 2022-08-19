@@ -1,0 +1,26 @@
+{
+  "signal": {
+    "relationshipDiagram": "Relationship Diagram Analysis",
+    "associatedWordAnalysis": "Associated Word Cloud",
+    "peopleOrCompany": "People Or Company",
+    "trend": "Trend"
+  },
+  "signal-tracking": {
+    "title-fix": "Fix issue tracking",
+    "title-register": "Issue Tracking Registration",
+    "issue-keyword": "Issue Keywords",
+    "representative-keyword": "Representative Keyword",
+    "start-tracking": "Start tracking issues!",
+    "register": "Register your keywords and get notified.",
+    "info": "If the representative keyword is not specified, the first keyword will be selected automatically.",
+    "cancel": "Cancel",
+    "apply": "Apply",
+    "applying": "Applying...",
+    "related-contents": "Related contents",
+    "register-issue-tracking": "At least 2 issue keywords must be entered, and up to 10 can be registered.",
+    "issue-tracking": "Issue tracking",
+    "delete": "Delete",
+    "correction": "Correction",
+    "people-company": "People and Company"
+  }
+}

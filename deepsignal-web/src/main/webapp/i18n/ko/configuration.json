@@ -1,0 +1,10 @@
+{
+  "configuration": {
+    "title": "설정",
+    "filter": "필터 (접두사 기준)",
+    "table": {
+      "prefix": "접두사",
+      "properties": "특징"
+    }
+  }
+}

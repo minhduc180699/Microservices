@@ -1,0 +1,365 @@
+/*
+----------------------------------------
+icon-common
+----------------------------------------
+*/
+
+.icon-common {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+  background-image: url('../images/common/icon-common-set.png');
+  background-position: 0 0;
+
+  &.icon-notify {
+    background-position: 0 0;
+  }
+  &.icon-setting {
+    background-position: 0 0;
+  }
+  &.icon-refresh {
+    background-position: -20px 0;
+  }
+  &.icon-search {
+    background-position: -40px 0;
+  }
+  &.icon-logout {
+    background-position: 0 -20px;
+  }
+  &.icon-edit {
+    background-position: -20px -20px;
+  }
+  &.icon-write {
+    background-position: -20px -20px;
+  }
+  &.icon-newwindow {
+    background-position: -140px -20px;
+  }
+  &.icon-list {
+    background-position: -180px 0;
+  }
+  &.icon-trash {
+    background-position: -140px -40px;
+  }
+  &.icon-camera {
+    background-position: -160px -40px;
+  }
+
+  /* shortcut icon */
+  &.icon-shortcut {
+    background-position: -180px -40px;
+  }
+  &.icon-feed {
+    background-position: -180px -20px;
+  }
+  &.icon-people {
+    background-position: -200px -40px;
+  }
+  &.icon-learning {
+    background-position: -200px 0;
+  }
+  &.icon-connectome {
+    background-position: -200px -20px;
+  }
+
+  /* user activity button icon */
+  &.icon-like {
+    background-position: -40px 0;
+  }
+  &.icon-dislike {
+    background-position: -60px 0;
+  }
+  &.icon-bookmark {
+    background-position: -80px 0;
+  }
+  &.icon-visibility {
+    background-position: -100px 0;
+  }
+  &.icon-favorites {
+    background-position: -160px 0;
+  }
+  &.icon-share {
+    background-position: -140px 0;
+  }
+  .btn.active & {
+    &.icon-like {
+      background-position: -40px -20px;
+    }
+    &.icon-dislike {
+      background-position: -60px -20px;
+    }
+    &.icon-bookmark {
+      background-position: -80px -20px;
+    }
+    &.icon-visibility {
+      background-position: -100px -20px;
+    }
+    &.icon-favorites {
+      background-position: -160px -20px;
+    }
+  }
+  &.icon-more {
+    background-position: -120px 0;
+  }
+  .show-menu & {
+    &.icon-more {
+      background-position: -120px -20px;
+    }
+  }
+
+  /* close icon */
+  &.icon-close {
+    background-position: 0 -40px;
+  }
+  &.icon-close-light {
+    background-position: -120px -60px;
+  }
+
+  /* chevron icon */
+  &.icon-chevron-up {
+    background-position: 0 -60px;
+  }
+  &.icon-chevron-down {
+    background-position: -20px -60px;
+  }
+  &.icon-chevron-left {
+    background-position: -40px -60px;
+  }
+  &.icon-chevron-right {
+    background-position: -60px -60px;
+  }
+  &.icon-chevron-first {
+    background-position: -80px -60px;
+  }
+  &.icon-chevron-last {
+    background-position: -100px -60px;
+  }
+
+  /* arrow */
+  &.icon-arrow-up {
+    background-position: 0 -80px;
+  }
+  &.icon-arrow-down {
+    background-position: -20px -80px;
+  }
+  &.icon-arrow-left {
+    background-position: -40px -80px;
+  }
+  &.icon-arrow-right {
+    background-position: -60px -80px;
+  }
+}
+
+/*
+----------------------------------------
+icon-common-sm
+----------------------------------------
+*/
+
+.icon-common-sm {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  vertical-align: middle;
+  background-image: url('../images/common/icon-common-set.png');
+  background-position: 0 0;
+
+  &.icon-location {
+    background-position: 0 -172px;
+  }
+  &.icon-setting {
+    background-position: -18px -172px;
+  }
+  &.icon-problem {
+    background-position: -36px -172px;
+  }
+  &.icon-visibility {
+    background-position: -54px -172px;
+  }
+  &.icon-add {
+    background-position: -72px -172px;
+  }
+}
+
+/*
+----------------------------------------
+icon-common-lg
+----------------------------------------
+*/
+
+.icon-common-lg {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  background-image: url('../images/common/icon-common-set.png');
+  background-position: 0 -100px;
+
+  /* notification icon */
+  &.icon-noti {
+    background-position: 0 -100px;
+  }
+  &.icon-noti-fill {
+    background-position: -24px -100px;
+  }
+  &.icon-noti-setting {
+    background-position: -72px -100px;
+  }
+  .new & {
+    &.icon-noti-fill {
+      background-position: -48px -100px;
+    }
+  }
+  &.icon-favorites {
+    background-position: -96px -100px;
+  }
+
+  &.icon-refresh {
+    background-position: 0 -124px;
+  }
+  &.icon-help {
+    background-position: -24px -124px;
+  }
+  &.icon-fillter {
+    background-position: -48px -124px;
+  }
+  &.icon-search {
+    background-position: -72px -124px;
+  }
+  &.icon-login {
+    background-position: -96px -124px;
+  }
+  &.icon-logout {
+    background-position: -120px -124px;
+  }
+  &.icon-signup {
+    background-position: -144px -124px;
+  }
+  &.icon-language {
+    background-position: -168px -124px;
+  }
+  &.icon-menu {
+    background-position: -192px -124px;
+  }
+
+  &.icon-arrow-left {
+    background-position: -48px -148px;
+  }
+  &.icon-arrow-up {
+    background-position: -48px -148px;
+  }
+  &.icon-close {
+    background-position: -72px -148px;
+  }
+}
+
+/*
+----------------------------------------
+icon-empty
+----------------------------------------
+*/
+
+.icon-empty {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  background-image: url('../images/common/icon-common-set.png');
+  &.icon-empty-comment {
+    background-position: 0 -196px;
+  }
+}
+
+/*
+----------------------------------------
+icon-menu (main, sub)
+----------------------------------------
+*/
+
+.icon-mainmenu,
+.icon-submenu {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  background-image: url('../images/common/icon-menu-set.png');
+  &.icon-feed {
+    background-position: 0 0;
+  }
+  &.icon-people {
+    background-position: -48px 0;
+  }
+  &.icon-signal {
+    background-position: 0 -24px;
+  }
+  &.icon-intelligence {
+    background-position: -48px -24px;
+  }
+  &.icon-persona {
+    background-position: 0 -48px;
+  }
+  &.icon-learning {
+    background-position: -48px -48px;
+  }
+  &.icon-connectome {
+    background-position: 0 -72px;
+  }
+  &.icon-stats {
+    background-position: -48px -72px;
+  }
+  .nav-link.active & {
+    &.icon-feed {
+      background-position: -24px 0;
+    }
+    &.icon-people {
+      background-position: -72px 0;
+    }
+    &.icon-signal {
+      background-position: -24px -24px;
+    }
+    &.icon-intelligence {
+      background-position: -72px -24px;
+    }
+    &.icon-persona {
+      background-position: -24px -48px;
+    }
+    &.icon-learning {
+      background-position: -72px -48px;
+    }
+    &.icon-connectome {
+      background-position: -24px -72px;
+    }
+    &.icon-stats {
+      background-position: -72px -72px;
+    }
+  }
+}
+
+/*
+----------------------------------------
+icon-noti-type
+----------------------------------------
+*/
+
+.icon-noti-type {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  background-image: url('../images/common/icon-notiType-set.png');
+  background-position: 0 0;
+
+  &.icon-feed {
+    background-position: 0 -24px;
+  }
+  &.icon-learning {
+    background-position: -24px -24px;
+  }
+  &.icon-connectome {
+    background-position: -48px -24px;
+  }
+  &.icon-signal {
+    background-position: 0 0;
+  }
+}
+
+.blind {
+  display: none;
+}

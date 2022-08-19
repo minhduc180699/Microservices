@@ -1,0 +1,36 @@
+{
+  "login": {
+    "title": "Login",
+    "signin": "Sign In",
+    "form": {
+      "password": "Password",
+      "password.placeholder": "Your password",
+      "rememberme": "Keep me logged in.",
+      "button": "Login",
+      "phonenumber": "Phone number",
+      "send": "Send",
+      "code": "Code",
+      "code.placeholder": "Enter code",
+      "confirm": "Confirm",
+      "ainame": "Your AI Name",
+      "ainame.placeholder": "Select Connectome"
+    },
+    "messages": {
+      "error": {
+        "authentication": "<strong>Failed!</strong> Please check the login credential and try again",
+        "phone": "The phone number entered invalid.",
+        "phone.maxlength": "This field should be less than 50 characters.",
+        "code": "The verification you entered is incorrect.",
+        "code.maxlength": "This field should be less than 10 characters.",
+        "lockedAccount": "Your account has been locked. Please Try again in 5 minutes"
+      }
+    },
+    "password": {
+      "forgot": "Forgot password?"
+    },
+    "join": "Join Deepsignal",
+    "notjoin": "Do you want to register an account?",
+    "signUp": "Sign Up",
+    "changeLanguage": "Change Language"
+  }
+}

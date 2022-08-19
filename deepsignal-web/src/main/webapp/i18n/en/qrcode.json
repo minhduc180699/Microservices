@@ -1,0 +1,7 @@
+{
+  "qrcode": {
+    "public": "If you are using a public network or PC, please log in with \nQR code for safety.",
+    "scan": "Scan the QR code to log in from your mobile phone, and select\n<b>[20]</b> to log in to your browser.",
+    "timeRemain": "Time Remain"
+  }
+}

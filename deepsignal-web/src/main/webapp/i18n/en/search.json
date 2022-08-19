@@ -1,0 +1,11 @@
+{
+  "search": {
+    "close": "Close",
+    "noResultRecent": "No Recent Search.",
+    "keyword": "Keyword",
+    "noResultSearch": "No Result Found.",
+    "justYesterday": "The day before yesterday",
+    "yesterday": "Yesterday",
+    "today": "Today"
+  }
+}

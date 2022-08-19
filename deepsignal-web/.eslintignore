@@ -1,0 +1,12 @@
+node_modules/
+src/main/docker/
+src/test/javascript/jest.conf.js
+webpack/
+target/
+build/
+node/
+src/main/webapp/content/
+src/main/webapp/app/entities/connectome/map/
+postcss.config.js
+src/main/webapp/index.html
+src/main/resources/templates/

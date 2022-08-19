@@ -1,0 +1,11 @@
+{
+  "people": {
+    "enterSearchTerm": "Please enter your search keyword.",
+    "businessmen": "Entrepreneur",
+    "source": "Source",
+    "detail": {
+      "back-people": "Back to People",
+      "last20Post": "Last 20 Posts"
+    }
+  }
+}

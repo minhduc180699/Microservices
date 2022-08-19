@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>DeepSignal</title>
+    <meta name="description" content="Description for DeepSignal" />
+    <meta name="google" content="notranslate" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="theme-color" content="#000000" />
+    <link rel="icon" href="favicon.ico" />
+    <link rel="manifest" href="manifest.webapp" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+    <script src="/content/lib/gsap/gsap.min.js"></script>
+    <!-- google api -->
+    <script async defer src="https://apis.google.com/js/api.js"></script>
+    <script async defer src="https://accounts.google.com/gsi/client"></script>
+    <link rel="stylesheet" href="/content/fonts/bootstrap-icons/bootstrap-icons.css" />
+  </head>
+  <body data-menu="feed">
+    <!--[if lt IE 9]>
+      <p class="browserupgrade">
+        You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve
+        your experience.
+      </p>
+    <![endif]-->
+    <div id="app">
+      <div class="app-loading">
+        <div class="lds-pacman">
+          <div>
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
+          <div>
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
+        </div>
+      </div>
+      <div class="app-loading">
+        <div id="jhipster-error" style="display: none">
+          <!-- This content is for troubleshooting purpose and will be removed when app renders -->
+          <h1>An error has occurred :-(</h1>
+          <h2>Usual error causes</h2>
+          <ol>
+            <li>
+              You started the application from an IDE and you didn't run <code style="color: red">npm start</code> or
+              <code style="color: red">npm run webapp:build</code>.
+            </li>
+            <li>
+              You had a network error while running <code style="color: red">npm install</code>. If you are behind a corporate proxy, it is
+              likely that this error was caused by your proxy. Have a look at the JHipster error logs, you will probably have the cause of
+              the error.
+            </li>
+            <li>
+              You installed a Node.js version that doesn't work with JHipster: please use an LTS (long-term support) version, as it's the
+              only version we support.
+            </li>
+          </ol>
+          <h2>Building the client side code again</h2>
+          <p>If you want to go fast, run <code style="color: red">./mvnw</code> to build and run everything.</p>
+          <p>If you want to have more control, so you can debug your issue more easily, you should follow the following steps:</p>
+          <ol>
+            <li>Install npm dependencies with the command <code style="color: red">npm install</code></li>
+            <li>
+              Build the client with the command <code style="color: red">npm run webapp:build</code> or
+              <code style="color: red">npm start</code>
+            </li>
+            <li>Start the server with <code style="color: red">./mvnw</code> or using your IDE</li>
+          </ol>
+          <!-- end of troubleshooting content -->
+        </div>
+      </div>
+    </div>
+    <noscript>
+      <h1>You must enable JavaScript to view this page.</h1>
+    </noscript>
+    <script type="text/javascript">
+      // show an error message if the app loading takes more than 4 sec
+      window.onload = function () {
+        setTimeout(showError, 4000);
+      };
+      function showError() {
+        var errorElm = document.getElementById('jhipster-error');
+        if (errorElm && errorElm.style) {
+          errorElm.style.display = 'block';
+        }
+      }
+    </script>
+    <script src="/content/lib/jquery/jquery.min.js"></script>
+    <!--    <script src="/content/lib/jquery-ui/jquery-ui.min.js"></script>-->
+    <script src="/content/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!--    <script type="text/javascript">-->
+    <!--      window.onload = function () {-->
+    <!--          const datePickerConfig = {-->
+    <!--              monthNames: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"],-->
+    <!--              monthNamesShort: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"],-->
+    <!--              dayNamesMin: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],-->
+    <!--              showMonthAfterYear: true,-->
+    <!--              showOtherMonths: true,-->
+    <!--              changeMonth: true,-->
+    <!--              changeYear: true,-->
+    <!--              dateFormat: "yy-mm-dd",-->
+    <!--          };-->
+    <!--          function beforeShow(input, inst) {-->
+    <!--              $('#ui-datepicker-div').addClass('datepicker-wrapper');-->
+    <!--          }-->
+    <!--          function validDateFormat(dateStr) { // YYYY-MM-DD-->
+    <!--              const regex = /^\d{4}-\d{2}-\d{2}$/;-->
+    <!--              if (dateStr.match(regex) === null) {-->
+    <!--                  return false;-->
+    <!--              }-->
+    <!--              const date = new Date(dateStr);-->
+    <!--              const timestamp = date.getTime();-->
+    <!--              if (typeof timestamp !== 'number' || Number.isNaN(timestamp)) {-->
+    <!--                  return false;-->
+    <!--              }-->
+    <!--              return date.toISOString().startsWith(dateStr);-->
+    <!--          }-->
+    <!--          // function reFormatDate-->
+    <!--          //datepicker-->
+    <!--            $('#datepicker').datepicker({-->
+    <!--                onSelect: function(date) {-->
+    <!--                    $('#date-from').val(date);-->
+    <!--                },-->
+    <!--                ...datePickerConfig,-->
+    <!--                beforeShow: beforeShow-->
+    <!--            });-->
+    <!--          $('#datepicker2').datepicker({-->
+    <!--              onSelect: function(date) {-->
+    <!--                  $('#date-to').val(date);-->
+    <!--              },-->
+    <!--              ...datePickerConfig,-->
+    <!--              beforeShow: beforeShow-->
+    <!--          });-->
+
+    <!--          $('#date-from').on('keyup', function (e) {-->
+    <!--              if (e.key === 'Enter' || e.keyCode === 13) {-->
+    <!--                  // alert('enter');-->
+    <!--                  // console.log('date format = ', validDateFormat($('#date-from').val()));-->
+    <!--                  console.log('date format = ', new Date(2022, 5, 3));-->
+    <!--                  $( '#datepicker' ).datepicker( 'setDate', $('#date-from').val());-->
+    <!--              }-->
+    <!--          });-->
+    <!--          $('#date-to').on('keyup', function (e) {-->
+    <!--              if (e.key === 'Enter' || e.keyCode === 13) {-->
+    <!--                  // alert('enter');-->
+    <!--                  $( '#datepicker2' ).datepicker( 'setDate', $('#date-to').val());-->
+    <!--              }-->
+    <!--          });-->
+    <!--        };-->
+    <!--    </script>-->
+    <!-- uncomment this for adding service worker
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('/service-worker.js')
+            .then(function () {
+              console.log('Service Worker Registered');
+            });
+        });
+      }
+    </script>
+    -->
+    <!-- Google Analytics: uncomment and change UA-XXXXX-X to be your site's ID.
+    <script>
+      (function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+      function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+      e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+      e.src='//www.google-analytics.com/analytics.js';
+      r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+      ga('create','UA-XXXXX-X');ga('send','pageview');
+    </script>-->
+  </body>
+</html>

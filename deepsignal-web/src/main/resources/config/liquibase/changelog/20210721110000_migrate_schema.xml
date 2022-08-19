@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd
+                        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet id="00000000000001" author="system">
+        <sqlFile dbms="mariadb" path="config/liquibase/changelog/migrate/20210721104500_added_entity_column_ConnectomeSocialMedia.sql" />
+    </changeSet>
+    <changeSet id="00000000000002" author="system">
+        <sqlFile dbms="mariadb" path="config/liquibase/changelog/migrate/20210721162230_added_entity_table_Purpose.sql" />
+    </changeSet>
+    <changeSet id="00000000000003" author="system">
+        <sqlFile dbms="mariadb" path="config/liquibase/changelog/migrate/20210729150000_update_entity_table_User.sql" />
+    </changeSet>
+    <changeSet id="00000000000004" author="system">
+        <sqlFile dbms="mariadb" path="config/liquibase/changelog/migrate/20210902232545_added_entity_column_FileUpload.sql" />
+    </changeSet>
+    <changeSet id="00000000000005" author="system">
+        <sqlFile dbms="mariadb" path="config/liquibase/changelog/migrate/20211004084800_create_entity_table_of_fqas.sql" />
+    </changeSet>
+    <changeSet id="00000000000006" author="system">
+        <sqlFile dbms="mariadb" path="config/liquibase/changelog/migrate/20211102111300_added_entity_term_column_User.sql" />
+    </changeSet>
+    <changeSet id="00000000000007" author="system">
+        <sqlFile dbms="mariadb" path="config/liquibase/changelog/migrate/20212512171100_added_entity_image_url_connectome.sql" />
+    </changeSet>
+    <changeSet id="00000000000008" author="system">
+        <sqlFile dbms="mariadb" path="config/liquibase/changelog/migrate/20221101135500_added_entity_column_User.sql" />
+    </changeSet>
+    <changeSet id="00000000000009" author="system">
+        <sqlFile dbms="mariadb" path="config/liquibase/changelog/migrate/20220111154500_create_entity_table_recent_search.sql" />
+    </changeSet>
+    <changeSet id="00000000000010" author="system">
+        <sqlFile dbms="mariadb" path="config/liquibase/changelog/migrate/20220702135300_create_entity_table_interaction.sql"/>
+    </changeSet>
+    <changeSet id="00000000000011" author="system">
+        <sqlFile dbms="mariadb" path="config/liquibase/changelog/migrate/20220207150000_create_entity_table_favorite_keyword.sql"/>
+    </changeSet>
+    <changeSet id="00000000000012" author="system">
+        <sqlFile dbms="mariadb" path="config/liquibase/changelog/migrate/20221002111300_create_entity_table_comment.sql"/>
+    </changeSet>
+    <changeSet id="00000000000013" author="system">
+        <sqlFile dbms="mariadb" path="config/liquibase/changelog/migrate/20220221103800_update_entity_comment.sql"/>
+    </changeSet>
+    <changeSet id="00000000000014" author="system">
+        <sqlFile dbms="mariadb" path="config/liquibase/changelog/migrate/20220221112100_create_entity_table_user_activities.sql"/>
+    </changeSet>
+    <changeSet id="00000000000015" author="system">
+        <sqlFile dbms="mariadb" path="config/liquibase/changelog/migrate/20220703095100_create_entity_table_notification.sql"/>
+    </changeSet>
+    <changeSet id="00000000000016" author="system">
+        <sqlFile dbms="mariadb" path="config/liquibase/changelog/migrate/20220315091010_update_entity_table_user_activity_log.sql"/>
+    </changeSet>
+    <changeSet id="00000000000018" author="system">
+        <sqlFile dbms="mariadb" path="config/liquibase/changelog/migrate/20222103164300_create_entity_table_link_share.sql"/>
+    </changeSet>
+    <changeSet id="00000000000019" author="system">
+        <sqlFile dbms="mariadb" path="config/liquibase/changelog/migrate/20220322101010_update_entity_table_favorite_keyword.sql"/>
+    </changeSet>
+    <changeSet id="00000000000020" author="system">
+        <sqlFile dbms="mariadb" path="config/liquibase/changelog/migrate/20220329170400_create_entity_notification_type.sql"/>
+    </changeSet>
+    <changeSet id="00000000000021" author="system">
+        <sqlFile dbms="mariadb" path="config/liquibase/changelog/migrate/20220405150000_create_entity_table_memo.sql"/>
+    </changeSet>
+    <changeSet id="00000000000022" author="system">
+        <sqlFile dbms="mariadb" path="config/liquibase/changelog/migrate/20220425100400_alter_table_notification.sql"/>
+    </changeSet>
+    <changeSet id="00000000000023" author="system">
+        <sqlFile dbms="mariadb" path="config/liquibase/changelog/migrate/20220501010500_add_entity_notification_type.sql"/>
+    </changeSet>
+    <changeSet id="00000000000024" author="system">
+        <sqlFile dbms="mariadb" path="config/liquibase/changelog/migrate/20220509180500_update_notification_type_training_completed.sql"/>
+    </changeSet>
+    <changeSet id="00000000000025" author="system">
+        <sqlFile dbms="mariadb" path="config/liquibase/changelog/migrate/20220511110400_update_entity_notification.sql"/>
+    </changeSet>
+    <changeSet id="00000000000026" author="system">
+        <sqlFile dbms="mariadb" path="config/liquibase/changelog/migrate/20220517141000_initial_data_notification_type.sql"/>
+    </changeSet>
+    <changeSet id="00000000000027" author="system">
+        <sqlFile dbms="mariadb" path="config/liquibase/changelog/migrate/20220517164500_update_notification_type_training_completed_2.sql"/>
+    </changeSet>
+    <changeSet id="00000000000028" author="system">
+        <sqlFile dbms="mariadb" path="config/liquibase/changelog/migrate/20220526051010_update_notification_type_connectome.sql"/>
+    </changeSet>
+    <changeSet id="00000000000029" author="system">
+        <sqlFile dbms="mariadb" path="config/liquibase/changelog/migrate/20220306091500_update_entity_table_user.sql"/>
+    </changeSet>
+    <changeSet id="00000000000030" author="system">
+        <sqlFile dbms="mariadb" path="config/liquibase/changelog/migrate/20220605164300_create_entity_table_signal_keyword.sql"/>
+    </changeSet>
+    <changeSet id="00000000000031" author="system">
+        <sqlFile dbms="mariadb" path="config/liquibase/changelog/migrate/20220605155700_update_entity_table_user_activity_log.sql"/>
+    </changeSet>
+    <changeSet id="00000000000032" author="system">
+        <sqlFile dbms="mariadb" path="config/liquibase/changelog/migrate/20220705181818_create_entity_table_heatmap.sql"/>
+    </changeSet>
+    <changeSet id="00000000000033" author="system">
+        <sqlFile dbms="mariadb" path="config/liquibase/changelog/migrate/20220803104040_update_entity_table_Signal_Keywords.sql"/>
+    </changeSet>
+    <changeSet id="00000000000034" author="system">
+        <sqlFile dbms="mariadb" path="config/liquibase/changelog/migrate/20220803150300_added_entity_column_User.sql"/>
+    </changeSet>
+    <changeSet id="00000000000036" author="system">
+        <sqlFile dbms="mariadb" path="config/liquibase/changelog/migrate/20220805162100_create_table_UserSetting.sql"/>
+    </changeSet>
+    <changeSet id="00000000000035" author="system">
+        <sqlFile dbms="mariadb" path="config/liquibase/changelog/migrate/20220805160000_update_entity_table_User_Activity_Log.sql"/>
+    </changeSet>
+    <changeSet id="00000000000037" author="system">
+        <sqlFile dbms="mariadb" path="config/liquibase/changelog/migrate/20220815151515_update_entity_table_User_Activity_Log.sql"/>
+    </changeSet>
+</databaseChangeLog>

@@ -1,0 +1,28 @@
+{
+  "notification": {
+    "basic": {
+      "content": {
+        "learning-complete": "You have {0} new feed. Let's see what's new"
+      },
+      "title": {
+        "learning-complete": "New Feeds"
+      }
+    },
+    "interpolation": {
+      "content": {
+        "comment-feed": "{0} also commented on {1}",
+        "reply-comment": "{1} replied to your comment"
+      },
+      "title": {
+        "comment-feed": "Comment Feed",
+        "reply-comment": "Reply comment"
+      }
+    },
+    "connectome-training": {
+      "completed": {
+        "content": "Your connectome has been updated after training",
+        "title": "Connectome updated"
+      }
+    }
+  }
+}

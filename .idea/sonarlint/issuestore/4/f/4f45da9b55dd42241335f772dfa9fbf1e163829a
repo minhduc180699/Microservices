@@ -1,0 +1,180 @@
+
+K
+java:S3740Õ"/Provide the parametrized type for this generic.(€²À¬ûÿÿÿÿ
+K
+java:S3740š"/Provide the parametrized type for this generic.(€²À¬ûÿÿÿÿ
+K
+java:S3740í"/Provide the parametrized type for this generic.(€²À¬ûÿÿÿÿ
+F
+java:S3740Ö"/Provide the parametrized type for this generic.(ÌààÔ
+K
+java:S3740½"/Provide the parametrized type for this generic.(€²À¬ûÿÿÿÿ
+p
+java:S2293ô"YReplace the type specification in this constructor call with the diamond operator ("<>").(üİÙÔ
+u
+java:S2293õ"YReplace the type specification in this constructor call with the diamond operator ("<>").(ü§ÀÜşÿÿÿÿ
+p
+java:S2293±"YReplace the type specification in this constructor call with the diamond operator ("<>").(é´‰
+u
+java:S2293²"YReplace the type specification in this constructor call with the diamond operator ("<>").(Ï“Ø­úÿÿÿÿ
+p
+java:S2293³"YReplace the type specification in this constructor call with the diamond operator ("<>").(Õ‘¯®
+p
+java:S2293ã"YReplace the type specification in this constructor call with the diamond operator ("<>").(ê§¿È
+p
+java:S2293µ"YReplace the type specification in this constructor call with the diamond operator ("<>").(·í„æ
+p
+java:S2293¶"YReplace the type specification in this constructor call with the diamond operator ("<>").(ü¡¸‡
+p
+java:S2293½"YReplace the type specification in this constructor call with the diamond operator ("<>").(†Äµ
+u
+java:S2293¾"YReplace the type specification in this constructor call with the diamond operator ("<>").(Åáàÿÿÿÿÿ
+p
+java:S2293‡"YReplace the type specification in this constructor call with the diamond operator ("<>").(ê õ±
+p
+java:S2293Š"YReplace the type specification in this constructor call with the diamond operator ("<>").(–‰µÀ
+u
+java:S2293“"YReplace the type specification in this constructor call with the diamond operator ("<>").(õ’Çûÿÿÿÿ
+o
+java:S2293˜"YReplace the type specification in this constructor call with the diamond operator ("<>").(¢©¤
+p
+java:S2293Ğ"YReplace the type specification in this constructor call with the diamond operator ("<>").(üİÙÔ
+u
+java:S2293Ñ"YReplace the type specification in this constructor call with the diamond operator ("<>").(ü§ÀÜşÿÿÿÿ
+p
+java:S2293é"YReplace the type specification in this constructor call with the diamond operator ("<>").(é´‰
+u
+java:S2293ê"YReplace the type specification in this constructor call with the diamond operator ("<>").(Ï“Ø­úÿÿÿÿ
+p
+java:S2293’"YReplace the type specification in this constructor call with the diamond operator ("<>").(ê§¿È
+f
+java:S1192±"JDefine a constant instead of duplicating this literal "instagram" 6 times.(¿ÂœÁùÿÿÿÿ
+d
+java:S1192­"HDefine a constant instead of duplicating this literal "twitter" 6 times.(“ÉèŠúÿÿÿÿ
+b
+java:S1192É"KDefine a constant instead of duplicating this literal "sourceLang" 4 times.(èê€
+_
+java:S1192¸"HDefine a constant instead of duplicating this literal "CLUSTER" 3 times.(µí‰©
+d
+java:S1192¹"HDefine a constant instead of duplicating this literal "youtube" 6 times.(ô¤òÜûÿÿÿÿ
+h
+java:S1192©"LDefine a constant instead of duplicating this literal "description" 5 times.(Í–ÅÍüÿÿÿÿ
+e
+java:S1192½"IDefine a constant instead of duplicating this literal "linkedin" 6 times.(Õƒì¡øÿÿÿÿ
+e
+java:S1192¡"IDefine a constant instead of duplicating this literal "imageUrl" 3 times.(äî°÷ıÿÿÿÿ
+_
+java:S1192¥"HDefine a constant instead of duplicating this literal "wikiUrl" 3 times.(½Ì”À
+y
+java:S1192‚"bDefine a constant instead of duplicating this literal "Entity's label is null or invalid" 3 times.(Éœ±
+e
+java:S1192µ"IDefine a constant instead of duplicating this literal "facebook" 6 times.(Ÿ’çôÿÿÿÿÿ
+b
+java:S1192¹"FDefine a constant instead of duplicating this literal "label" 5 times.(µóë¨ùÿÿÿÿ
+i
+java:S1192¬"MDefine a constant instead of duplicating this literal "connectomeId" 4 times.(…Ï…×ıÿÿÿÿ
+c
+java:S1192÷"GDefine a constant instead of duplicating this literal "entity" 4 times.(€šŒ’úÿÿÿÿ
+Z
+java:S2184Ä"CCast one of the operands of this subtraction operation to a "long".(¼Öß€
+c	java:S116X"NRename this field "API" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(™Ö°ë
+r	java:S116Z"XRename this field "APIConnectome" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(»É®¹üÿÿÿÿ
+u	java:S116["[Rename this field "APIEntityNetwork" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ÉæĞîüÿÿÿÿ
+<
+java:S1452m"&Remove usage of generic wildcard type.(ÌŒÑ¥
+B
+java:S1452"&Remove usage of generic wildcard type.(§÷Şúÿÿÿÿ
+=
+java:S1452—"&Remove usage of generic wildcard type.(ä¬¥÷
+B
+java:S1452½"&Remove usage of generic wildcard type.(û§Ùëùÿÿÿÿ
+R	java:S125Í"<This block of commented-out lines of code should be removed.(€©¾
+i
+java:S3776Û"RRefactor this method to reduce its Cognitive Complexity from 21 to the 15 allowed.(” ç¹
+U
+java:S1854¤">Remove this useless assignment to local variable "tmpCluster".(Åñ
+[
+java:S1854¥"?Remove this useless assignment to local variable "tmpEntities".(ª«â®úÿÿÿÿ
+]
+java:S1854¦"FRemove this useless assignment to local variable "tmpClusterEntities".(É„æ¬
+Q
+java:S1854§";Remove this useless assignment to local variable "tmpLink".(ş·ÆD
+=
+java:S1452Û"&Remove usage of generic wildcard type.(” ç¹
+@
+java:S1659ä")Declare "labelToFrom" on a separate line.(áµÎ
+R	java:S125ì"<This block of commented-out lines of code should be removed.(ğŒşµ
+W	java:S125÷"<This block of commented-out lines of code should be removed.(æ”Í©úÿÿÿÿ
+W	java:S125™"<This block of commented-out lines of code should be removed.(ø¿ìïşÿÿÿÿ
+R	java:S125"<This block of commented-out lines of code should be removed.(ãÿºğ
+N
+java:S1481¦"7Remove this unused "tmpClusterEntities" local variable.(É„æ¬
+R	java:S125Ã"<This block of commented-out lines of code should be removed.(­¦×Ó
+W	java:S125˜"<This block of commented-out lines of code should be removed.(éØ»Úûÿÿÿÿ
+n
+java:S3776"RRefactor this method to reduce its Cognitive Complexity from 17 to the 15 allowed.(‹«¥¸ÿÿÿÿÿ
+?
+java:S1125¿"(Remove the unnecessary boolean literals.(¦è¸¯
+D
+java:S1125À"(Remove the unnecessary boolean literals.(’îÑ¹ÿÿÿÿÿ
+o
+java:S3776€"SRefactor this method to reduce its Cognitive Complexity from 125 to the 15 allowed.(¥€î‡úÿÿÿÿ
+B
+java:S1452€"&Remove usage of generic wildcard type.(¥€î‡úÿÿÿÿ
+a
+java:S1659–"JDeclare "googleInfobox" and all following declarations on a separate line.(å×
+H
+java:S1481–"1Remove this unused "googleSocial" local variable.(å×
+P
+java:S2864™"4Iterate over the "entrySet" instead of the "keySet".(û¡º­ùÿÿÿÿ
+R	java:S125Ã"<This block of commented-out lines of code should be removed.(ùß³ 
+K
+java:S2864Û"4Iterate over the "entrySet" instead of the "keySet".(Ñ¥Àˆ
+P
+java:S2864‡"4Iterate over the "entrySet" instead of the "keySet".(£è¤úÿÿÿÿ
+n
+java:S3776¨"RRefactor this method to reduce its Cognitive Complexity from 20 to the 15 allowed.(ÚŞµºøÿÿÿÿ
+B
+java:S1452¨"&Remove usage of generic wildcard type.(ÚŞµºøÿÿÿÿ
+O	java:S106Ô"9Replace this use of System.out or System.err by a logger.(ŞÇùã
+T	java:S106Õ"9Replace this use of System.out or System.err by a logger.(Ö‚ú üÿÿÿÿ
+’
+java:S1130ó"tRemove the declaration of thrown exception 'java.net.URISyntaxException', as it cannot be thrown from method's body.(ğ©…À8à­œ’¨0
+=
+java:S1452ó"&Remove usage of generic wildcard type.(ğ©…À
+—
+java:S1130"tRemove the declaration of thrown exception 'java.net.URISyntaxException', as it cannot be thrown from method's body.(‚û£Ğùÿÿÿÿ8ó­œ’¨0
+B
+java:S1452"&Remove usage of generic wildcard type.(‚û£Ğùÿÿÿÿ
+n
+java:S3776­"RRefactor this method to reduce its Cognitive Complexity from 20 to the 15 allowed.(ÌáÄıÿÿÿÿ
+U
+java:S1854Ü">Remove this useless assignment to local variable "tmpCluster".(Åñ
+[
+java:S1854İ"?Remove this useless assignment to local variable "tmpEntities".(ª«â®úÿÿÿÿ
+]
+java:S1854Ş"FRemove this useless assignment to local variable "tmpClusterEntities".(É„æ¬
+Q
+java:S1854ß";Remove this useless assignment to local variable "tmpLink".(ş·ÆD
+B
+java:S1452­"&Remove usage of generic wildcard type.(ÌáÄıÿÿÿÿ
+@
+java:S1659“")Declare "labelToFrom" on a separate line.(áµÎ
+T	java:S106À"9Replace this use of System.out or System.err by a logger.(á€ “øÿÿÿÿ
+O	java:S106Á"9Replace this use of System.out or System.err by a logger.(”Î›–
+a
+java:S1155È">Use isEmpty() to check whether the collection is empty or not.(ş¡ˆ¦ÿÿÿÿÿ8Š®œ’¨0
+\
+java:S1155Ê">Use isEmpty() to check whether the collection is empty or not.(¹Ä8‹®œ’¨0
+W	java:S125Í"<This block of commented-out lines of code should be removed.(ŠÕ›“ùÿÿÿÿ
+T	java:S106Ô"9Replace this use of System.out or System.err by a logger.(è­Ÿßùÿÿÿÿ
+T	java:S106Õ"9Replace this use of System.out or System.err by a logger.(÷œèàşÿÿÿÿ
+N
+java:S1481Ş"7Remove this unused "tmpClusterEntities" local variable.(É„æ¬
+R	java:S125ü"<This block of commented-out lines of code should be removed.(á¶šï
+=
+java:S1068X"'Remove this unused "API" private field.(™Ö°ë
+Y
+java:S1144"=Remove this unused private "getDummiesConnectomeData" method.(‹«¥¸ÿÿÿÿÿ
+[
+java:S1144æ"?Remove this unused private "getDummiesConnectomeStatus" method.(µíĞ–ÿÿÿÿÿ

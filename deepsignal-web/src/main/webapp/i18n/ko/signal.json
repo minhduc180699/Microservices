@@ -1,0 +1,25 @@
+{
+  "signal": {
+    "relationshipDiagram": "관계도 분석",
+    "associatedWordAnalysis": "연관어 분석",
+    "peopleOrCompany": "인물/기업"
+  },
+  "signal-tracking": {
+    "title-fix": "이슈 트래킹 수정하기",
+    "title-register": "이슈 트래킹 등록",
+    "issue-keyword": "이슈 키워드",
+    "representative-keyword": "대표 키워드",
+    "start-tracking": "이슈 트래킹을 시작해보세요!",
+    "register": "키워드를 등록하여 확인해보세요.",
+    "info": "대표 키워드 미입력시, 등록된 연관 키워드의 첫 키워드가 자동으로 등록됩니다.",
+    "cancel": "취소",
+    "apply": "적용",
+    "applying": "적용...",
+    "related-contents": "관련 뉴스",
+    "register-issue-tracking": "이슈 키워드는 최소 2개 이상 입력하여야 하며, 10개 까지 등록 할 수 있습니다.",
+    "issue-tracking": "이슈 트래킹",
+    "delete": "삭제",
+    "correction": "보정",
+    "people-company": "인물/기업"
+  }
+}

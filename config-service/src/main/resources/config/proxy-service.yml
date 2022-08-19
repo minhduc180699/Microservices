@@ -1,0 +1,34 @@
+#server:
+#  port: 8060
+#
+#eureka:
+#  client:
+#    serviceUrl:
+#      defaultZone: http://localhost:8061/eureka/
+#
+#logging:
+#  pattern:
+#    console: "%d{yyyy-MM-dd HH:mm:ss} ${LOG_LEVEL_PATTERN:-%5p} %m%n"
+#
+#zuul:
+#  routes:
+#    department:
+#      path: /department/**
+#      serviceId: department-service
+#      strip-prefix: false
+#    employee:
+#      path: /employee/**
+#      serviceId: employee-service
+#      strip-prefix: false
+#    organization:
+#      path: /organization/**
+#      serviceId: organization-service
+#      strip-prefix: false
+#    deepsignal-adapter:
+#      path: /deepsignal-adapter/**
+#      serviceId: deepsignal-adapter
+#      strip-prefix: false
+#    deepsignal-web:
+#      path: /deepsignal-web/**
+#      serviceId: deepsignal-web
+#      strip-prefix: false

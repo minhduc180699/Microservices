@@ -1,0 +1,28 @@
+{
+  "notification": {
+    "basic": {
+      "content": {
+        "learning-complete": "새 Feed가 {0} 개 있습니다!"
+      },
+      "title": {
+        "learning-complete": "새로운 Feed"
+      }
+    },
+    "interpolation": {
+      "content": {
+        "comment-feed": "{0} 에 대해서도 댓글을 남겼습니다 {1}",
+        "reply-comment": "{1} 귀하의 의견에 응답했습니다"
+      },
+      "title": {
+        "comment-feed": "댓글 피드",
+        "reply-comment": "댓글 답장"
+      }
+    },
+    "connectome-training": {
+      "completed": {
+        "content": "학습 추가에 따른 커넥톰이 업데이트 되었습니다.",
+        "title": "커넥톰 업데이트"
+      }
+    }
+  }
+}

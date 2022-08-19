@@ -1,0 +1,232 @@
+{
+  "global": {
+    "title": "DeepSignal",
+    "browsehappy": "You are using an <strong>outdated</strong> browser. Please <a href=\"http://browsehappy.com/?locale=en\">upgrade your browser</a> and improve you experience.",
+    "buttons": {
+      "save": "Save",
+      "cancel": "Cancel",
+      "ok": "Ok",
+      "yes": "Yes",
+      "settings": "Settings"
+    },
+    "header": {
+      "search": "Search",
+      "learn": "Learn",
+      "feed": "Feed<i>({{feedCount}})</i>",
+      "people": "People<i>({{peopleCount}})</i>",
+      "signal": "Signal<i>({{signalCount}})</i>",
+      "intelligence": "Inisght"
+    },
+    "menu": {
+      "home": "Home",
+      "feed": "Feed",
+      "people": "People",
+      "signal": "Signal",
+      "my-ai": "My AI",
+      "intelligence": "Insight",
+      "settings": "<span class=\"icon-area\"><i class=\"icon-setting\"></i></span>Settings",
+      "archives": {
+        "archive": "Archive",
+        "activity": "User Activity",
+        "favorites": "Favorites",
+        "bookmark": "Bookmark",
+        "like": "Like",
+        "share": "Share",
+        "memo": "Note",
+        "follow": "Follow",
+        "admin": "Admin",
+        "administration": "Administration"
+      },
+      "connectomes": {
+        "connectome": "Connectome",
+        "social": "Social Conectome",
+        "basicinfo": "Connectome Basic Info",
+        "settings": "<span class=\"icon-area\"><i class=\"icon-setting\"></i> </span>Connectome Settings"
+      },
+      "learningCenter": "Training Center",
+      "entities": {
+        "main": "Entities"
+      },
+      "account": {
+        "main": "Account",
+        "settings": "Settings",
+        "password": "Password",
+        "sessions": "Sessions",
+        "login": "Sign In",
+        "logout": "Sign Out",
+        "register": "Register"
+      },
+      "admin": {
+        "main": "Administation",
+        "tracker": "User tracker",
+        "metrics": "Metrics",
+        "health": "Health",
+        "configuration": "Configuration",
+        "logs": "Logs",
+        "apidocs": "API",
+        "heatmap": "Heatmap",
+        "database": "Database",
+        "userManagement": "User management",
+        "jhipster-needle-menu-add-admin-element": "JHipster will add additional menu entries here (do not translate!)"
+      },
+      "language": "Language",
+      "notification": "Notification"
+    },
+    "form": {
+      "username.label": "Username",
+      "username.placeholder": "You",
+      "currentpassword.label": "Current Password",
+      "currentpassword.placeholder": "Current password",
+      "newpassword.label": "New Password",
+      "newpassword.placeholder": "New password",
+      "confirmpassword.label": "Confirm New Password",
+      "confirmpassword.placeholder": "New password",
+      "email.label": "Email",
+      "email.placeholder": "Enter your email"
+    },
+    "messages": {
+      "info": {
+        "authenticated": {
+          "prefix": "",
+          "link": "Sign in",
+          "suffix": "? ????, ?? ??? ??? ? ????:<br/>- ??? (???=\"admin\", ????=\"admin\") <br/>- ??? (???=\"user\", ????=\"user\")."
+        },
+        "register": {
+          "noaccount": "Do you have an account",
+          "link": "Sign up"
+        }
+      },
+      "error": {
+        "dontmatch": "Password does not match. Please try again"
+      },
+      "validate": {
+        "newpassword": {
+          "required": "Please enter your password",
+          "minlength": "Password must be at least 4 characters.",
+          "maxlength": "Password must be a maximum of 50 characters.",
+          "strength": "Password Length:"
+        },
+        "confirmpassword": {
+          "required": "Please enter your password to confirm.",
+          "minlength": "Password must be at least 4 characters to confirm",
+          "maxlength": "Password must be a maximum of 50 characters to confirm."
+        },
+        "email": {
+          "required": "Please enter your email",
+          "invalid": "The email is invalid",
+          "minlength": "Email must be at least 5 characters.",
+          "maxlength": "Your email cannot be longer than 50 characters.",
+          "already-exist": "The email you entered already taken. Please use another email."
+        }
+      }
+    },
+    "field": {
+      "id": "ID"
+    },
+    "ribbon": {
+      "dev": "Development"
+    },
+    "item-count": "Showing {{first}} - {{second}} of {{total}} items."
+  },
+  "entity": {
+    "action": {
+      "addblob": "Add blob",
+      "addimage": "Add image",
+      "back": "Back",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "edit": "Edit",
+      "open": "Open",
+      "save": "Save",
+      "view": "View"
+    },
+    "detail": {
+      "field": "Field",
+      "value": "Value"
+    },
+    "delete": {
+      "title": "Do you really want to delete it?"
+    },
+    "validation": {
+      "required": "This is a required field.",
+      "minlength": "Please enter at least {{min}} characters.",
+      "maxlength": "Please enter up to {{max}} characters.",
+      "min": "Must be a value of at least {{min}}",
+      "max": "Must be less than at most {{max}} value",
+      "minbytes": "Must be at least {{min}} bytes",
+      "maxbytes": "Must be less than at most {{max}} bytes",
+      "pattern": "Please enter according to {{pattern}}.",
+      "number": "Must be a number",
+      "datetimelocal": "Must be a date or time."
+    }
+  },
+  "error": {
+    "internalServerError": "Internal server error",
+    "server.not.reachable": "Server not reachable",
+    "url.not.found": "Not found",
+    "NotNull": "Field {{fieldName}} cannot be empty!",
+    "Size": "Field {{fieldName}} does not meet min/max size requirements!",
+    "userexists": "Login name already used!",
+    "emailexists": "Email is already in use!",
+    "idexists": "A new {{entityName}} cannot already have an ID",
+    "idnull": "Invalid ID",
+    "idinvalid": "Invalid Id",
+    "idnotfound": "ID cannot be found",
+    "file": {
+      "could.not.extract": "Could not extract file",
+      "not.image": "File was expected to be an image but was found to be \"{{ fileType }}\""
+    }
+  },
+  "footer": "Footer",
+  "nav-left": {
+    "notice": "Notice",
+    "information": "Information",
+    "my-membership": "My Membership",
+    "connectome-management": "Connectome Management",
+    "payment-history": "Payment History",
+    "inquiries": "Inquiries",
+    "user-account-info": "User Information",
+    "question": "Question"
+  },
+  "ds-feed": {
+    "comment": "Comment",
+    "like": "Like",
+    "dislike": "Dislike",
+    "view-original-text": "View source",
+    "no-permission": "You don't have permission to access this content."
+  },
+  "footerGlobal": {
+    "term-of-use": "Terms of Use",
+    "privacy-policy": "Privacy Policy",
+    "saltlux": "Saltlux.inc",
+    "ceo": "CEO: Kyungil Lee",
+    "business-location": "Address : 3-5 Daewoong Bldg 538 Eonju-ro Gangnam-gu Seoul, 06147 Korea, Republic of (South)",
+    "registration": "Business registration no. : 102-81-13061",
+    "customer-center": "Contact no. : 02.2193.1600",
+    "fax": "Fax no. : 02.3402.0082",
+    "email": "Email : marketing@saltlux.com",
+    "info": " Saltlux info",
+    "deepSignal": "DeepSignal .LLC",
+    "business-information": "DeepSignal Business Information"
+  },
+  "alarmNotice": {
+    "notice": "Notice",
+    "notification": "Notification"
+  },
+  "favorites": {
+    "favorites": "Favorites",
+    "all-favorites": "View all favorites"
+  },
+  "search-layer": {
+    "recent-search": "Recent Search",
+    "delete-all": "Delete All"
+  },
+  "notice": {
+    "notice": "Annoucements",
+    "placeHolder": "Please search for announcements",
+    "search": "Search",
+    "all": "All",
+    "notification": "Notification",
+    "event": "Event"
+  }
+}

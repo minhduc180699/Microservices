@@ -1,0 +1,10 @@
+{
+  "search": {
+    "close": "닫기",
+    "noResultRecent": "최근 검색내역이 없습니다.",
+    "keyword": "검색어",
+    "justYesterday": "그제",
+    "yesterday": "어제",
+    "today": "오늘"
+  }
+}

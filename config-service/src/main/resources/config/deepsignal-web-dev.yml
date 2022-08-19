@@ -1,0 +1,215 @@
+# ===================================================================
+# Spring Boot configuration for the "dev" profile.
+#
+# This configuration overrides the application.yml file.
+# ===================================================================
+
+# ===================================================================
+# Standard Spring Boot properties.
+# Full reference is available at:
+# http://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html
+# ===================================================================
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8061/eureka/
+
+logging:
+  level:
+    ROOT: DEBUG
+    tech.jhipster: DEBUG
+    org.hibernate.SQL: INFO
+    com.saltlux.deepsignal: DEBUG
+
+feign:
+  circuitbreaker:
+    enabled: true
+
+resilience4j.circuitbreaker:
+  configs:
+    default:
+      registerHealthIndicator: true
+      slidingWindowSize: 10
+      minimumNumberOfCalls: 5
+      permittedNumberOfCallsInHalfOpenState: 3
+      automaticTransitionFromOpenToHalfOpenEnabled: true
+      waitDurationInOpenState: 5s
+      failureRateThreshold: 50
+      eventConsumerBufferSize: 10
+
+resilience4j.timelimiter:
+  configs:
+    default:
+      cancelRunningFuture: false
+      timeoutDuration: 20s
+
+spring:
+  devtools:
+    restart:
+      enabled: true
+      additional-exclude: static/**
+    livereload:
+      enabled: false # we use Webpack dev server + BrowserSync for livereload
+  jackson:
+    serialization:
+      indent-output: true
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:mariadb://localhost:3306/deepsignal?useLegacyDatetimeCode=false&serverTimezone=UTC
+    username: admin
+    password: saltlux
+  rabbitmq:
+    host: 192.168.10.12
+    port: 5672
+    username: deepsignal
+    password: deeppass22
+    hikari:
+      poolName: Hikari
+      auto-commit: false
+      data-source-properties:
+        cachePrepStmts: true
+        prepStmtCacheSize: 250
+        prepStmtCacheSqlLimit: 2048
+        useServerPrepStmts: true
+  jpa:
+  liquibase:
+    # Remove 'faker' if you do not want the sample data to be loaded automatically
+    contexts: dev, faker
+  mail:
+    host: smtp.office365.com
+    port: 587
+    username: deepsignaldatareport@saltlux.com
+    password: Deep!wjqthr
+    protocol: smtp
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+  messages:
+    cache-duration: PT1S # 1 second, see the ISO 8601 standard
+  thymeleaf:
+    cache: false
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+server:
+  port: 8080
+
+# ===================================================================
+# JHipster specific properties
+#
+# Full reference is available at: https://www.jhipster.tech/common-application-properties/
+# ===================================================================
+
+jhipster:
+  cache: # Cache configuration
+    redis: # Redis configuration
+      expiration: 3600 # By default objects stay 1 hour (in seconds) in the cache
+      server: redis://localhost:6379
+      cluster: false
+      #      server: redis://localhost:7000,redis://localhost:7001,redis://localhost:7002
+      #      server: redis://no-username:elqtlrmsjf!@192.168.10.14:6379,redis://192.168.10.15:6379,redis://192.168.10.16:6379
+      #      cluster: true
+      #server: redis://no-username:elqtlrmsjf!@13.21.34.201:6379
+      #cluster: false
+  # CORS is only enabled by default with the "dev" profile
+  cors:
+    # Allow Ionic for JHipster by default (* no longer allowed in Spring Boot 2.4+)
+    allowed-origins: '*'
+    allowed-methods: '*'
+    allowed-headers: '*'
+    exposed-headers: 'Authorization,Link,X-Total-Count,X-${jhipster.clientApp.name}-alert,X-${jhipster.clientApp.name}-error,X-${jhipster.clientApp.name}-params'
+    allow-credentials: false
+    max-age: 1800
+  security:
+    authentication:
+      jwt:
+        # This token must be encoded using Base64 and be at least 256 bits long (you can type `openssl rand -base64 64` on your command line to generate a 512 bits one)
+        base64-secret: Y2ZlYmY1NzI5N2I1OTk2ZjcwOGY3NWUxYmEzZDNlNmQzYzkyNTRmZTRlMWY2NGI2MzEzNzA4YzFmOTAxMzkyZDkxMzUyNGFlZGU4MjIzZDU5ZGRmZjJhOWNlMjYwN2MwZDJlYWY2YTZjYWM1N2UxMDBmNDkzZjAzYTY0NGE3ZTY=
+        # Token is valid 24 hours
+        token-validity-in-seconds: 86400
+        token-validity-in-seconds-for-remember-me: 2592000
+  mail: # specific JHipster mail property, for standard properties see MailProperties
+    base-url: http://127.0.0.1:8080
+    from: support@deepsignal.ai
+  logging:
+    use-json-format: false # By default, logs are not in Json format
+    logstash: # Forward logs to logstash over a socket, used by LoggingConfiguration
+      enabled: false
+      host: localhost
+      port: 5000
+      queue-size: 512
+# ===================================================================
+# Application specific properties
+# Add your own application properties here, see the ApplicationProperties class
+# to have type-safe configuration, like in the JHipsterProperties above
+#
+# More documentation is available at:
+# https://www.jhipster.tech/common-application-properties/
+# ===================================================================
+
+application:
+  security:
+    jwt:
+      token-issuer: Deepsignal
+      token-audience: Deepsignal
+      token-refresh-limit: 15
+    login:
+      max-failed-login: 5
+      lock-time-duration: 300000 # milliseconds
+  files-upload:
+    location: '/Users/thienha/mnt/analytics/deepsignal/download'
+    #    location: '/Users/admin/Documents/Saltlux/DeepSignal/upload'
+    #    location: 'D:/Project/DeepSignal/download/'
+    #    location: 'C:/Code/DeepSignal/download'
+    max-size: 10
+    url-file: http://localhost:8080/api/file
+  external-api:
+    deepsignal-adapter: http://localhost:8060/deepsignal-adapter/api
+    deepsignal-outside: http://192.168.10.12:8080
+    deepsignal-file: http://192.168.10.12:8089
+    deepsignal-connectome: http://192.168.10.14:8301
+    deepsignal-entity-network: http://192.168.10.14:8304
+    deepsignal-stock: http://192.168.10.14:8083
+    deepsignal-toolbox: http://192.168.10.18:5555
+    deepsignal-dashboard: http://192.168.10.18:1113
+    deepsignal-metasearch: http://34.69.56.245:80
+    deepsignal-doc-converter: http://35.223.20.10
+    deepsignal-issue-tracking: http://192.168.9.219:8077
+    deepsignal-trend-timeseries: http://35.239.167.117
+    deepsignal-related-content: http://192.168.9.220:8077
+  twilio:
+    account_sid: AC88de7429d30bc75a701f3c71630be0af
+    auth_token: 5fd6908999926b84935c97435241d047
+    sender_number: 15005550006
+    #    account_sid: ACcb944a769aaf8713147e64abbff39436
+    #    auth_token: 4c176fa8de127632a8200a6573be9938
+    #    sender_number: 14079880919
+    length_code: 6
+    expired_time: 3
+  user-activity:
+    number-thread-consumer: 1
+    full-queue-waiting-time: 1
+    empty-queue-waiting-time: 1
+  rabbit-config:
+    notification:
+      exchange-name: deepsignal.exchange.dev
+      queue-name: deepsignal.notification.dev
+      router-key: deepsignal.key.dev.#
+    web-logging:
+      exchange-name: web.logged.in.exchange
+      queue-name: web.logged.in
+      router-key: web.logged.in.key.#
+    feed-training:
+      exchange-name: recommendation.connectome.completed.dev
+      queue-name: recommendation.connectome.completed.dev
+      router-key: recommendation.connectome.completed.dev.#
+    connectome-training:
+      exchange-name: connectome.training.completed.dev
+      queue-name: connectome.training.completed.dev
+      router-key: connectome.training.completed.dev.#
+    signal-tracking:
+      exchange-name: signal.issuetracking.completed
+      queue-name: signal.issuetracking.completed
+      router-key: signal.issuetracking.completed.#

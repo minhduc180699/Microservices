@@ -1,0 +1,120 @@
+/* slide-left */
+@-webkit-keyframes slide-left {
+  0% {
+    -webkit-transform: translateX(110%);
+    transform: translateX(110%);
+  }
+  100% {
+    -webkit-transform: translateX(0);
+    transform: translateX(0);
+  }
+}
+@keyframes slide-left {
+  0% {
+    -webkit-transform: translateX(110%);
+    transform: translateX(110%);
+  }
+  100% {
+    -webkit-transform: translateX(0);
+    transform: translateX(0);
+  }
+}
+
+/* slide-right-in */
+@-webkit-keyframes slide-right-in {
+  0% {
+    -webkit-transform: translateX(-100%);
+    transform: translateX(-100%);
+  }
+  100% {
+    -webkit-transform: translateX(0);
+    transform: translateX(0);
+  }
+}
+@keyframes slide-right-in {
+  0% {
+    -webkit-transform: translateX(-100%);
+    transform: translateX(-100%);
+  }
+  100% {
+    -webkit-transform: translateX(0);
+    transform: translateX(0);
+  }
+}
+/* slide-right-out */
+@-webkit-keyframes slide-right-out {
+  0% {
+    -webkit-transform: translateX(0);
+    transform: translateX(0);
+  }
+  100% {
+    -webkit-transform: translateX(-100%);
+    transform: translateX(-100%);
+  }
+}
+@keyframes slide-right-out {
+  0% {
+    -webkit-transform: translateX(0);
+    transform: translateX(0);
+  }
+  100% {
+    -webkit-transform: translateX(-100%);
+    transform: translateX(-100%);
+  }
+}
+
+/* cp-boxes */
+@-webkit-keyframes ld-boxes-animate-before {
+  0% {
+    transform: translateX(-24px) rotate(45deg);
+  }
+  50% {
+    transform: translateX(-8px) rotate(225deg);
+  }
+  100% {
+    transform: translateX(-24px) rotate(45deg);
+  }
+}
+@keyframes ld-boxes-animate-before {
+  0% {
+    transform: translateX(-24px) rotate(45deg);
+  }
+  50% {
+    transform: translateX(-8px) rotate(225deg);
+  }
+  100% {
+    transform: translateX(-24px) rotate(45deg);
+  }
+}
+@-webkit-keyframes ld-boxes-animate-after {
+  0% {
+    transform: translateX(24px) rotate(45deg);
+  }
+  50% {
+    transform: translateX(8px) rotate(-225deg);
+  }
+  100% {
+    transform: translateX(24px) rotate(45deg);
+  }
+}
+@keyframes ld-boxes-animate-after {
+  0% {
+    transform: translateX(24px) rotate(45deg);
+  }
+  50% {
+    transform: translateX(8px) rotate(-225deg);
+  }
+  100% {
+    transform: translateX(24px) rotate(45deg);
+  }
+}
+@keyframes dropdown-animation-fade-in {
+  0% {
+    opacity: 0;
+    margin-top: 0.75rem;
+  }
+  100% {
+    opacity: 1;
+    margin-top: 0.125rem;
+  }
+}

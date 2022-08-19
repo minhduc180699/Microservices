@@ -1,0 +1,1 @@
+UPDATE deepsignal.notification_type SET template_content_i18n='notification.connectome-training.completed.content', template_title_i18n='notification.connectome-training.completed.title' WHERE name='training completed';

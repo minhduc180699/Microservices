@@ -1,0 +1,49 @@
+========== Commit Format ==========
+<type>(<module or scope>): <subject>
+<BLINK LINE>
+<body>(optional)
+<BLINK LINE>
+<footer>(optional)
+
+============= Sample ==============
+fix(shape): update aborting animation logic
+
+Abort the animating post process when "tap" occurs or velocity is zero at inside border.
+
+Ref #30
+
+============ See More =============
+
+Types
+	feat: A new feature
+	fix: A bug fix
+	docs: Documentation only changes
+	style: Changes that do not affect the meaning of the code. Such as white-space, formatting, missing semi-colons, etc.
+	refactor: A code change that neither fixes a bug nor adds a feature
+	test: Adding missing tests. Changing tests.
+	chore: Changes to the build process or tools and libraries such as documentation generation
+	skip: For commits made by after the 1st commit. Usually for applying code review changes.
+
+Body
+	A short descriptive message which commit consists. At the end preferably(or should) contain related github issue number referencing by Ref #ISSUE-NO.
+
+		ex) When the commit is about issue number 20, then
+
+			Ref #20
+	
+
+	Example commit of fixing a bug:
+
+		Fix(Axis): Correct tick rendering
+
+		Update condition of tick to avoid unnecessary tick rendering
+
+		Ref #20
+
+
+	Example commit applying code review (after the 1st commit)
+
+		skip: Applied the review
+
+
+	Note: Commit log starting with skip: type will be ignored by commit hook constraint.

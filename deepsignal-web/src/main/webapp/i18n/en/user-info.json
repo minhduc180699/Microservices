@@ -1,0 +1,47 @@
+{
+  "userInfo": {
+    "title": "User Information",
+    "avatar": "Avatar",
+    "cancelImage": "Cancel",
+    "registration": "Registration",
+    "name": "Name",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "phone": "Phone number",
+    "email": "Email address",
+    "changeEmail": "Change email",
+    "job": "Job",
+    "position": "Position",
+    "company": "Company",
+    "receiveNews": "Agree to receive newsletter",
+    "receiveNotification": "Agree to receive notifications/push",
+    "receiveMessage": "Agree to receive text messages",
+    "yes": "Yes",
+    "no": "No",
+    "withDraw": "Withdrawal",
+    "cancel": "Cancel",
+    "confirm": "Change user information",
+    "sendCode": "Send code",
+    "changePhone": "Change phone number",
+    "delete": "Delete account",
+    "deleteSuccess": "Delete User Successfully",
+    "deleteFailed": "Delete User Failed",
+    "dialog": {
+      "message": "Are you sure to delete your account ?",
+      "cancel": "Cancel",
+      "ok": "Ok"
+    },
+    "error": {
+      "firstName.maxLength": "First name should be less than 50 characters.",
+      "lastName.maxLength": "Last name should be less 50 characters."
+    }
+  },
+  "userMenu": {
+    "userInfo": "User Information",
+    "preferences": "Settings",
+    "logout": "Log out",
+    "logoutTitle": "Are you sure you want to logout?",
+    "logoutText": "If you log out, you need to get re-authenticated.",
+    "close": "Close"
+  }
+}

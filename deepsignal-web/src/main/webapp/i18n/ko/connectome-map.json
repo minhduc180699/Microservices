@@ -1,0 +1,13 @@
+{
+  "connectome-map": {
+    "search": "검색",
+    "detail": "상세",
+    "leave": "전체화면 종료",
+    "fullscreen": "전체 화면",
+    "fit-to-screen": "화면 맞춤",
+    "expand-nodes": "그래프 확장",
+    "contract-nodes": "그래프 수축",
+    "zoom-in": "확대",
+    "zoom-out": "축소"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "people": {
+    "enterSearchTerm": "검색어를 입력 하세요.",
+    "businessmen": "기업인",
+    "source": "출처",
+    "detail": {
+      "back-people": "People로 돌아가기",
+      "last20Post": "최근 20개 포스팅"
+    }
+  }
+}

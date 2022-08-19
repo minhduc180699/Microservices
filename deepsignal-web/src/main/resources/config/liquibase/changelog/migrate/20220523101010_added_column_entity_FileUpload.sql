@@ -1,0 +1,3 @@
+ALTER TABLE `file_upload`
+    ADD COLUMN IF NOT EXISTS `favicon` varchar(5000) DEFAULT NULL,
+    ADD COLUMN IF NOT EXISTS `img` varchar(5000) NULL DEFAULT NULL

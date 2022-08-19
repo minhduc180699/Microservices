@@ -1,0 +1,33 @@
+{
+  "health": {
+    "title": "Status Check",
+    "refresh.button": "Refresh",
+    "refresh": "Refresh",
+    "stacktrace": "Stack trace",
+    "details": {
+      "details": "Details",
+      "properties": "Properties",
+      "name": "Name",
+      "value": "Value",
+      "error": "Error"
+    },
+    "indicator": {
+      "hazelcast": "Hazelcast",
+      "diskSpace": "Disk Space",
+      "mail": "Email",
+      "livenessState": "Liveness state",
+      "readinessState": "Readiness state",
+      "ping": "Application",
+      "db": "Database"
+    },
+    "table": {
+      "service": "Service Name",
+      "status": "Status"
+    },
+    "status": {
+      "UNKNOWN": "UNKNOWN",
+      "UP": "Available",
+      "DOWN": "Running"
+    }
+  }
+}

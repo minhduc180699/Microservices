@@ -1,0 +1,98 @@
+
+K
+java:S3740"/Provide the parametrized type for this generic.(¤ÿñßÿÿÿÿÿ
+K
+java:S3740°"/Provide the parametrized type for this generic.(€²À¬ûÿÿÿÿ
+K
+java:S3740Ï"/Provide the parametrized type for this generic.(è¿øùûÿÿÿÿ
+K
+java:S3740ì"/Provide the parametrized type for this generic.(è¿øùûÿÿÿÿ
+K
+java:S3740ÿ"/Provide the parametrized type for this generic.(è¿øùûÿÿÿÿ
+K
+java:S3740‰"/Provide the parametrized type for this generic.(è¿øùûÿÿÿÿ
+K
+java:S3740™"/Provide the parametrized type for this generic.(è¿øùûÿÿÿÿ
+K
+java:S3740²"/Provide the parametrized type for this generic.(€²À¬ûÿÿÿÿ
+K
+java:S3740¾"/Provide the parametrized type for this generic.(è¿øùûÿÿÿÿ
+K
+java:S3740Ï"/Provide the parametrized type for this generic.(è¿øùûÿÿÿÿ
+K
+java:S3740Ú"/Provide the parametrized type for this generic.(è¿øùûÿÿÿÿ
+K
+java:S3740ê"/Provide the parametrized type for this generic.(è¿øùûÿÿÿÿ
+K
+java:S3740ú"/Provide the parametrized type for this generic.(è¿øùûÿÿÿÿ
+K
+java:S3740…"/Provide the parametrized type for this generic.(è¿øùûÿÿÿÿ
+_
+java:S4973˜"<Strings and Boxed types should be compared using "equals()".(åâİÈÿÿÿÿÿ8Íƒœ’¨0
+X
+java:S4973Î"<Strings and Boxed types should be compared using "equals()".( šÄ úÿÿÿÿ
+m
+java:S3655¤"PCall "Optional#isPresent()" or "!Optional#isEmpty()" before accessing the value.(»ø·w8Ä„œ’¨0
+s
+java:S3655¦"PCall "Optional#isPresent()" or "!Optional#isEmpty()" before accessing the value.(¶š»­ÿÿÿÿÿ8Ã„œ’¨0
+n
+java:S3655¨"PCall "Optional#isPresent()" or "!Optional#isEmpty()" before accessing the value.(Ìêÿ¨8Ä„œ’¨0
+v
+java:S3655Ô"XCall "adminUserDTO.isPresent()" or "!adminUserDTO.isEmpty()" before accessing the value.(şôí8Ä„œ’¨0
+Q	java:S125Z"<This block of commented-out lines of code should be removed.(›¨Æ‰
+V	java:S125k"<This block of commented-out lines of code should be removed.(ş‹ÚÊûÿÿÿÿ
+B
+java:S1452š"&Remove usage of generic wildcard type.(Ğšûÿÿÿÿ
+R	java:S125£"<This block of commented-out lines of code should be removed.(Áğ©Ø
+W	java:S125ª"<This block of commented-out lines of code should be removed.(‘·ˆŠÿÿÿÿÿ
+W	java:S125®"<This block of commented-out lines of code should be removed.(¨‘Š£ùÿÿÿÿ
+B
+java:S1452·"&Remove usage of generic wildcard type.(øÍüÄÿÿÿÿÿ
+B
+java:S1452Ì"&Remove usage of generic wildcard type.(ª¦Şéÿÿÿÿÿ
+B
+java:S1452ß"&Remove usage of generic wildcard type.(¯Öİèùÿÿÿÿ
+=
+java:S1452ä"&Remove usage of generic wildcard type.(“ Üú
+B
+java:S1452ê"&Remove usage of generic wildcard type.( ´¿úÿÿÿÿ
+B
+java:S1452ı"&Remove usage of generic wildcard type.(şìÊåüÿÿÿÿ
+a
+java:S1155ş">Use isEmpty() to check whether the collection is empty or not.(ò‚œ¦ÿÿÿÿÿ8À…œ’¨0
+O
+java:S1854¢"8Remove this useless assignment to local variable "user".(Ç­‚û
+B
+java:S1452—"&Remove usage of generic wildcard type.(ÜÑ’ıÿÿÿÿ
+B
+java:S1452¸"&Remove usage of generic wildcard type.(ØıŞøÿÿÿÿ
+=
+java:S1452Í"&Remove usage of generic wildcard type.(°µŠ
+B
+java:S1452è"&Remove usage of generic wildcard type.(†ç’Ûùÿÿÿÿ
+B
+java:S1452ø"&Remove usage of generic wildcard type.(…¯Ä”ûÿÿÿÿ
+€
+java:S1128"^Remove this unused import 'com.saltlux.deepsignal.web.exception.AccountAlreadyExistException'.(©™Ç‰øÿÿÿÿ8ä…œ’¨0
+x
+java:S1128"[Remove this unused import 'com.saltlux.deepsignal.web.exception.AccountUnconfirmException'.(Óí¤8ä…œ’¨0
+F
+java:S1128")Remove this unused import 'java.io.File'.(†Ğ¥Å8ä…œ’¨0
+R
+java:S1128"0Remove this unused import 'java.io.IOException'.(ªº»Úıÿÿÿÿ8ä…œ’¨0
+T
+java:S1128"7Remove this unused import 'java.text.SimpleDateFormat'.(ú¡ÙÛ8å…œ’¨0
+[
+java:S1128">Remove this unused import 'java.util.logging.SimpleFormatter'.(ÇöÁ8å…œ’¨0
+W
+java:S1128"5Remove this unused import 'liquibase.pro.packaged.D'.(ÎÁñÊüÿÿÿÿ8å…œ’¨0
+R
+java:S1128"5Remove this unused import 'liquibase.pro.packaged.U'.(é‘ƒ8å…œ’¨0
+Y
+java:S1128 "<Remove this unused import 'org.apache.commons.io.FileUtils'.(À¿Ù´8æ…œ’¨0
+f
+java:S1128%"IRemove this unused import 'org.springframework.boot.json.GsonJsonParser'.(Ïê´ê8æ…œ’¨0
+s
+java:S1128&"QRemove this unused import 'org.springframework.format.annotation.DateTimeFormat'.(‡ˆôƒøÿÿÿÿ8æ…œ’¨0
+a
+java:S1128("?Remove this unused import 'org.springframework.http.MediaType'.(úŸİ¯şÿÿÿÿ8è…œ’¨0

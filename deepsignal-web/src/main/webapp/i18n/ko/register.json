@@ -1,0 +1,79 @@
+{
+  "register": {
+    "title": "가입하기",
+    "desc": "세상의 모든 정보와 의미를 재연결하여 사용자에게 통찰을 제공하는 증강지능 서비스",
+    "terms": {
+      "desc": "DeepSignal 서비스 이용약관, 개인정보 수집 및 이용약관, 뉴스레터 및 메시지 수신(선택)에 모두 동의합니다.",
+      "service": "서비스 이용약관 (필수)",
+      "personal": "개인정보 수집 및 이용약관 (필수)",
+      "newsletters": "뉴스레터 및 메시지 수신 (선택)",
+      "read": "보기"
+    },
+    "form": {
+      "next": "다음",
+      "button": "등록",
+      "email": "이메일",
+      "purpose": "가입 목적",
+      "connectome": "커넥톰 이름"
+    },
+    "messages": {
+      "validate": {
+        "login": {
+          "required": "아이디 입력이 필요합니다",
+          "minlength": "아이디는 적어도 1자 이상이어야 합니다",
+          "maxlength": "아이디는 최대 50자 까지입니다",
+          "pattern": "사용자 이름이 부적절합니다."
+        }
+      },
+      "success": "<strong>회원가입 내용이 저장되었습니다!</strong> 가입을 완료하기 위해 이메일을 확인해주세요.",
+      "timeOut": "인증코드가 만료되었습니다. 몇분후 다시 시도해주시기 바랍니다!",
+      "isChosePurpose": "최소 한 가지 목적을 선택해야 합니다!",
+      "enterEmail": "이메일 입력",
+      "verification": "인증번호 입력",
+      "error": {
+        "fail": "<strong>회원가입이 실패했습니다!</strong> 다시 시도해 주세요.",
+        "userexists": "<strong>로그인 아이디가 이미 존재합니다!</strong> 다른 아이디로 다시 시도해 주세요.",
+        "emailexists": "<strong>이미 사용 중인 이메일입니다!</strong> 다른 이메일 주소를 선택하세요.",
+        "phoneExisted": "<strong>이미 사용중인 전화번호 입니다!</strong> 다른 전화번호를 선택하세요.",
+        "phoneIsNotExisted": "<strong>존재하지 않는 번호입니다!</strong> 다른 전화번호로 다시 시도해 주세요.",
+        "malformed": "<strong>이메일 형식에 맞지 않습니다.</strong>",
+        "connectomeIsNull": "<strong>커넥톰은 null 값이 될 수 없습니다.</strong>"
+      }
+    },
+    "step1": {
+      "title": "가입하실 휴대폰 번호를 인증해주세요.",
+      "content": "휴대폰 번호를 입력하시고, 인증해주세요. 가입하시는 휴대폰 번호로<span class=\"text-primary text-underline\">DeepSignal</span> 서비스를 무료로 사용하실 수 있습니다."
+    },
+    "step3": {
+      "title": "원활한 서비스 및 본인 확인을 위해 이메일 주소를 인증해주세요."
+    },
+    "purposeChosen": {
+      "title": "환영합니다! <br />DeepSignal 서비스에 가입되셨습니다.",
+      "content": "가입 목적을 선택하시면, 로그인 하실 수 있습니다.",
+      "purpose-first": "입력하신",
+      "purpose-last": "에 맞게 제가 임시로 이름을 지어봤어요.",
+      "notice-deny-to-login": "성공적으로 등록했습니다! 로그인하려면 관리자에게 문의하세요.",
+      "description": "가입 목적을 선택하시고, 로그인 해주세요.",
+      "register-success-notice": "DeepSignal 가입이 완료되었습니다."
+    },
+    "modal": {
+      "title": "이름을 지어주세요!",
+      "welcome": "DeepSignal에 오신 것을 환영합니다. <br>저에게 이름을 지어주세요!",
+      "changePurpose": "가입목적을 변경할까요?",
+      "purpose": ""
+    },
+    "phone": {
+      "selectCountries": "국가 번호 입력",
+      "phoneNumber": "없이 번호 입력",
+      "sendCode": "인증 요청",
+      "confirmCode": "인증번호 입력",
+      "name": "이름 입력",
+      "phone": "전화 번호",
+      "email": "이메일"
+    },
+    "signIn": "로그인",
+    "terms-of-use": {
+      "confirm": "확인"
+    }
+  }
+}

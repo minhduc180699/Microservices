@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <style>
+      .over {
+        color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <p>Dear <span th:text="${entity.getName()}"></span></p>
+    <br />
+    <p>
+      We thank you for your question. We would like to respond as follows:
+      <br />
+      <br />
+      <span th:utext="${entity.getContent()}"></span>
+    </p>
+    <br />
+    <div>
+      <p>Thanks so much,</p>
+      <p>--</p>
+      <p>System Deppsignal</p>
+    </div>
+  </body>
+</html>

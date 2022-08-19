@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.saltlux.bigo:BigO_InfraAPP:2021_0831">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/saltlux/bigo/BigO_InfraAPP/2021_0831/BigO_InfraAPP-2021_0831.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/com/saltlux/bigo/BigO_InfraAPP/2021_0831/BigO_InfraAPP-2021_0831-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/saltlux/bigo/BigO_InfraAPP/2021_0831/BigO_InfraAPP-2021_0831-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

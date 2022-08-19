@@ -1,0 +1,79 @@
+{
+  "register": {
+    "title": "Register",
+    "desc": "Augmented intelligence service that provides insight to users by reconnecting all information and meaning in the world",
+    "terms": {
+      "desc": "Agree to all terms of service, privacy policy, and receiving marketing materials.",
+      "service": "Terms of service (required)",
+      "personal": "Personal information collection and terms of use (required)",
+      "newsletters": "Receive newsletters and messages (optional)",
+      "read": "Read"
+    },
+    "form": {
+      "next": "Next",
+      "button": "Register",
+      "email": "Email",
+      "purpose": "Purpose of Joining",
+      "connectome": "Connectome Name"
+    },
+    "messages": {
+      "validate": {
+        "login": {
+          "required": "Please enter your username.",
+          "minlength": "Username must be at least 1 character.",
+          "maxlength": "Username must be a maximum of 50 characters.",
+          "pattern": "Your username is invalid."
+        }
+      },
+      "success": "<strong>Your registration has been saved!</strong> Please check your email to complete your registration.",
+      "timeOut": "Your verification code has expired. Please try again after a few minutes.",
+      "isChosePurpose": "Please choose at least one purpose.",
+      "enterEmail": "Enter your email.",
+      "verification": "Enter your verification number.",
+      "error": {
+        "fail": "<strong>Registration failed.</strong> Please try again after 5 minutes.",
+        "userexists": "<strong>The username is already in use.</strong>",
+        "emailexists": "<strong>The email entered is already in use.</strong> Please use another email.",
+        "phoneExisted": "<strong>The phone number you entered is already in use.</strong> Please use another phone number.",
+        "phoneIsNotExisted": "<strong>The phone number entered does not exist.</strong>",
+        "malformed": "<strong>The email format is invalid.</strong>",
+        "connectomeIsNull": "<strong>Connectome can't be null.</strong>"
+      }
+    },
+    "step1": {
+      "title": "Please verify your phone number.",
+      "content": "Please enter your phone number and verify it. <br/>You can use the <span class=\"text-primary text-underline\">DeepSignal</span> service for free <br/> with your registered phone number."
+    },
+    "step3": {
+      "title": "Please verify your email address for identity verification."
+    },
+    "purposeChosen": {
+      "title": "Welcome! You have successfully signed up for DeepSignal.",
+      "content": "You can log in by selecting the purpose of membership.",
+      "purpose-first": "Based on what you entered, ",
+      "purpose-last": "I made a name.",
+      "notice-deny-to-login": "Registered successfully! Please contact Admin to login.",
+      "description": "Please select the purpose of registration.",
+      "register-success-notice": "Welcome! You have successfuly register to the service."
+    },
+    "modal": {
+      "title": "Please name your AI!",
+      "welcome": "Welcome to DeepSignal. <br>Please name your AI.",
+      "changePurpose": "Do you want to change the purpose of membership?",
+      "purpose": ""
+    },
+    "phone": {
+      "selectCountries": "Enter your country code.",
+      "phoneNumber": "Enter your phone number.",
+      "sendCode": "Request verification.",
+      "confirmCode": "Enter your verification code.",
+      "name": "Enter your name.",
+      "phone": "Phone Number",
+      "email": "Email"
+    },
+    "signIn": "Sign in",
+    "terms-of-use": {
+      "confirm": "Confirm"
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "connectome-map": {
+    "search": "Search",
+    "detail": "Detail",
+    "leave": "Leave",
+    "fullscreen": "Full Screen",
+    "fit-to-screen": "Fit to Screen",
+    "expand-nodes": "Expand Nodes",
+    "contract-nodes": "Contract Nodes",
+    "zoom-in": "Zoom In",
+    "zoom-out": "Zoom Out"
+  }
+}

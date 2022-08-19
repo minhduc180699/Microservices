@@ -1,0 +1,38 @@
+{
+  "map-side-bar": {
+    "details-tab": {
+      "list-topics": "키워드 목록",
+      "keywords-linked": "연결된 키워드",
+      "go-to-connectome": "커넥톰에서 찾기",
+      "go-to-people": "People에서 찾기",
+      "go-to-feed": "Feed 바로가기",
+      "go-to-learning": "학습센터 바로가기",
+      "set-as-favorite": "즐겨찾기",
+      "unset-as-favorite": "즐겨찾기에서 제거",
+      "hide": "숨기기",
+      "display": "표시하다",
+      "feeds-related": " Feed 보기",
+      "locate-on-map": "지도에서 찾기",
+      "see-more": "더보기",
+      "see-less": "접기",
+      "source": "(출저)",
+      "select-this-topic": "이 키워드를 선택하십시오",
+      "resources-related": "학습 자료",
+      "go-to-personal-document-title": "Document를 더 보고 싶나요?",
+      "go-to-personal-document": "학습된 자료를 확인하기"
+    },
+    "entity-search-tab": {
+      "search-placeholder": "커넥톰 검색",
+      "result-filter-title": "최신순",
+      "result-all": "전체 목록",
+      "result-all-visible": "전체 목록",
+      "result-filter-by-black-entity": "미확인 Entity",
+      "result-filter-by-favorite": "즐겨찾기",
+      "result-filter-by-disable": "숨김 목록",
+      "result-order-by-title": "관련성",
+      "result-order-by-date": "관련성",
+      "result-order-by-name": "가나다순",
+      "result-count": "전체 {0} 건"
+    }
+  }
+}

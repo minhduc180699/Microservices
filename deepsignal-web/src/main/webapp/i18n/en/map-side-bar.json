@@ -1,0 +1,38 @@
+{
+  "map-side-bar": {
+    "details-tab": {
+      "list-topics": "List of Topics",
+      "keywords-linked": "Topics Related",
+      "go-to-connectome": "Locate on the connectome",
+      "go-to-people": "People related",
+      "go-to-feed": "Feeds related",
+      "go-to-learning": "Training",
+      "set-as-favorite": "Add to favorites",
+      "unset-as-favorite": "Remove from favorites",
+      "hide": "Hide",
+      "display": "Display",
+      "feeds-related": "Feeds",
+      "locate-on-map": "Locate on map",
+      "see-more": "More...",
+      "see-less": "Less...",
+      "source": "(Source)",
+      "select-this-topic": "Select this topic.",
+      "resources-related": "Training Resources",
+      "go-to-personal-document-title": "Do you want to explore the documents?",
+      "go-to-personal-document": "Explore"
+    },
+    "entity-search-tab": {
+      "search-placeholder": "Filter by name",
+      "result-filter-title": "Filter by",
+      "result-all": "All",
+      "result-all-visible": "Visible",
+      "result-filter-by-black-entity": "Unknown entity",
+      "result-filter-by-favorite": "Favorites",
+      "result-filter-by-disable": "Hidden",
+      "result-order-by-title": "Relevance",
+      "result-order-by-relevance": "Relevance",
+      "result-order-by-name": "Alphabetical",
+      "result-count": "Topics {0}"
+    }
+  }
+}

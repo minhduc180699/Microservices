@@ -1,0 +1,42 @@
+{
+  "userInfo": {
+    "title": "사용자 정보",
+    "avatar": "화신",
+    "cancelImage": "삭제",
+    "registration": "등록",
+    "firstName": "이름",
+    "lastName": "성",
+    "phone": "전화번호",
+    "email": "이메일",
+    "changeEmail": "이메일 변경",
+    "job": "직종",
+    "position": "직종",
+    "company": "직종",
+    "receiveNews": "뉴스레터 수신동의",
+    "receiveNotification": "알림/푸시 수신동의",
+    "receiveMessage": "문자메시지 수신동의",
+    "yes": "예",
+    "no": "아니오",
+    "withDraw": "회원탈퇴",
+    "cancel": "취소",
+    "confirm": "사용자 정보변경",
+    "sendCode": "코드 보내기",
+    "changePhone": "전화번호 변경",
+    "delete": "회원탈퇴",
+    "deleteSuccess": "성공적으로 사용자를 삭제했습니다.",
+    "deleteFailed": "유저 삭제에 실패했습니다.",
+    "dialog": {
+      "message": "정말로 계정을 삭제하시겠습니까?",
+      "cancel": "취소",
+      "ok": "예"
+    }
+  },
+  "userMenu": {
+    "userInfo": "사용자 정보",
+    "preferences": "환경설정",
+    "logout": "로그아웃",
+    "logoutTitle": "로그아웃하시겠습니까?",
+    "logoutText": "로그아웃하면 재인증이 필요합니다.",
+    "close": "닫기"
+  }
+}

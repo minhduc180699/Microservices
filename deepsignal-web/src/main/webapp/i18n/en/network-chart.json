@@ -1,0 +1,9 @@
+{
+  "network-chart": {
+    "tooltip": {
+      "twitter-following": "Twitter following",
+      "executive": "Executive",
+      "2-depth": "2 depth"
+    }
+  }
+}

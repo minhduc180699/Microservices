@@ -1,0 +1,117 @@
+{
+  "learningIntro": {
+    "title": "What information would you like to train?",
+    "content": "After the training is over, <br /> I'll set up a channel to collect necessary feeds. <br />I'll let you know when the feed collection is done!"
+  },
+  "learningDoc": {
+    "title": "Are there any documents you want to train?"
+  },
+  "learningTag": {
+    "title": "Which topic or content you want to train?",
+    "placeHolderInput": "Please enter a keyword",
+    "recommend": "I recommend <br /><span class=\"text-danger\">topics that has spiked</span>."
+  },
+  "learningAside": {
+    "footer": "Learnability Rate"
+  },
+  "learningWeb": {
+    "title": "Are there any social channels for training?",
+    "recommend": "I recommend a list of major sites by category.",
+    "placeHolderInput": "Type the category of the website.",
+    "resultSearch": "Search results (<i>100</i>)",
+    "selectAll": "Select All",
+    "finance": "Finance",
+    "all": "All"
+  },
+  "learningSocial": {
+    "title": "Are there any social channels for training?",
+    "selectAll": "Select All",
+    "saltlux-group": "Facebook > Saltlux Group(followinf)",
+    "search-result": " Search Results(100)"
+  },
+  "itemBar": {
+    "next": "Next",
+    "learn": "Train"
+  },
+  "learningManagement": {
+    "title": "The detailed meanings of the topic are called entity."
+  },
+  "search": {
+    "description": "Search for interesting postings and train them."
+  },
+  "web": {
+    "description": "Register for URL and train it.",
+    "select": "Select All",
+    "all": "All",
+    "remove": "Remove All"
+  },
+  "document": {
+    "description": "Choose a document you want to train."
+  },
+  "learningCenter": {
+    "title": "Training Center",
+    "total": "Total",
+    "items": "Items",
+    "liked": "Liked",
+    "disliked": "Disliked",
+    "bookmarked": "Bookmarked",
+    "memo": "Memo",
+    "hidden": "Hidden",
+    "enterKeyword": "Please enter a keyword.",
+    "unselectAll": "Unselect All",
+    "deleteAll": "Delete All",
+    "latest": "Latest",
+    "oldest": " Oldest",
+    "history": "History",
+    "learningCompleteList": "Completed List",
+    "addNewSearch": "Add New Search",
+    "addNewWeb": "Add New Web",
+    "addNewDocument": "Add New Document",
+    "insertSearchKeyword": "Enter a search keyword.",
+    "searchResult": "Search Result",
+    "case": "Case",
+    "choose": "Select",
+    "selectAll": "Select All",
+    "addLearning": "Add Training Material",
+    "startLearningNow": "Train now.",
+    "noSearchResult": "No Search Result.",
+    "enterSearchKeywordAndSelectContent": "Enter a search keyword and select a content.",
+    "insertUrlKeyword": "Enter or paste a URL.",
+    "learnMoreList": "Train more list",
+    "noWebResult": "There is no new web result.",
+    "enterUrlOrPasteUrl": "Enter the URL in the input box at the top or paste the URL.",
+    "myComputer": "My Computer",
+    "googleDrive": "Google Drive",
+    "add": "Add",
+    "modify": "Edit",
+    "delete": "Delete",
+    "download": "Download",
+    "noNewDocument": "There is no document.",
+    "addFileFromComputerOrDraggingFile": "Select a file from My Computer and Shared Drives, or <br />you can add files by dragging them with the mouse.",
+    "unsupportedFileType": "Your files you just selected is not supported. Please choose the following file types: ",
+    "learningList": "Training List",
+    "learningGuide": "Training Guide",
+    "learningGuide1": "Depending on the amount of the training, it may take some time to train. If you want to check the completion of training, please check 'Notification of completion of training' below.",
+    "learningGuide2": "You can check the list of completed training in [<a style='color:#007bff'>Trained Document<a/>]",
+    "receiveLearningCompleteNotify": "Receive a training completion notification.",
+    "toLearn": "Train",
+    "learning": "Training...",
+    "select": "Select",
+    "alarm": "Alarm",
+    "newFeed": "New Feed",
+    "goToFeed": "Feed",
+    "learningComplete": "Training complete",
+    "minutesAgo": "minutes ago",
+    "goToLearningCenter": "Training Center",
+    "connectomeUpdate": "Connectome Update",
+    "seeAllNotification": "See All Notification",
+    "yesterday": "Yesterday",
+    "web": "Website",
+    "search": "Search",
+    "more": "More",
+    "document": "Document",
+    "myActivity": "My Activity",
+    "learnedDocument": "Trained Document",
+    "choices": "Choices"
+  }
+}

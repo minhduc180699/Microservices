@@ -1,0 +1,122 @@
+{
+  "feed": {
+    "not-useful": {
+      "title": "Reason you want to hide this story",
+      "not-interest": "Not interested",
+      "not-like": "Don't like it",
+      "report": "Report problem",
+      "cancel": "Cancel",
+      "show-less": "Ok, we will show less similar stories in the future.",
+      "refresh": "Refresh"
+    },
+    "detail": {
+      "no-registered-comment": "No Comments",
+      "no-registered-note": "No Notes",
+      "see-all-comment": "View all comments",
+      "see-all-note": "View all notes",
+      "see-more": "More",
+      "comment": "Comment",
+      "view-original-text": "View original text",
+      "view-all": "View all",
+      "view-less": "View less",
+      "like": "Like",
+      "dislike": "Dislike",
+      "bookmark": "Bookmark",
+      "share": "Share",
+      "hide": "Hide card",
+      "back-feed": "Back to Feed",
+      "view-more": "View more"
+    },
+    "placeholder-search-input": "Enter the search keyword",
+    "responsive-mobile": {
+      "archive": {
+        "history": "Recently Viewed",
+        "like": "Liked",
+        "bookmark": "Bookmarked",
+        "hide": "Hidden"
+      },
+      "support": {
+        "announcement": "Announcement",
+        "faq": "FAQ",
+        "user-guide": "User Guide",
+        "inquiry": "1:1 Questions"
+      },
+      "my-page": {
+        "membership": "My Membership",
+        "connectome-management": "Connectome Management",
+        "payment-history": "Payment History",
+        "inquiries": "Inquiries",
+        "user-account": "User Account"
+      },
+      "header": {
+        "description": "Log in to get more benefits",
+        "message": "Start a fresh new day"
+      },
+      "learning-center": "Train your AI, and your AI will recommend the best matching content for you."
+    },
+    "filter": {
+      "keyword": "Keyword",
+      "period": {
+        "name": "Period",
+        "all": "All",
+        "1day": "1 day",
+        "1week": "1 week",
+        "1month": "1 month",
+        "3months": "3 months",
+        "6months": "6 months",
+        "1year": "1 year",
+        "choosePeriod": "Choose period"
+      },
+      "category": {
+        "name": "Category",
+        "all": "All",
+        "article": "Article",
+        "social": "Social",
+        "video": "Video",
+        "document": "Document"
+      }
+    },
+    "no-content": {
+      "no-results": "There are no results",
+      "go-to-my-ai": "Please go to My AI and training data or try another keyword and filter.",
+      "learn-more": "Learn more"
+    },
+    "card": {
+      "card-issue": "Go to Signal",
+      "card-people": "Go to People"
+    },
+    "weather": {
+      "hide-weather": "Hide Weather Card",
+      "hide-stock": "Hide Stock Card",
+      "detail-setting": "Detailed Setting",
+      "report-problem": "Report Problem",
+      "highest": "Highest",
+      "lowest": "Lowest",
+      "search-add": "Search and Add"
+    },
+    "popup-setting": {
+      "setting": "Setting",
+      "general": "General",
+      "information-card": "Information card",
+      "language": "Language",
+      "language-content": "Language and content",
+      "south-korea": "South Korea (South Korea)",
+      "usa": "USA",
+      "vietnam": "Vietnam (Việt nam)",
+      "france": "France",
+
+      "weather": "Weather",
+      "show-weather-card": "Show weather cards in your feed",
+      "always-detect-location": "Always detect my location",
+      "temperature-unit": "Temperature unit",
+      "fahrenheit": "Fahrenheit (°F)",
+      "celsius": "Celsius  (°C)",
+
+      "stock": "Stock",
+      "show-stock-cards": "Show stock cards in your feed",
+      "choose-stock-style": "Choose a stock card style",
+      "view-in-chart": "View in chart",
+      "view-by-list": "View by list"
+    }
+  }
+}
