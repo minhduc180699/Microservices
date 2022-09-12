@@ -18,8 +18,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -676,7 +678,7 @@ public class ConnectomeResource {
     }
 
     @GetMapping("/entity/{connectomeId}/docs")
-    @Operation(summary = "get the connectome map ", tags = { "Connectome Management" })
+    @Operation(summary = "get the documents from a specific vertex ", tags = { "Connectome Management" })
     public ResponseEntity<?> getDocsEntity(
         @PathVariable("connectomeId") String connectomeId,
         @RequestParam(value = "sourceLang", defaultValue = "en") String sourceLang,
@@ -689,63 +691,27 @@ public class ConnectomeResource {
         if (Objects.isNull(label)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
-        StringBuilder url = new StringBuilder();
-        url.append(APIConnectome).append(Constants.GET_CONNECTOMES_URI);
+
+        String uriConnectome = connectAdapterApi.getExternalApi() + "/connectome/" + connectomeId + "/vertices/docs";
+
         String urlTemplate = UriComponentsBuilder
-            .fromHttpUrl(url.toString())
-            .queryParam("id", connectomeId)
-            .queryParam("sourceLang", sourceLang)
+            .fromHttpUrl(uriConnectome)
+            .queryParam("label", label)
+            .queryParam("lang", sourceLang)
             .build()
             .toUriString();
+
         try {
-            HttpEntity<ConnectomeNetworkDocsDTO> response = restTemplate.getForEntity(urlTemplate, ConnectomeNetworkDocsDTO.class);
+            HttpEntity<VertexDocsRes> response = restTemplate.getForEntity(urlTemplate, VertexDocsRes.class);
 
-            ConnectomeNetworkDocsDTO connectome = response.getBody();
+            VertexDocsRes docs = response.getBody();
 
-            ArrayList<String> docs = new ArrayList<>();
-            ArrayList<String> feeds = new ArrayList<>();
-            for (VerticeDocsDTO vertice : connectome.getVertices()) {
-                if (vertice.getLabel().equals(label)) {
-                    for (int i = 0; i < vertice.getDocumentIds().size(); i++) {
-                        if (i > 4) {
-                            break;
-                        }
-                        docs.add(vertice.getDocumentIds().get(i).toString());
-                    }
-                    for (int i = 0; i < vertice.getFeedIds().size(); i++) {
-                        if (i > 4) {
-                            break;
-                        }
-                        feeds.add(vertice.getFeedIds().get(i).toString());
-                    }
-                }
-            }
+            System.out.println("docs" + docs.getPersonalDocuments().size());
+            System.out.println("feeds" + docs.getFeeds().size());
 
-            System.out.println("docs" + docs);
-            System.out.println("feeds" + feeds);
-
-            //get the personal documents
-            String uriPersonalDocument = connectAdapterApi.getExternalApi() + "/personal-documents/getByIds";
-            String strJsonPersonalDocument = connectAdapterApi.getDataFromAdapterApi(
-                uriPersonalDocument,
-                null,
-                HttpMethod.POST,
-                null,
-                docs
-            );
-            ObjectMapper objectMapper = new ObjectMapper();
-            PersonalDocumentRes personalDocumentRes = objectMapper.readValue(strJsonPersonalDocument, PersonalDocumentRes.class);
-
-            //get the feeds
-            String uriFeed = connectAdapterApi.getExternalApi() + "/connectome-feed/getByIds";
-            String strJsonFeed = connectAdapterApi.getDataFromAdapterApi(uriFeed, null, HttpMethod.POST, null, feeds);
-            FeedRes feedRes = objectMapper.readValue(strJsonFeed, FeedRes.class);
-
-            Map<String, Object> responseBody = new HashMap<>();
-            responseBody.put("personalDocuments", personalDocumentRes);
-            responseBody.put("feeds", feedRes);
-            return ResponseEntity.ok().body(new ResponseEntity<>(responseBody, response.getHeaders(), HttpStatus.OK));
+            return ResponseEntity.ok().body(new ResponseEntity<>(docs, response.getHeaders(), HttpStatus.OK));
         } catch (Exception e) {
+            e.printStackTrace();
             return new ResponseEntity(new ApiResponse(false, e.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
@@ -953,6 +919,91 @@ public class ConnectomeResource {
             return ResponseEntity
                 .ok()
                 .body(new ResponseEntity<ConnectomeNetworkDTO>(connectomeFiltered, response.getHeaders(), HttpStatus.OK));
+        } catch (Exception e) {
+            return new ResponseEntity(new ApiResponse(false, e.getMessage()), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("/pd-map/{connectomeId}")
+    @Operation(summary = "get the document connectome map ", tags = { "Connectome Management" })
+    public ResponseEntity<?> postPDConnectomeMapByConnectomeIdAndDocIds(
+        @PathVariable(value = "connectomeId") String connectomeId,
+        @RequestBody miniConnectomeRequestBody filterIDS
+    ) {
+        if (Objects.isNull(connectomeId)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+        if (Objects.isNull(filterIDS)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+
+        StringBuilder url = new StringBuilder();
+        url.append(APIConnectome).append(Constants.POST_MINI_CONNECTOMES_URI);
+        try {
+            Map<String, Object> requestBody = new HashMap<>();
+            requestBody.put("connectomeId", connectomeId);
+            requestBody.put("sourceLang", filterIDS.getSourceLang());
+            requestBody.put("personalDocumentObjectIds", filterIDS.getIds());
+            requestBody.put("feedObjectIds", new ArrayList<String>());
+            HttpEntity<Object> request = new HttpEntity<>(requestBody);
+            HttpEntity<ConnectomeNetworkDTO> response = restTemplate.postForEntity(url.toString(), request, ConnectomeNetworkDTO.class);
+            /*{sourceLang=en, personalDocumentObjectIds=[], feedObjectIds=[62b50aa7cea9a2500dd0a6e7], connectomeId=CID_92340659-a63c-4d72-b808-63461f40625f} */
+            ConnectomeNetworkDTO connectome = response.getBody();
+
+            ArrayList<EdgeDTO> edgesFiltered = new ArrayList<EdgeDTO>();
+
+            if (connectome == null) {
+                System.out.println("Doc connectome Request Body");
+                System.out.println(requestBody);
+                return new ResponseEntity(new ApiResponse(false, "Body response empty"), HttpStatus.OK);
+            }
+            ArrayList<ConnectomeNodeDTO> verticesFiltered = new ArrayList<>();
+            ConnectomeNodeDTO tmpVertice = new ConnectomeNodeDTO();
+            ArrayList<String> tmpEntities = new ArrayList<>();
+            //connectome node
+            HashSet<String> hs = new HashSet<>();
+
+            //add links to connectome node
+            Set<String> uniqueEdge = new HashSet<String>();
+            String labelFromTo = null, labelToFrom = null;
+            for (EdgeDTO edge : connectome.getEdges()) {
+                labelFromTo = edge.getFrom() + "=>" + edge.getTo();
+                labelToFrom = edge.getTo() + "=>" + edge.getFrom();
+
+                if (!uniqueEdge.contains(labelFromTo) && !uniqueEdge.contains(labelToFrom)) {
+                    uniqueEdge.add(edge.getLabel());
+                    edgesFiltered.add(edge);
+                }
+            }
+
+            for (VerticeDTO vertice : connectome.getVertices()) {
+                tmpVertice = new ConnectomeNodeDTO();
+                tmpEntities = new ArrayList<>();
+                tmpVertice.setWeight(filterIDS.getIds());
+                tmpVertice.setLabel(vertice.getLabel());
+                tmpVertice.setFavorite(vertice.getFavorite());
+                tmpVertice.setDisable(vertice.getDisable());
+                for (EdgeDTO edge : edgesFiltered) {
+                    if (edge.getFrom().equals(vertice.getLabel())) {
+                        tmpEntities.add(edge.getTo());
+                    } else if (edge.getTo().equals(vertice.getLabel())) {
+                        tmpEntities.add(edge.getFrom());
+                    }
+                }
+                hs = new HashSet<>();
+                hs.addAll(tmpEntities);
+                tmpEntities.clear();
+                tmpEntities.addAll(hs);
+                tmpVertice.setLinkedNodes(tmpEntities);
+                verticesFiltered.add(tmpVertice);
+            }
+            ConnectomePersonalDocumentDTO responseToSend = new ConnectomePersonalDocumentDTO();
+            responseToSend.setId(filterIDS.getIds().get(0));
+            responseToSend.setConnectome(verticesFiltered);
+
+            return ResponseEntity
+                .ok()
+                .body(new ResponseEntity<ConnectomePersonalDocumentDTO>(responseToSend, response.getHeaders(), HttpStatus.OK));
         } catch (Exception e) {
             return new ResponseEntity(new ApiResponse(false, e.getMessage()), HttpStatus.BAD_REQUEST);
         }

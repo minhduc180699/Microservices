@@ -1,13 +1,6 @@
 package com.saltlux.deepsignal.adapter;
 
 import com.saltlux.deepsignal.adapter.config.ApplicationProperties;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Optional;
-import javax.annotation.PostConstruct;
-
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
 import org.apache.commons.lang3.StringUtils;
@@ -17,14 +10,22 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.cloud.client.circuitbreaker.EnableCircuitBreaker;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.core.env.Environment;
 import tech.jhipster.config.DefaultProfileUtil;
 import tech.jhipster.config.JHipsterConstants;
 
+import javax.annotation.PostConstruct;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Optional;
+
 @SpringBootApplication
 @EnableFeignClients
+@RefreshScope
 @EnableConfigurationProperties({ LiquibaseProperties.class, ApplicationProperties.class })
 @OpenAPIDefinition(info =
     @Info(title = "Deepsignal Adapter API", version = "1.0", description = "Documentation Deepsignal Adapter API v1.0")

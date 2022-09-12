@@ -12,7 +12,19 @@ public interface IUserActivityLogService {
     UserActivityLog saveUserActivityLogWithBase(UserActivityLog userActivityLog);
     UserActivityLog saveUserActivityLogWithBase();
 
-    List<TrainingDocumentInfoDTO> getTrainingDocumentsByKeyword(String connectomeId, String keyword, String datetime);
+    List<TrainingDocumentInfoDTO> getTrainingDocumentsByKeyword(
+        String connectomeId,
+        String keyword,
+        String dateFrom,
+        String dateTo,
+        Integer hour
+    );
 
-    List<TrainingDocumentInfoDTO> getTrainingDocumentsByType(String connectomeId, String type, String datime);
+    List<TrainingDocumentInfoDTO> getTrainingDocumentsByType(
+        String connectomeId,
+        String type,
+        String dateFrom,
+        String dateTo,
+        Integer hour
+    );
 }

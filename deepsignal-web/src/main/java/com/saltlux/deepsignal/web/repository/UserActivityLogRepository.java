@@ -17,14 +17,43 @@ public interface UserActivityLogRepository extends JpaRepository<UserActivityLog
         value = "SELECT * FROM user_activity_log " +
         "WHERE connectome_id = ?1 " +
         "AND JSON_CONTAINS(training_data, ?2) " +
-        "AND DATE(logged_time) = ?3",
+        "AND DATE(logged_time) >= ?3 AND DATE(logged_time) <= ?4 " +
+        "AND HOUR(logged_time) = ?5 ",
         nativeQuery = true
     )
-    List<UserActivityLog> findUserActivityLogByTrainingKeywordOrType(String connectomeId, String keyword, String datetime);
+    List<UserActivityLog> findUserActivityLogByTrainingKeywordOrType(
+        String connectomeId,
+        String keyword,
+        String dateFrom,
+        String dateTo,
+        Integer hour
+    );
 
     @Query(
-        value = "SELECT * FROM user_activity_log WHERE connectome_id = ?1 AND DATE(logged_time) = ?2 AND training_data IS NOT NULL ",
+        value = "SELECT * FROM user_activity_log " +
+        "WHERE connectome_id = ?1 " +
+        "AND DATE(logged_time) >= ?2 AND DATE(logged_time) <= ?3 " +
+        "AND HOUR(logged_time) = ?4 " +
+        "AND training_data IS NOT NULL ",
         nativeQuery = true
     )
-    List<UserActivityLog> findUserActivityLogByConnectomeIdAndLoggedTime(String connectomeId, String datetime);
+    List<UserActivityLog> findUserActivityLogByConnectomeIdAndLoggedTime(String connectomeId, String dateFrom, String dateTo, Integer hour);
+
+    @Query(
+        value = "SELECT * FROM user_activity_log " +
+        "WHERE connectome_id = ?1 " +
+        "AND JSON_CONTAINS(training_data, ?2) " +
+        "AND DATE(logged_time) >= ?3 AND DATE(logged_time) <= ?4",
+        nativeQuery = true
+    )
+    List<UserActivityLog> findUserActivityLogByTrainingKeywordOrType(String connectomeId, String keyword, String dateFrom, String dateTo);
+
+    @Query(
+        value = "SELECT * FROM user_activity_log " +
+        "WHERE connectome_id = ?1 " +
+        "AND DATE(logged_time) >= ?2 AND DATE(logged_time) <= ?3 " +
+        "AND training_data IS NOT NULL ",
+        nativeQuery = true
+    )
+    List<UserActivityLog> findUserActivityLogByConnectomeIdAndLoggedTime(String connectomeId, String dateFrom, String dateTo);
 }

@@ -1,5 +1,20 @@
 server:
   port: 8088
 spring:
-  profiles:
-    active: native
+  rabbitmq:
+    host: 192.168.10.12
+    port: 5672
+    username: deepsignal
+    password: deeppass22
+  cloud:
+    bus:
+      enabled: true
+    config:
+      server:
+        git:
+          uri: https://github.com/deepsignalai/deepsignal-cloud-config.git
+          username: deepsignalai
+          password: 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
+management:
+  security:
+    enabled: false

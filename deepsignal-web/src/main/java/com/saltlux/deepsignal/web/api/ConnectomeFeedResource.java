@@ -88,7 +88,8 @@ public class ConnectomeFeedResource {
      * @return
      */
     @GetMapping("/getAll")
-    @Operation(summary = "get all connectome feed information from deepsignal adapter", tags = { "Connectome Feed Management" }, security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "get all connectome feed information from deepsignal adapter", tags = { "Connectome Feed Management" },
+        security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<?> getAllConnectomeFeed(
         @RequestParam(value = "page", defaultValue = "0") int page,
         @RequestParam(value = "size", defaultValue = "10") int size,
@@ -96,16 +97,6 @@ public class ConnectomeFeedResource {
         @RequestParam(value = "sortDirection", defaultValue = "desc") String sortDirection
     ) {
         try {
-//            String uri = connectAdapterApi.getExternalApi() + "/connectome-feed/getAll";
-//            Map<String, Object> params = new HashMap<>();
-//            params.put("page", page);
-//            params.put("size", size);
-//            params.put("orderBy", orderBy);
-//            params.put("sortDirection", sortDirection);
-//            String strJson = connectAdapterApi.getDataFromAdapterApi(uri, params, HttpMethod.GET);
-//            ObjectMapper objectMapper = new ObjectMapper();
-//            ConnectomeFeedRes connectomeFeedRes = objectMapper.readValue(strJson, ConnectomeFeedRes.class);
-//            return new ResponseEntity<>(connectomeFeedRes, HttpStatus.OK);
             return adapterClient.getAllConnectomeFeed(page, size, orderBy, sortDirection);
         } catch (Exception e) {
             log.error(e.getMessage());

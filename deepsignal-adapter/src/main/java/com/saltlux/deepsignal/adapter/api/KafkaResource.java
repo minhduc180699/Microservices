@@ -1,17 +1,17 @@
 package com.saltlux.deepsignal.adapter.api;
 
+import com.saltlux.deepsignal.adapter.config.ApplicationProperties;
 import com.saltlux.deepsignal.adapter.service.KafkaService;
 import com.saltlux.deepsignal.adapter.service.dto.FileInfoDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import javax.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api/kafka")
@@ -20,8 +20,11 @@ public class KafkaResource {
 
     private final KafkaService kafkaService;
 
-    public KafkaResource(KafkaService kafkaService) {
+    private final ApplicationProperties properties;
+
+    public KafkaResource(KafkaService kafkaService, ApplicationProperties properties) {
         this.kafkaService = kafkaService;
+        this.properties = properties;
     }
 
     @PostMapping(value = "/publish")
@@ -29,5 +32,11 @@ public class KafkaResource {
     public ResponseEntity<?> sendMessageToKafkaTopic(@Valid @RequestBody FileInfoDTO[] fileInfoDTO) {
         kafkaService.sendMessage(fileInfoDTO);
         return new ResponseEntity<>(fileInfoDTO, new HttpHeaders(), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/properties")
+    @Operation(summary = "Get Kafka info", tags = { "Kafka Management" })
+    public ResponseEntity<?> getProperties() {
+        return new ResponseEntity<>(properties.getKafkaCfg(), new HttpHeaders(), HttpStatus.OK);
     }
 }

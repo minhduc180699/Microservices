@@ -1,16 +1,0 @@
-
--
-java:S1700Q"Rename field "postType"(ˆÚ¬¬
-t	java:S1151"ZRename this constant name to match the regular expression '^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$'.(Æ…ÚÒøÿÿÿÿ
-o	java:S1152"ZRename this constant name to match the regular expression '^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$'.(â²è”
-o	java:S1153"ZRename this constant name to match the regular expression '^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$'.(¹İÅ¤
-o	java:S115h"ZRename this constant name to match the regular expression '^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$'.(¹˜
-n	java:S115i"ZRename this constant name to match the regular expression '^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$'.(‘º
-Š
-java:S1845r"tRename field "name" to prevent any misunderstanding/clash with method "name" defined in superclass "java.lang.Enum".(³Êøü
-V
-java:S1118‘":Add a private constructor to hide the implicit public one.(ºØ®ôÿÿÿÿÿ
-V
-java:S1118Ş":Add a private constructor to hide the implicit public one.(¦­­¡ıÿÿÿÿ
-V
-java:S1118ÿ":Add a private constructor to hide the implicit public one.(Éæè‚øÿÿÿÿ

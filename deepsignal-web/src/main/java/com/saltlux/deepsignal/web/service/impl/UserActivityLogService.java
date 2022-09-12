@@ -11,6 +11,7 @@ import com.saltlux.deepsignal.web.util.HttpRequestResponseUtils;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
@@ -64,12 +65,34 @@ public class UserActivityLogService implements IUserActivityLogService {
     }
 
     @Override
-    public List<TrainingDocumentInfoDTO> getTrainingDocumentsByKeyword(String connectomeId, String keyword, String datetime) {
+    public List<TrainingDocumentInfoDTO> getTrainingDocumentsByKeyword(
+        String connectomeId,
+        String keyword,
+        String dateFrom,
+        String dateTo,
+        Integer hour
+    ) {
         List<UserActivityLog> userActivityLogs = new ArrayList<>();
         JSONObject keywordJSON = new JSONObject();
         keywordJSON.put("keyword", keyword);
-        userActivityLogs =
-            userActivityLogRepository.findUserActivityLogByTrainingKeywordOrType(connectomeId, keywordJSON.toString(), datetime);
+        if (Objects.isNull(hour)) {
+            userActivityLogs =
+                userActivityLogRepository.findUserActivityLogByTrainingKeywordOrType(
+                    connectomeId,
+                    keywordJSON.toString(),
+                    dateFrom,
+                    dateTo
+                );
+        } else {
+            userActivityLogs =
+                userActivityLogRepository.findUserActivityLogByTrainingKeywordOrType(
+                    connectomeId,
+                    keywordJSON.toString(),
+                    dateFrom,
+                    dateTo,
+                    hour
+                );
+        }
 
         List<TrainingDocumentInfoDTO> trainingDocumentsWithKeyword = new ArrayList<>();
         try {
@@ -84,6 +107,7 @@ public class UserActivityLogService implements IUserActivityLogService {
                             documentJSON.toString(),
                             TrainingDocumentInfoDTO.class
                         );
+                        trainingDocumentInfoDTO.setDatetime(log.getLoggedTime());
                         trainingDocumentsWithKeyword.add(trainingDocumentInfoDTO);
                     }
                 }
@@ -96,15 +120,42 @@ public class UserActivityLogService implements IUserActivityLogService {
     }
 
     @Override
-    public List<TrainingDocumentInfoDTO> getTrainingDocumentsByType(String connectomeId, String type, String datetime) {
+    public List<TrainingDocumentInfoDTO> getTrainingDocumentsByType(
+        String connectomeId,
+        String type,
+        String dateFrom,
+        String dateTo,
+        Integer hour
+    ) {
         List<UserActivityLog> userActivityLogs = new ArrayList<>();
         if (type.equalsIgnoreCase(Constants.UploadType.ALL.toString())) {
-            userActivityLogs = userActivityLogRepository.findUserActivityLogByConnectomeIdAndLoggedTime(connectomeId, datetime);
+            if (Objects.isNull(hour)) {
+                userActivityLogs = userActivityLogRepository.findUserActivityLogByConnectomeIdAndLoggedTime(connectomeId, dateFrom, dateTo);
+            } else {
+                userActivityLogs =
+                    userActivityLogRepository.findUserActivityLogByConnectomeIdAndLoggedTime(connectomeId, dateFrom, dateTo, hour);
+            }
         } else {
             JSONObject typeJSON = new JSONObject();
-            typeJSON.put("type", type);
-            userActivityLogs =
-                userActivityLogRepository.findUserActivityLogByTrainingKeywordOrType(connectomeId, typeJSON.toString(), datetime);
+            typeJSON.put("type", type.toUpperCase());
+            if (Objects.isNull(hour)) {
+                userActivityLogs =
+                    userActivityLogRepository.findUserActivityLogByTrainingKeywordOrType(
+                        connectomeId,
+                        typeJSON.toString(),
+                        dateFrom,
+                        dateTo
+                    );
+            } else {
+                userActivityLogs =
+                    userActivityLogRepository.findUserActivityLogByTrainingKeywordOrType(
+                        connectomeId,
+                        typeJSON.toString(),
+                        dateFrom,
+                        dateTo,
+                        hour
+                    );
+            }
         }
 
         List<TrainingDocumentInfoDTO> trainingDocumentsWithKeyword = new ArrayList<>();
@@ -120,12 +171,14 @@ public class UserActivityLogService implements IUserActivityLogService {
                             logJSON.get(i).toString(),
                             TrainingDocumentInfoDTO.class
                         );
+                        trainingDocumentInfoDTO.setDatetime(log.getLoggedTime());
                         trainingDocumentsWithKeyword.add(trainingDocumentInfoDTO);
                     } else if (trainingDocJSON.has("type") && trainingDocJSON.getString("type").equalsIgnoreCase(type)) {
                         TrainingDocumentInfoDTO trainingDocumentInfoDTO = objectMapper.readValue(
                             logJSON.get(i).toString(),
                             TrainingDocumentInfoDTO.class
                         );
+                        trainingDocumentInfoDTO.setDatetime(log.getLoggedTime());
                         trainingDocumentsWithKeyword.add(trainingDocumentInfoDTO);
                     }
                 }
