@@ -6,6 +6,8 @@ import com.saltlux.deepsignal.adapter.service.dto.FileInfoDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +23,9 @@ public class KafkaResource {
     private final KafkaService kafkaService;
 
     private final ApplicationProperties properties;
+
+    @Value("${application.kafka-cfg.messages-per-request}")
+    private String msgPerRequest;
 
     public KafkaResource(KafkaService kafkaService, ApplicationProperties properties) {
         this.kafkaService = kafkaService;
@@ -38,5 +43,12 @@ public class KafkaResource {
     @Operation(summary = "Get Kafka info", tags = { "Kafka Management" })
     public ResponseEntity<?> getProperties() {
         return new ResponseEntity<>(properties.getKafkaCfg(), new HttpHeaders(), HttpStatus.OK);
+    }
+
+
+    @GetMapping(value = "/msgPerRequest")
+    @Operation(summary = "Get Kafka Message Per Request", tags = { "Kafka Management" })
+    public ResponseEntity<?> getMsgPerRequest() {
+        return new ResponseEntity<>(msgPerRequest, new HttpHeaders(), HttpStatus.OK);
     }
 }
