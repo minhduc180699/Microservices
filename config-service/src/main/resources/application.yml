@@ -7,15 +7,16 @@ spring:
     config:
       server:
         git:
-          uri: https://github.com/deepsignalai/deepsignal-cloud-config.git
+          uri: https://deepsignal.ziny.us/deepsignal/deepsignal-cloud-config.git
           username: deepsignalai
-          password: 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
+          password: Deepsignal123!@#
           default-label: main
+          skip-ssl-validation: true
   rabbitmq:
-    host: localhost
+    host: 192.168.10.12
     port: 5672
-    username: guest
-    password: guest
+    username: deepsignal
+    password: deeppass22
 management:
   security:
     enabled: false
