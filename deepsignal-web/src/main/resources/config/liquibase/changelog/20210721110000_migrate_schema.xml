@@ -114,4 +114,11 @@
     <changeSet id="00000000000037" author="system">
         <sqlFile dbms="mariadb" path="config/liquibase/changelog/migrate/20220815151515_update_entity_table_User_Activity_Log.sql"/>
     </changeSet>
+
+    <changeSet id="00000000000038" author="system">
+        <sqlFile dbms="mariadb" path="config/liquibase/changelog/migrate/20220915133700_add_entity_column_FileUpload.sql"/>
+    </changeSet>
+    <changeSet id="00000000000039" author="system">
+        <sqlFile dbms="mariadb" path="config/liquibase/changelog/migrate/20220916141400_create_entity_table_external_url_tracking.sql"/>
+    </changeSet>
 </databaseChangeLog>

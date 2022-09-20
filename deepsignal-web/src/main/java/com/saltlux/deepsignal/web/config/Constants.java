@@ -25,6 +25,7 @@ public final class Constants {
     public static final String CONNECTOME_TRAINING = "/connectomes/training";
     public static final String GET_CONNECTOMES_URI = "/connectomes";
     public static final String POST_MINI_CONNECTOMES_URI = "/connectomes/training/instant/ids";
+    public static final String POST_TEXT_CONNECTOME_URI = "/connectomes/training/instant/text/pageRank";
     public static final String PATCH_DISABLE_ENTITY_URI = "/vertex/toggle/disable";
     public static final String PATCH_FAVORITE_ENTITY_URI = "/vertex/toggle/favorite";
     public static final String GET_CONNECTOMES_STATUS_URI = "/status";

@@ -63,6 +63,7 @@ public class ApplicationProperties {
         private String deepsignalAdapter;
         private String deepsignalOutside;
         private String deepsignalConnectome;
+        private String deepsignalConnectomeTest;
         private String deepsignalEntityNetwork;
         private String deepsignalFile;
         private String deepsignalStock;

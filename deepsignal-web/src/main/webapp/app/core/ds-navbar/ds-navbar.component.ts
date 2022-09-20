@@ -285,7 +285,7 @@ export default class DsNavbar extends Vue {
     this.isEditing = false;
     if (this.showUserMenu) {
       this.$nextTick().then(() => {
-        if (checkMobile()) {
+        if (checkMobile() || window.innerWidth < 992) {
           // @ts-ignore
           this.$refs.userMenuMobile.focus(); // set active element
         } else {

@@ -37,6 +37,10 @@ const validations = {
   },
   watch: {
     getCurrentLanguage(value) {
+      if (value != this.langKey) {
+        this.langKey = value;
+        this.updateUser(value);
+      }
       this.language = this.$store.getters.languages[value].name;
     },
   },
@@ -45,10 +49,10 @@ export default class PopupUserInfoComponent extends Vue {
   @Inject('translationService') private translationService: () => TranslationService;
   @Inject('publicService') private publicService: () => PublicService;
 
-  private currentLanguage = this.$store.getters.currentLanguage;
   private languages: any = this.$store.getters.languages;
   private language;
   private phoneNumber = '';
+  private langKey = '';
   private countryCode;
   private email = '';
   public imageUrl = null;
@@ -80,7 +84,8 @@ export default class PopupUserInfoComponent extends Vue {
   @Inject('phoneService') private phoneService: () => PhoneService;
 
   created() {
-    this.language = this.$store.getters.languages[this.currentLanguage].name;
+    this.langKey = this.$store.getters.currentLanguage;
+    this.language = this.$store.getters.languages[this.langKey].name;
   }
 
   onOpenPopUpUserInfo() {
@@ -118,6 +123,7 @@ export default class PopupUserInfoComponent extends Vue {
   }
 
   public changeLanguage(newLanguage: string): void {
+    this.langKey = newLanguage;
     this.$store.commit('currentLanguage', newLanguage);
     this.language = this.$store.getters.languages[newLanguage].name;
     this.translationService().refreshTranslation(newLanguage);
@@ -293,7 +299,7 @@ export default class PopupUserInfoComponent extends Vue {
     };
   }
 
-  public updateUser() {
+  public updateUser(language?) {
     const formData = new FormData();
     formData.append('file', this.fileAvatar);
     const user = this.createUser();
@@ -308,14 +314,16 @@ export default class PopupUserInfoComponent extends Vue {
       .put<IUserModel>('/api/admin/users', formData)
       .then(res => {
         this.user = res.data;
-        this.$bvModal.hide('modal-user-info');
-        this.$bvToast.toast('Edit User Success', {
-          toaster: 'b-toaster-bottom-right',
-          title: 'Success',
-          variant: 'success',
-          solid: true,
-          autoHideDelay: 5000,
-        });
+        if (!language) {
+          this.$bvModal.hide('modal-user-info');
+          this.$bvToast.toast('Edit User Success', {
+            toaster: 'b-toaster-bottom-right',
+            title: 'Success',
+            variant: 'success',
+            solid: true,
+            autoHideDelay: 5000,
+          });
+        }
       })
       .catch(err => {
         this.$bvToast.toast(err.response?.data?.title, {

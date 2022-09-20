@@ -5,18 +5,22 @@ import com.saltlux.deepsignal.web.config.Constants;
 import com.saltlux.deepsignal.web.domain.Connectome;
 import com.saltlux.deepsignal.web.domain.FileInfo;
 import com.saltlux.deepsignal.web.domain.GetFileData;
+import com.saltlux.deepsignal.web.domain.User;
 import com.saltlux.deepsignal.web.repository.ConnectomeRepository;
 import com.saltlux.deepsignal.web.repository.FileStorageRepository;
 import com.saltlux.deepsignal.web.service.IFileStorageService;
+import com.saltlux.deepsignal.web.service.dto.FileInfoFindParam;
 import com.saltlux.deepsignal.web.util.FileUtil;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import javax.persistence.criteria.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -155,5 +159,52 @@ public class FileResourceService {
         }
         String pathFile = fileInfo.get().getPath();
         return new File(pathFile);
+    }
+
+    public Page<FileInfo> searchDynamic(Pageable page, FileInfoFindParam fileInfoFindParam) {
+        Page<FileInfo> pageResult = fileStorageRepository.findAll(
+            new Specification<FileInfo>() {
+                @Override
+                public Predicate toPredicate(Root<FileInfo> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+                    // TODO Auto-generated method stub
+                    Join<FileInfo, User> joinUser = root.join("user", JoinType.LEFT);
+                    List<Predicate> predicates = new ArrayList<>();
+                    if (fileInfoFindParam != null) {
+                        if (fileInfoFindParam.getUserId() != null) {
+                            predicates.add(
+                                criteriaBuilder.and(
+                                    criteriaBuilder.equal(root.get("user").<String>get("id"), fileInfoFindParam.getUserId())
+                                )
+                            );
+                        }
+                        if (fileInfoFindParam.getType() != null) {
+                            predicates.add(
+                                criteriaBuilder.and(criteriaBuilder.equal(root.<String>get("type"), fileInfoFindParam.getType()))
+                            );
+                        }
+                        if (fileInfoFindParam.getChromeType() != null) {
+                            predicates.add(
+                                criteriaBuilder.and(
+                                    criteriaBuilder.equal(root.<Integer>get("chromeType"), fileInfoFindParam.getChromeType())
+                                )
+                            );
+                        }
+                        if (fileInfoFindParam.getPath() != null) {
+                            predicates.add(
+                                criteriaBuilder.and(
+                                    criteriaBuilder.like(
+                                        criteriaBuilder.upper(root.<String>get("path")),
+                                        "%" + fileInfoFindParam.getPath().trim().toUpperCase() + "%"
+                                    )
+                                )
+                            );
+                        }
+                    }
+                    return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
+                }
+            },
+            page
+        );
+        return pageResult;
     }
 }

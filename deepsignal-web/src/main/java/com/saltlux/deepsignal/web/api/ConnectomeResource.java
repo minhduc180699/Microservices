@@ -11,17 +11,27 @@ import com.saltlux.deepsignal.web.domain.Connectome;
 import com.saltlux.deepsignal.web.repository.ConnectomeRepository;
 import com.saltlux.deepsignal.web.security.SecurityUtils;
 import com.saltlux.deepsignal.web.service.IConnectomeService;
-import com.saltlux.deepsignal.web.service.dto.*;
+import com.saltlux.deepsignal.web.service.dto.ApiResponse;
+import com.saltlux.deepsignal.web.service.dto.ConnectomeDTO;
+import com.saltlux.deepsignal.web.service.dto.ConnectomeNetworkDTO;
+import com.saltlux.deepsignal.web.service.dto.ConnectomeNodeDTO;
+import com.saltlux.deepsignal.web.service.dto.ConnectomeOnTextRequestBody;
+import com.saltlux.deepsignal.web.service.dto.ConnectomePersonalDocumentDTO;
+import com.saltlux.deepsignal.web.service.dto.ConnectomeStatusDTO;
+import com.saltlux.deepsignal.web.service.dto.EdgeDTO;
+import com.saltlux.deepsignal.web.service.dto.FeedRes;
+import com.saltlux.deepsignal.web.service.dto.VertexDocsRes;
+import com.saltlux.deepsignal.web.service.dto.VerticeDTO;
+import com.saltlux.deepsignal.web.service.dto.entityUpdateRequestBody;
+import com.saltlux.deepsignal.web.service.dto.miniConnectomeRequestBody;
 import com.saltlux.deepsignal.web.service.impl.ConnectomeService;
 import com.saltlux.deepsignal.web.util.ConnectAdapterApi;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,9 +50,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -90,6 +100,7 @@ public class ConnectomeResource {
     private final String API;
 
     private final String APIConnectome;
+    private final String APIConnectomeTest;
     private final String APIEntityNetwork;
 
     public ConnectomeResource(
@@ -101,6 +112,7 @@ public class ConnectomeResource {
         this.connectomeService = connectomeService;
         this.modelMapper = modelMapper;
         this.API = applicationProperties.getExternalApi().getDeepsignalAdapter();
+        this.APIConnectomeTest = applicationProperties.getExternalApi().getDeepsignalConnectomeTest();
         this.connectomeRepository = connectomeRepository;
         this.APIConnectome = applicationProperties.getExternalApi().getDeepsignalConnectome();
         this.APIEntityNetwork = applicationProperties.getExternalApi().getDeepsignalEntityNetwork();
@@ -924,88 +936,188 @@ public class ConnectomeResource {
         }
     }
 
-    @PostMapping("/pd-map/{connectomeId}")
-    @Operation(summary = "get the document connectome map ", tags = { "Connectome Management" })
-    public ResponseEntity<?> postPDConnectomeMapByConnectomeIdAndDocIds(
-        @PathVariable(value = "connectomeId") String connectomeId,
-        @RequestBody miniConnectomeRequestBody filterIDS
+    // @PostMapping("/pd-map/{connectomeId}")
+    // @Operation(summary = "get the document connectome map ", tags = { "Connectome Management" })
+    // public ResponseEntity<?> postPDConnectomeMapByConnectomeIdAndDocIds(
+    //     @PathVariable(value = "connectomeId") String connectomeId,
+    //     @RequestBody miniConnectomeRequestBody filterIDS
+    // ) {
+    //     if (Objects.isNull(connectomeId)) {
+    //         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+    //     }
+    //     if (Objects.isNull(filterIDS)) {
+    //         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+    //     }
+
+    //     StringBuilder url = new StringBuilder();
+    //     url.append(APIConnectome).append(Constants.POST_MINI_CONNECTOMES_URI);
+    //     try {
+    //         Map<String, Object> requestBody = new HashMap<>();
+    //         requestBody.put("connectomeId", connectomeId);
+    //         requestBody.put("sourceLang", filterIDS.getSourceLang());
+    //         requestBody.put("personalDocumentObjectIds", filterIDS.getIds());
+    //         requestBody.put("feedObjectIds", new ArrayList<String>());
+    //         HttpEntity<Object> request = new HttpEntity<>(requestBody);
+    //         HttpEntity<ConnectomeNetworkDTO> response = restTemplate.postForEntity(url.toString(), request, ConnectomeNetworkDTO.class);
+    //         /*{sourceLang=en, personalDocumentObjectIds=[], feedObjectIds=[62b50aa7cea9a2500dd0a6e7], connectomeId=CID_92340659-a63c-4d72-b808-63461f40625f} */
+    //         ConnectomeNetworkDTO connectome = response.getBody();
+
+    //         ArrayList<EdgeDTO> edgesFiltered = new ArrayList<EdgeDTO>();
+
+    //         if (connectome == null) {
+    //             System.out.println("Doc connectome Request Body");
+    //             System.out.println(requestBody);
+    //             return new ResponseEntity(new ApiResponse(false, "Body response empty"), HttpStatus.OK);
+    //         }
+    //         ArrayList<ConnectomeNodeDTO> verticesFiltered = new ArrayList<>();
+    //         ConnectomeNodeDTO tmpVertice = new ConnectomeNodeDTO();
+    //         ArrayList<String> tmpEntities = new ArrayList<>();
+    //         //connectome node
+    //         HashSet<String> hs = new HashSet<>();
+
+    //         //add links to connectome node
+    //         Set<String> uniqueEdge = new HashSet<String>();
+    //         String labelFromTo = null, labelToFrom = null;
+    //         for (EdgeDTO edge : connectome.getEdges()) {
+    //             labelFromTo = edge.getFrom() + "=>" + edge.getTo();
+    //             labelToFrom = edge.getTo() + "=>" + edge.getFrom();
+
+    //             if (!uniqueEdge.contains(labelFromTo) && !uniqueEdge.contains(labelToFrom)) {
+    //                 uniqueEdge.add(edge.getLabel());
+    //                 edgesFiltered.add(edge);
+    //             }
+    //         }
+
+    //         for (VerticeDTO vertice : connectome.getVertices()) {
+    //             tmpVertice = new ConnectomeNodeDTO();
+    //             tmpEntities = new ArrayList<>();
+    //             tmpVertice.setWeight(vertice.getWeight());
+    //             tmpVertice.setRelatedDocuments(filterIDS.getIds());
+    //             tmpVertice.setLabel(vertice.getLabel());
+    //             tmpVertice.setFavorite(vertice.getFavorite());
+    //             tmpVertice.setDisable(vertice.getDisable());
+    //             for (EdgeDTO edge : edgesFiltered) {
+    //                 if (edge.getFrom().equals(vertice.getLabel())) {
+    //                     tmpEntities.add(edge.getTo());
+    //                 } else if (edge.getTo().equals(vertice.getLabel())) {
+    //                     tmpEntities.add(edge.getFrom());
+    //                 }
+    //             }
+    //             hs = new HashSet<>();
+    //             hs.addAll(tmpEntities);
+    //             tmpEntities.clear();
+    //             tmpEntities.addAll(hs);
+    //             tmpVertice.setLinkedNodes(tmpEntities);
+    //             verticesFiltered.add(tmpVertice);
+    //         }
+    //         ConnectomePersonalDocumentDTO responseToSend = new ConnectomePersonalDocumentDTO();
+    //         responseToSend.setId(filterIDS.getIds().get(0));
+    //         responseToSend.setConnectome(verticesFiltered);
+
+    //         return ResponseEntity
+    //             .ok()
+    //             .body(new ResponseEntity<ConnectomePersonalDocumentDTO>(responseToSend, response.getHeaders(), HttpStatus.OK));
+    //     } catch (Exception e) {
+    //         return new ResponseEntity(new ApiResponse(false, e.getMessage()), HttpStatus.BAD_REQUEST);
+    //     }
+    // }
+
+    @PostMapping("/text-map/{lang}")
+    @Operation(summary = "get connectome map by title and content", tags = { "Connectome Management" })
+    public ResponseEntity<?> postPDConnectomeMapByDocTitleAndContent(
+        @PathVariable(value = "lang") String lang,
+        @RequestBody ConnectomeOnTextRequestBody content
     ) {
-        if (Objects.isNull(connectomeId)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        //return ResponseEntity.status(HttpStatus.OK).body(content);
+        // System.out.println("Content postPDConnectomeMapByDocTitleAndContent");
+        // System.out.println(content.getTitle());
+        // System.out.println(content.getContent());
+
+        if (Objects.isNull(content)) {
+            return ResponseEntity.status(HttpStatus.OK).body(content);
         }
-        if (Objects.isNull(filterIDS)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
+        // System.out.println("Content postPDConnectomeMapByDocTitleAndContent");
+        // System.out.println(content.getTitle());
 
         StringBuilder url = new StringBuilder();
-        url.append(APIConnectome).append(Constants.POST_MINI_CONNECTOMES_URI);
+        url.append(APIConnectomeTest).append(Constants.POST_TEXT_CONNECTOME_URI).append("/").append(lang);
         try {
+            //String requestBody = String.format("%s\r\n\r\n%s", content.getTitle(), content.getContent());
+            //System.out.println(requestBody);
             Map<String, Object> requestBody = new HashMap<>();
-            requestBody.put("connectomeId", connectomeId);
-            requestBody.put("sourceLang", filterIDS.getSourceLang());
-            requestBody.put("personalDocumentObjectIds", filterIDS.getIds());
-            requestBody.put("feedObjectIds", new ArrayList<String>());
+            requestBody.put("connectomeId", content.getConnectomeId());
+            requestBody.put("documentIds", content.getDocumentIds());
+            requestBody.put("title", content.getTitle());
+            requestBody.put("contents", content.getContent());
+            System.out.println(requestBody);
             HttpEntity<Object> request = new HttpEntity<>(requestBody);
-            HttpEntity<ConnectomeNetworkDTO> response = restTemplate.postForEntity(url.toString(), request, ConnectomeNetworkDTO.class);
+            HttpEntity<ConnectomeNodeDTO[]> response = restTemplate.postForEntity(url.toString(), request, ConnectomeNodeDTO[].class);
             /*{sourceLang=en, personalDocumentObjectIds=[], feedObjectIds=[62b50aa7cea9a2500dd0a6e7], connectomeId=CID_92340659-a63c-4d72-b808-63461f40625f} */
-            ConnectomeNetworkDTO connectome = response.getBody();
+            ConnectomeNodeDTO[] connectome = response.getBody();
 
-            ArrayList<EdgeDTO> edgesFiltered = new ArrayList<EdgeDTO>();
+            // ArrayList<EdgeDTO> edgesFiltered = new ArrayList<EdgeDTO>();
 
             if (connectome == null) {
                 System.out.println("Doc connectome Request Body");
                 System.out.println(requestBody);
                 return new ResponseEntity(new ApiResponse(false, "Body response empty"), HttpStatus.OK);
             }
-            ArrayList<ConnectomeNodeDTO> verticesFiltered = new ArrayList<>();
-            ConnectomeNodeDTO tmpVertice = new ConnectomeNodeDTO();
-            ArrayList<String> tmpEntities = new ArrayList<>();
-            //connectome node
-            HashSet<String> hs = new HashSet<>();
+            // ArrayList<ConnectomeNodeDTO> verticesFiltered = new ArrayList<>();
+            // ConnectomeNodeDTO tmpVertice = new ConnectomeNodeDTO();
+            // ArrayList<String> tmpEntities = new ArrayList<>();
+            // //connectome node
+            // HashSet<String> hs = new HashSet<>();
 
-            //add links to connectome node
-            Set<String> uniqueEdge = new HashSet<String>();
-            String labelFromTo = null, labelToFrom = null;
-            for (EdgeDTO edge : connectome.getEdges()) {
-                labelFromTo = edge.getFrom() + "=>" + edge.getTo();
-                labelToFrom = edge.getTo() + "=>" + edge.getFrom();
+            // //add links to connectome node
+            // Set<String> uniqueEdge = new HashSet<String>();
+            // String labelFromTo = null, labelToFrom = null;
+            // for (EdgeDTO edge : connectome.getEdges()) {
+            //     labelFromTo = edge.getFrom() + "=>" + edge.getTo();
+            //     labelToFrom = edge.getTo() + "=>" + edge.getFrom();
 
-                if (!uniqueEdge.contains(labelFromTo) && !uniqueEdge.contains(labelToFrom)) {
-                    uniqueEdge.add(edge.getLabel());
-                    edgesFiltered.add(edge);
-                }
-            }
+            //     if (!uniqueEdge.contains(labelFromTo) && !uniqueEdge.contains(labelToFrom)) {
+            //         uniqueEdge.add(edge.getLabel());
+            //         edgesFiltered.add(edge);
+            //     }
+            // }
 
-            for (VerticeDTO vertice : connectome.getVertices()) {
-                tmpVertice = new ConnectomeNodeDTO();
-                tmpEntities = new ArrayList<>();
-                tmpVertice.setWeight(filterIDS.getIds());
-                tmpVertice.setLabel(vertice.getLabel());
-                tmpVertice.setFavorite(vertice.getFavorite());
-                tmpVertice.setDisable(vertice.getDisable());
-                for (EdgeDTO edge : edgesFiltered) {
-                    if (edge.getFrom().equals(vertice.getLabel())) {
-                        tmpEntities.add(edge.getTo());
-                    } else if (edge.getTo().equals(vertice.getLabel())) {
-                        tmpEntities.add(edge.getFrom());
-                    }
-                }
-                hs = new HashSet<>();
-                hs.addAll(tmpEntities);
-                tmpEntities.clear();
-                tmpEntities.addAll(hs);
-                tmpVertice.setLinkedNodes(tmpEntities);
-                verticesFiltered.add(tmpVertice);
-            }
+            // ArrayList<String> documentIds = new ArrayList<>();
+            // if (!Objects.isNull(content.getDocumentId()) || !content.getDocumentId().isEmpty()) {
+            //     documentIds.add(content.getDocumentId());
+            // }
+            // for (VerticeDTO vertice : connectome.getVertices()) {
+            //     tmpVertice = new ConnectomeNodeDTO();
+            //     tmpEntities = new ArrayList<>();
+            //     tmpVertice.setWeight(vertice.getWeight());
+            //     tmpVertice.setRelatedDocuments(documentIds);
+            //     tmpVertice.setLabel(vertice.getLabel());
+            //     tmpVertice.setFavorite(vertice.getFavorite());
+            //     tmpVertice.setDisable(vertice.getDisable());
+            //     for (EdgeDTO edge : edgesFiltered) {
+            //         if (edge.getFrom().equals(vertice.getLabel())) {
+            //             tmpEntities.add(edge.getTo());
+            //         } else if (edge.getTo().equals(vertice.getLabel())) {
+            //             tmpEntities.add(edge.getFrom());
+            //         }
+            //     }
+            //     hs = new HashSet<>();
+            //     hs.addAll(tmpEntities);
+            //     tmpEntities.clear();
+            //     tmpEntities.addAll(hs);
+            //     tmpVertice.setLinkedNodes(tmpEntities);
+            //     verticesFiltered.add(tmpVertice);
+            // }
             ConnectomePersonalDocumentDTO responseToSend = new ConnectomePersonalDocumentDTO();
-            responseToSend.setId(filterIDS.getIds().get(0));
-            responseToSend.setConnectome(verticesFiltered);
+            responseToSend.setDocumentIds(content.getDocumentIds());
+            responseToSend.setConnectome(connectome);
 
             return ResponseEntity
                 .ok()
                 .body(new ResponseEntity<ConnectomePersonalDocumentDTO>(responseToSend, response.getHeaders(), HttpStatus.OK));
         } catch (Exception e) {
-            return new ResponseEntity(new ApiResponse(false, e.getMessage()), HttpStatus.BAD_REQUEST);
+            System.out.println("Error");
+            System.out.println(e.getMessage());
+            return new ResponseEntity(new ApiResponse(false, "call of external api " + e.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
 }

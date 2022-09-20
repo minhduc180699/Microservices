@@ -12,6 +12,7 @@ import com.saltlux.deepsignal.web.exception.UploadFileMaxSizeException;
 import com.saltlux.deepsignal.web.service.IFileStorageService;
 import com.saltlux.deepsignal.web.service.UserService;
 import com.saltlux.deepsignal.web.service.dto.ApiResponse;
+import com.saltlux.deepsignal.web.service.dto.FileInfoFindParam;
 import com.saltlux.deepsignal.web.service.dto.UploadWrapper;
 import com.saltlux.deepsignal.web.service.dto.UrlUploadDTO;
 import com.saltlux.deepsignal.web.service.template.FileResourceService;
@@ -30,6 +31,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -58,8 +60,8 @@ public class FileStorageResource {
     /**
      * {@code POST  /upload/{userId}/{connectomeId}} : upload file.
      *
-     * @param files file uploaded
-     * @param userId user_id of current user
+     * @param files        file uploaded
+     * @param userId       user_id of current user
      * @param connectomeId connectome_id of current connectome
      * @return
      */
@@ -268,7 +270,7 @@ public class FileStorageResource {
     /**
      * {@code GET  /getAllDoc/{userId}: get all doc uploaded in learning center
      *
-     * @param userId user_id of current user
+     * @param userId   user_id of current user
      * @param pageable pageable to paging
      * @return
      */
@@ -304,5 +306,10 @@ public class FileStorageResource {
         } catch (IOException e) {
             return ResponseEntity.badRequest().body(new FileNotFoundException("File is not exist!"));
         }
+    }
+
+    @GetMapping("/searchDynamic")
+    public ResponseEntity<Page<FileInfo>> searchDynamic(Pageable page, FileInfoFindParam fileInfoFindParam) {
+        return new ResponseEntity<Page<FileInfo>>(fileResourceService.searchDynamic(page, fileInfoFindParam), HttpStatus.OK);
     }
 }

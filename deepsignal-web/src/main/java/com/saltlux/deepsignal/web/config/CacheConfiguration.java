@@ -153,6 +153,7 @@ public class CacheConfiguration {
             createCache(cm, com.saltlux.deepsignal.web.domain.WebSourceTemplate.class.getName() + ".connectomes", jcacheConfiguration);
             createCache(cm, com.saltlux.deepsignal.web.domain.SignalKeywords.class.getName(), jcacheConfiguration);
             createCache(cm, com.saltlux.deepsignal.web.domain.UserSetting.class.getName(), jcacheConfiguration);
+            createCache(cm, com.saltlux.deepsignal.web.domain.ExternalUrlTracking.class.getName(), jcacheConfiguration);
         };
     }
 

@@ -46,6 +46,9 @@ public class FileInfo extends AbstractBaseEntity implements Serializable {
     @Column(name = "type")
     private String type;
 
+    @Column(name = "chrome_type")
+    private Integer chromeType;
+
     private transient String author;
 
     private transient String originDate;

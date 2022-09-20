@@ -287,6 +287,7 @@ public class FileStorageService implements IFileStorageService {
                     fileInfo.setUser(user);
                     fileInfo.setConnectomes(connectomeSet);
                     fileInfo.setLang(language);
+                    fileInfo.setChromeType(urlUploadDTO.getChromeType());
                     fileInfos.add(fileInfo);
                     success++;
                 } else {

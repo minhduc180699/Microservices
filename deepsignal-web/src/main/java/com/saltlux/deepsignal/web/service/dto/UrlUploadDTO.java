@@ -21,4 +21,5 @@ public class UrlUploadDTO {
     private String description;
     private String keyword;
     private String type;
+    private int chromeType;
 }

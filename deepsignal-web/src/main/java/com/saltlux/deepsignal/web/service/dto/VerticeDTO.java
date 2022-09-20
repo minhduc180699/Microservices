@@ -12,6 +12,8 @@ public class VerticeDTO {
 
     private double dfCnt;
 
+    private double weight;
+
     private String type;
 
     private String mainCluster;

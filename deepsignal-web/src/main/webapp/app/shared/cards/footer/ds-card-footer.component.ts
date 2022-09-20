@@ -3,9 +3,12 @@ import axios from 'axios';
 import { InteractionUserService } from '@/service/interaction-user.service';
 import { computed } from '@vue/composition-api';
 import { ACTIVITY, PLATFORM } from '@/shared/constants/feed-constants';
+import { namespace } from 'vuex-class';
 
 export const interactionLike = { noAction: 0, like: 1, dislike: 2 };
 
+const connectomeBuilderStore = namespace('connectomeBuilderStore');
+const networkStore = namespace('connectomeNetworkStore');
 @Component({
   // computed: {
   //   show() {
@@ -50,6 +53,18 @@ export default class DsCardFooter extends Vue {
   private isShow = false;
   private isBookmark = false;
   private page = 'feed';
+
+  @networkStore.Getter
+  public connectomeId!: string;
+
+  @networkStore.Getter
+  public lang!: string;
+
+  @connectomeBuilderStore.Action
+  public addPdConnectomeData!: (payload: { connectomeId: string; language: string; ids: Array<string> }) => Promise<any>;
+
+  @connectomeBuilderStore.Action
+  public removePdConnectomeData!: (payload: { id: string }) => Promise<any>;
 
   mounted() {
     if (this.item.liked == 0) {
@@ -109,6 +124,26 @@ export default class DsCardFooter extends Vue {
       return;
     }
     this.callApiActivity(true, ACTIVITY.like, interaction);
+  }
+
+  handleAddRemoveInConnectome() {
+    const ids = new Array<string>();
+    ids.push(this.item.id);
+    this.addPdConnectomeData({
+      connectomeId: this.connectomeId,
+      language: this.lang,
+      ids: ids,
+    })
+      .then(res => {
+        if (!res) {
+          console.log('res null', res);
+          return;
+        }
+        //this.renderMap();
+      })
+      .catch(reason => {
+        console.log('catch get mini connectome', reason);
+      });
   }
 
   // handleMore() {

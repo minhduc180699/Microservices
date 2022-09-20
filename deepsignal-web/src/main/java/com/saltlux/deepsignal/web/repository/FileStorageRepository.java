@@ -6,9 +6,10 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 
-public interface FileStorageRepository extends JpaRepository<FileInfo, Long> {
+public interface FileStorageRepository extends JpaRepository<FileInfo, Long>, JpaSpecificationExecutor<FileInfo> {
     //    @Query("SELECT u FROM FileInfo u WHERE u.user.id =?1 AND u.type =?2")
     //    public List<FileInfo> getFileByUserId(String id, String type, Pageable pageable);
 

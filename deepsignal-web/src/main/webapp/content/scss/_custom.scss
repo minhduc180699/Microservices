@@ -449,6 +449,21 @@ strong {
   }
 }
 
+[data-menu='connectome'] .panel-sidebar {
+  width: 351px !important;
+  .panel-sub {
+    .sub-inner-cb {
+      position: relative;
+      height: 100%;
+      background-color: #e9ecef;
+      padding-top: 0px;
+    }
+    .panel-header-cb {
+      height: 0px;
+    }
+  }
+}
+
 .search-keyword-list li .keword {
   flex-grow: unset;
 }

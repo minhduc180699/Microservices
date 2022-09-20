@@ -6,9 +6,10 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ConnectomePersonalDocumentDTO {
+public class ConnectomeOnTextRequestBody {
 
+    private String connectomeId;
     private List<String> documentIds;
-
-    private ConnectomeNodeDTO[] connectome;
+    private String title;
+    private String content;
 }

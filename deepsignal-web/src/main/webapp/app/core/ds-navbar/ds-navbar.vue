@@ -196,6 +196,7 @@
               <!--                </a>-->
               <!--                <notification @newNotification="checkShowNotification"></notification>-->
               <!--              </li>-->
+
               <li class="nav-item">
                 <a id="openUserMenu" class="nav-link link-my" @click="openUserMenu">
                   <div class="my-thumb">

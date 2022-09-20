@@ -353,6 +353,20 @@ export default class DsFeedDetail extends Vue {
   }
 
   viewPost(link) {
+    const connectome = localStorage.getItem('ds-connectome')
+      ? JSON.parse(localStorage.getItem('ds-connectome'))
+      : JSON.parse(sessionStorage.getItem('ds-connectome'));
+    const userId = connectome?.user?.id;
+
+    const externalUrl = {
+      userId: userId ? userId : '',
+      connectomeId: this.$route.params?.connectomeId ? this.$route.params?.connectomeId : '',
+      url: this.$route.path,
+      originalUrl: this.connectomeFeed.sourceId ? this.connectomeFeed.sourceId : '',
+      title: this.connectomeFeed.title ? this.connectomeFeed.title : '',
+    };
+
+    axios.post('/api/url-tracking', externalUrl).then();
     window.open(link, '_blank');
   }
 

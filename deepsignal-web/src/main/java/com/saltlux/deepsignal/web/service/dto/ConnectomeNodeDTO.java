@@ -8,13 +8,17 @@ import lombok.Setter;
 @Setter
 public class ConnectomeNodeDTO {
 
+    private String id;
+
+    private String keyId;
+
     private String label;
 
-    private List<String> weight;
+    private String keyLabel;
+
+    private List<String> relatedDocuments;
 
     private List<String> linkedNodes;
 
-    private Boolean favorite;
-
-    private Boolean disable;
+    private Number weight;
 }
