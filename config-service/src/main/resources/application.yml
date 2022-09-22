@@ -20,3 +20,7 @@ spring:
 management:
   security:
     enabled: false
+logging:
+  level:
+    ROOT: INFO
+    com.saltlux.deepsignal: INFO

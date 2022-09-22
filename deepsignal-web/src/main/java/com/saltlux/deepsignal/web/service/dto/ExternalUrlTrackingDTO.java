@@ -1,6 +1,7 @@
 package com.saltlux.deepsignal.web.service.dto;
 
 import java.io.Serializable;
+import java.time.Instant;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -19,7 +20,7 @@ public class ExternalUrlTrackingDTO implements Serializable {
 
     private String title;
 
-    private String createdDate;
+    private Instant createdDate = Instant.now();
 
     public ExternalUrlTrackingDTO(
         Long id,
@@ -28,7 +29,7 @@ public class ExternalUrlTrackingDTO implements Serializable {
         String url,
         String originalUrl,
         String title,
-        String createdDate
+        Instant createdDate
     ) {
         this.id = id;
         this.userId = userId;
@@ -39,7 +40,7 @@ public class ExternalUrlTrackingDTO implements Serializable {
         this.createdDate = createdDate;
     }
 
-    public ExternalUrlTrackingDTO(String userId, String connectomeId, String url, String originalUrl, String title, String createdDate) {
+    public ExternalUrlTrackingDTO(String userId, String connectomeId, String url, String originalUrl, String title, Instant createdDate) {
         this.userId = userId;
         this.connectomeId = connectomeId;
         this.url = url;

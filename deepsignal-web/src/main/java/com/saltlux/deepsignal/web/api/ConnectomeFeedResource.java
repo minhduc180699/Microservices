@@ -108,7 +108,7 @@ public class ConnectomeFeedResource {
     @Operation(summary = "Get feed by id from deepsignal adapter", tags = { "Connectome Feed Management" }, security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<?> getAllConnectomeFeedByConnectomeId(@RequestBody List<String> ids) {
         try {
-//            String uri = connectAdapterApi.getExternalApi() + "/connectome-feed/getByIds";
+//            String uri = "http://localhost:8060/deepsignal-adapter + /connectome-feed/getByIds";
 //            String strJson = connectAdapterApi.getDataFromAdapterApi(uri, null, HttpMethod.POST, null, ids);
 //            ObjectMapper objectMapper = new ObjectMapper();
 //            FeedRes feedRes = objectMapper.readValue(strJson, FeedRes.class);
