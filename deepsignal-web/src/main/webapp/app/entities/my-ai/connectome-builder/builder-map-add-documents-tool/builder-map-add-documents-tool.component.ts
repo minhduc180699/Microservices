@@ -30,32 +30,12 @@ const connectomeBuilderStore = namespace('connectomeBuilderStore');
     'show-more': ShowMore,
   },
 })
-export default class BuilderMapSideBar extends mixins(ShowMoreMixin) {
-  @Inject('feedService')
-  private feedService: () => FeedService;
+export default class BuilderMapAddDocumentsTool extends mixins(ShowMoreMixin) {
   @Inject('principalService')
   private principalService: () => PrincipalService;
 
   @networkStore.Getter
   public lang!: string;
-
-  @connectomeBuilderStore.Getter
-  public getSequenceNote!: number;
-
-  @connectomeBuilderStore.Getter
-  public getMinNodeWeight!: number;
-
-  @connectomeBuilderStore.Getter
-  public getMinLinkedNodes!: number;
-
-  @connectomeBuilderStore.Getter
-  public getMinRelatedDocuments!: number;
-
-  @connectomeBuilderStore.Getter
-  public getDocumentColors!: Map<string, string>;
-
-  @connectomeBuilderStore.Mutation
-  public incrementSequenceNote!: () => void;
 
   @connectomeBuilderStore.Mutation
   public setDataUpdate!: () => void;
@@ -88,6 +68,7 @@ export default class BuilderMapSideBar extends mixins(ShowMoreMixin) {
   userId: string = null;
   trainingDocumentCount = 0;
   documentCardItems: Array<documentCard> = new Array<documentCard>();
+  documentMetadataPlusItems: Array<documentMetadataPlus> = new Array<documentMetadataPlus>();
   panelSub = 'panel-sub active';
   filterTerms = null;
 
@@ -103,9 +84,6 @@ export default class BuilderMapSideBar extends mixins(ShowMoreMixin) {
   mounted() {
     const userId = this.principalService().getUserInfo().id;
     const connectomeId = this.principalService().getConnectomeInfo().connectomeId;
-    this.cmpMinLinkedNodes = this.getMinLinkedNodes;
-    this.cmpMinNodeWeight = this.getMinNodeWeight;
-    this.cmpMinRelatedDocuments = this.getMinRelatedDocuments;
     this.connectomeId = connectomeId;
     this.userId = userId;
     this.getPDApi();
@@ -137,7 +115,7 @@ export default class BuilderMapSideBar extends mixins(ShowMoreMixin) {
         const card = this.documentCardItems.find(x => x.id == res.documentIds[0]);
         if (res.connectome && res.connectome.length > 0) {
           card.isAdded = true;
-          card.style = 'background-color:' + this.getDocumentColors.get(card.id);
+          card.style = 'background-color:lime';
         } else {
           card.isAdded = false;
           card.style = '';
@@ -168,16 +146,13 @@ export default class BuilderMapSideBar extends mixins(ShowMoreMixin) {
     this.getPDApi();
   }
 
-  public onScroll(event) {
-    console.log(event);
+  public onScroll({ target: { scrollTop, clientHeight, scrollHeight } }) {
+    //console.log(event);
+
+    if (scrollTop + clientHeight >= scrollHeight) {
+      this.getPDApi();
+    }
   }
-  // public onScroll({ target: { scrollTop, clientHeight, scrollHeight } }) {
-  //   //console.log(event);
-  //   console.log(scrollTop,clientHeight,scrollHeight);
-  //   if (scrollTop + clientHeight >= scrollHeight) {
-  //     this.getPDApi();
-  //   }
-  // }
 
   public onMore(event) {
     //console.log(event);
@@ -197,7 +172,7 @@ export default class BuilderMapSideBar extends mixins(ShowMoreMixin) {
   }
 
   onMouseOverDocumentCard(event) {
-    //console.log('test mouse hver');
+    console.log('test mouse hver');
   }
 
   isOrderByDate = true;
@@ -224,7 +199,6 @@ export default class BuilderMapSideBar extends mixins(ShowMoreMixin) {
 
   getPDApi() {
     const connectomeId = JSON.parse(localStorage.getItem('ds-connectome')).connectomeId;
-
     axios
       .get(`/api/personal-documents/getListDocuments/${connectomeId}`, {
         params: {
@@ -246,106 +220,24 @@ export default class BuilderMapSideBar extends mixins(ShowMoreMixin) {
           card.author = item.author;
           card.type = item.type;
           card.title = item.title;
-          card.content = item.contentSummary;
-          card.keyword = item.keyword;
+          card.content = this.getShortContent(item.content);
+          //card.keyword = item.keyword;
+          card.group.push(item.keyword);
           card.addedAt = new Date(item.publishedAt);
           card.modifiedAt = new Date(item.publishedAt);
+
+          const metadata = this.documentMetadataPlusItems.find(
+            x => x.author === item.author && x.name === item.title && x.url === item.url
+          );
+          if (metadata) {
+            card.content = metadata.description;
+            card.keyword = metadata.keyword;
+          }
+
           this.documentCardItems.push(card);
         });
         console.log(res);
       });
-  }
-
-  // addNote() {
-  //   if (!this.noteTitle && !this.noteContent) {
-  //     return;
-  //   }
-  //   const noteId = 'note_' + this.getSequenceNote;
-  //   const uniqueId = this.getSequenceNote;
-  //   this.incrementSequenceNote();
-  //   const now = new Date();
-  //   const card = new documentCard();
-
-  //   card.id = noteId;
-  //   card.author = 'Me';
-  //   card.type = 'Note';
-  //   card.title = this.noteTitle;
-  //   card.content = this.noteContent;
-  //   card.keyword = null;
-  //   card.addedAt = now;
-  //   card.modifiedAt = now;
-  //   this.documentCardItems.unshift(card);
-  //   this.noteTitle = null;
-  //   this.noteContent = null;
-  // }
-
-  // getData() {
-  //   const connectomeId = JSON.parse(localStorage.getItem('ds-connectome')).connectomeId;
-
-  //   // .get(`/api/personal-documents/getListDocuments/${connectomeId}`, {
-  //   //   params: {
-  //   //     page: this.page,
-  //   //     size: this.size,
-  //   //     uploadType: '',
-  //   //     isDelete: 0,
-  //   //   },
-  //   // })
-
-  //   const nowPlus = new Date();
-  //   //console.log(nowPlus);
-  //   nowPlus.setDate(nowPlus.getDate() + 1);
-  //   //console.log(nowPlus.getMonth());
-  //   //console.log(('0' + nowPlus.getMonth()).slice(-2));
-  //   const yearBefore = new Date();
-  //   yearBefore.setFullYear(yearBefore.getFullYear() - 1);
-
-  //   axios
-  //     .get(`https://deepsignal.ai/api/user-activity-log/getTrainingDocuments/${connectomeId}`, {
-  //       params: {
-  //         type: 'all',
-  //         from:
-  //           yearBefore.getFullYear() + '-' + ('0' + (yearBefore.getMonth() + 1)).slice(-2) + '-' + ('0' + yearBefore.getDate()).slice(-2),
-  //         to: nowPlus.getFullYear() + '-' + ('0' + (nowPlus.getMonth() + 1)).slice(-2) + '-' + ('0' + nowPlus.getDate()).slice(-2),
-  //       },
-  //     })
-  //     .then(res => {
-  //       console.log(res);
-  //       //try to convert data
-  //       res.data.forEach(item => {
-  //         console.log('item', item);
-  //         const pdId = 'pd_' + this.getSequenceNote;
-  //         this.incrementSequenceNote();
-  //         const metadata = new documentMetadataPlus();
-  //         metadata.author = item.author;
-  //         metadata.type = item.type;
-  //         metadata.name = item.name;
-  //         metadata.description = item.description;
-  //         metadata.keyword = item.keyword;
-  //         metadata.url = item.url;
-  //         metadata.type = item.type;
-  //         metadata.datetime = item.datetime;
-  //         this.documentMetadataPlusItems.push(metadata);
-  //       });
-  //       console.log('pd results', this.documentMetadataPlusItems);
-  //       this.getPDApi();
-  //     });
-  // }
-
-  cmpMinNodeWeight = 0;
-  cmpMinRelatedDocuments = 0;
-  cmpMinLinkedNodes = 0;
-
-  networkFiltersOnChange() {
-    this.updateMinLinkedNodes(this.cmpMinLinkedNodes).then(res => {
-      this.cmpMinLinkedNodes = res;
-    });
-    this.updateMinNodeWeight(this.cmpMinNodeWeight).then(res => {
-      this.cmpMinNodeWeight = res;
-    });
-    this.updateMinRelatedDocuments(this.cmpMinRelatedDocuments).then(res => {
-      this.cmpMinRelatedDocuments = res;
-    });
-    this.setDataUpdate();
   }
 
   handleActivity(item, activity) {}

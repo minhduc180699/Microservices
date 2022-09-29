@@ -1,0 +1,1 @@
+ALTER TABLE `user_activity_log` MODIFY `query_params` VarChar( 2048 ) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL;

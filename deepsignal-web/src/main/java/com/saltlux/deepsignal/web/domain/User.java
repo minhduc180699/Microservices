@@ -165,6 +165,10 @@ public class User extends AbstractAuditingEntity implements Serializable {
     @Column(name = "time_zone")
     private String timeZone;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<UserDevice> userDevices;
+
     public User(String id) {
         this.id = id;
     }

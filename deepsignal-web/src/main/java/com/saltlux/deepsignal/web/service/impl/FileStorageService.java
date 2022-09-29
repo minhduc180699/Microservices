@@ -277,8 +277,8 @@ public class FileStorageService implements IFileStorageService {
                 //                } else {
                 if (
                     !urlUploadDTO.getSearchType().equals("searchFileType:ppt") &&
-                    !urlUploadDTO.getSearchType().equals("searchFileType:pdf") &&
-                    !urlUploadDTO.getSearchType().equals("searchFileType:docx")
+                        !urlUploadDTO.getSearchType().equals("searchFileType:pdf") &&
+                        !urlUploadDTO.getSearchType().equals("searchFileType:docx")
                 ) {
                     FileInfo fileInfo = new FileInfo();
                     BeanUtils.copyProperties(urlUploadDTO, fileInfo);
@@ -335,7 +335,7 @@ public class FileStorageService implements IFileStorageService {
                         continue;
                     }
 
-                    Path filePath = Paths.get(this.rootLocation.toRealPath() + "/" + userId + "/" + learningDocument.getName());
+                    Path filePath = Paths.get(this.rootLocation.toRealPath() + "/" + userId);
                     if (!Files.exists(filePath)) {
                         Files.createDirectory(filePath);
                     }

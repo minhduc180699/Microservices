@@ -1,9 +1,10 @@
 package com.saltlux.deepsignal.web.config;
 
+import com.saltlux.deepsignal.web.domain.ExternalUrl;
 import com.saltlux.deepsignal.web.domain.UserActivityLog;
+import com.saltlux.deepsignal.web.domain.UserUrlTracking;
 import java.net.URI;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import javax.cache.CacheManager;
 import javax.cache.configuration.MutableConfiguration;
@@ -153,7 +154,8 @@ public class CacheConfiguration {
             createCache(cm, com.saltlux.deepsignal.web.domain.WebSourceTemplate.class.getName() + ".connectomes", jcacheConfiguration);
             createCache(cm, com.saltlux.deepsignal.web.domain.SignalKeywords.class.getName(), jcacheConfiguration);
             createCache(cm, com.saltlux.deepsignal.web.domain.UserSetting.class.getName(), jcacheConfiguration);
-            createCache(cm, com.saltlux.deepsignal.web.domain.ExternalUrlTracking.class.getName(), jcacheConfiguration);
+            createCache(cm, ExternalUrl.class.getName(), jcacheConfiguration);
+            createCache(cm, UserUrlTracking.class.getName(), jcacheConfiguration);
         };
     }
 

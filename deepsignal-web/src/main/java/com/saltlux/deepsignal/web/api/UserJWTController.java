@@ -5,10 +5,16 @@ import com.saltlux.deepsignal.web.api.vm.LoginVM;
 import com.saltlux.deepsignal.web.config.ApplicationProperties;
 import com.saltlux.deepsignal.web.domain.Connectome;
 import com.saltlux.deepsignal.web.domain.User;
+import com.saltlux.deepsignal.web.domain.UserDevice;
 import com.saltlux.deepsignal.web.repository.ConnectomeRepository;
+import com.saltlux.deepsignal.web.repository.UserDeviceRepository;
 import com.saltlux.deepsignal.web.repository.UserRepository;
 import com.saltlux.deepsignal.web.security.jwt.JWTFilter;
 import com.saltlux.deepsignal.web.security.jwt.TokenProvider;
+import com.saltlux.deepsignal.web.service.IUserDevice;
+import com.saltlux.deepsignal.web.service.MailService;
+import com.saltlux.deepsignal.web.service.UserService;
+import com.saltlux.deepsignal.web.service.dto.AccountDTO;
 import com.saltlux.deepsignal.web.service.dto.ApiResponse;
 import com.saltlux.deepsignal.web.util.ConnectAdapterApi;
 import io.netty.util.internal.StringUtil;
@@ -27,7 +33,6 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -62,6 +67,10 @@ public class UserJWTController {
     private Integer countTimer = 0;
     private ConnectAdapterApi connectAdapterApi;
     private String connectomeId = null;
+    private final IUserDevice iUserDevice;
+    private final UserDeviceRepository userDeviceRepository;
+    private final MailService mailService;
+    private final UserService userService;
 
     @Autowired
     private RMapCache<String, String> mapToken;
@@ -73,7 +82,11 @@ public class UserJWTController {
         RabbitTemplate rabbitTemplate,
         ApplicationProperties applicationProperties,
         UserRepository userRepository,
-        ConnectAdapterApi connectAdapterApi
+        ConnectAdapterApi connectAdapterApi,
+        IUserDevice iUserDevice,
+        UserDeviceRepository userDeviceRepository,
+        MailService mailService,
+        UserService userService
     ) {
         this.tokenProvider = tokenProvider;
         this.authenticationManagerBuilder = authenticationManagerBuilder;
@@ -82,11 +95,42 @@ public class UserJWTController {
         this.userRepository = userRepository;
         this.connectomeRepository = connectomeRepository;
         this.connectAdapterApi = connectAdapterApi;
+        this.iUserDevice = iUserDevice;
+        this.userDeviceRepository = userDeviceRepository;
+        this.mailService = mailService;
+        this.userService = userService;
     }
 
     @PostMapping("/authenticate")
     @Operation(summary = "Authenticate login user", tags = { "User JWT Management" })
     public ResponseEntity<JWTToken> authorize(@Valid @RequestBody LoginVM loginVM) {
+        Optional<User> user = userRepository.findOneByLogin(loginVM.getUsername());
+        if (!user.isPresent()) {
+            return new ResponseEntity<>(new JWTToken(null, null), HttpStatus.BAD_REQUEST);
+        }
+        String secretKey = "";
+        if (org.apache.commons.lang3.StringUtils.isNotEmpty(loginVM.getDeviceId())) {
+            Optional<UserDevice> userDevice = userDeviceRepository.findUserDeviceByDeviceIdAndUser_Id(
+                loginVM.getDeviceId(),
+                user.get().getId()
+            );
+            if (!userDevice.isPresent()) {
+                try {
+                    secretKey = iUserDevice.saveUserDevice(loginVM.getUsername(), loginVM.getDeviceId());
+                } catch (Exception e) {
+                    log.error(
+                        "Can not save deviceId: " +
+                        loginVM.getDeviceId() +
+                        " with userName: " +
+                        loginVM.getUsername() +
+                        " because of: " +
+                        e.getMessage()
+                    );
+                }
+            } else {
+                secretKey = userDevice.get().getSecretKey();
+            }
+        }
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
             loginVM.getUsername(),
             loginVM.getPassword()
@@ -98,7 +142,7 @@ public class UserJWTController {
         mapToken.put(jwt, jwt);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(JWTFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
-        return new ResponseEntity<>(new JWTToken(jwt), httpHeaders, HttpStatus.OK);
+        return new ResponseEntity<>(new JWTToken(jwt, secretKey), httpHeaders, HttpStatus.OK);
     }
 
     @PostMapping("/refreshToken")
@@ -115,13 +159,38 @@ public class UserJWTController {
                 HttpHeaders httpHeaders = new HttpHeaders();
                 httpHeaders.add(JWTFilter.AUTHORIZATION_HEADER, "Bearer " + newJwt);
 
-                return new ResponseEntity<>(new JWTToken(newJwt), httpHeaders, HttpStatus.OK);
+                return new ResponseEntity<>(new JWTToken(newJwt, ""), httpHeaders, HttpStatus.OK);
             } else {
                 return ResponseEntity.internalServerError().body(null);
             }
         } catch (Exception ex) {
             return new ResponseEntity(new ApiResponse(false, ex.getMessage()), HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @GetMapping("/public/getToken")
+    @Operation(summary = "Get JWT by secretKey", tags = { "User JWT Management" })
+    public ResponseEntity<?> getSecretKey(@RequestParam("secretKey") String secretKey) {
+        if (org.apache.commons.lang3.StringUtils.isEmpty(secretKey)) {
+            return ResponseEntity.badRequest().body("secretKey is null!");
+        }
+        Optional<UserDevice> userDeviceOptional = userDeviceRepository.findUserDeviceBySecretKey(secretKey);
+        if (userDeviceOptional.isPresent()) {
+            User user = userDeviceOptional.get().getUser();
+            String codeConfirm = mailService.codeConfirm();
+            AccountDTO accountDTO = new AccountDTO();
+            accountDTO.setLogin(user.getLogin());
+            accountDTO.setEmailCode(codeConfirm);
+            userService.registerEmail(accountDTO);
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user.getLogin(), codeConfirm);
+            Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            String jwt = tokenProvider.createToken(authentication, true);
+            this.pushToQueueLoginTime(user.getLogin(), user.getLangKey());
+            mapToken.put(jwt, jwt);
+            return ResponseEntity.ok().body(new JWTToken(jwt, secretKey));
+        }
+        return ResponseEntity.badRequest().body("Can not find user by secretKey");
     }
 
     /**
@@ -131,8 +200,11 @@ public class UserJWTController {
 
         private String idToken;
 
-        JWTToken(String idToken) {
+        private String secretKey;
+
+        JWTToken(String idToken, String secretKey) {
             this.idToken = idToken;
+            this.secretKey = secretKey;
         }
 
         @JsonProperty("id_token")
@@ -142,6 +214,15 @@ public class UserJWTController {
 
         void setIdToken(String idToken) {
             this.idToken = idToken;
+        }
+
+        @JsonProperty("secret_key")
+        String getSecretKey() {
+            return secretKey;
+        }
+
+        void setSecretKey(String secretKey) {
+            this.secretKey = secretKey;
         }
     }
 

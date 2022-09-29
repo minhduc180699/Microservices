@@ -15,8 +15,7 @@ export class ConnectomeNode {
       this.label = element.label;
       this.relatedDocuments = element.relatedDocuments?.map(x => x);
       this.linkedNodes = element.linkedNodes?.map(x => x);
-      this.favorite = element.favorite;
-      this.disable = element.disable;
+      this.weight = element.weight;
     }
   }
 }

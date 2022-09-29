@@ -1,12 +1,14 @@
 // @ts-nocheck
 import { Component, Vue, Watch } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
-import { ConnectomeNetworkVertex } from '@/shared/model/connectome-network-vertex.model';
+import { ConnectomeNode } from '@/shared/model/connectome-node.model';
+import { ConnectomeLink } from '@/shared/model/connectome-link.model';
 import * as d3 from 'd3';
 import * as d3ScaleChromatic from 'd3-scale-chromatic';
 import ForceGraph, { ForceGraphInstance, LinkObject } from 'force-graph';
 import { MAP_BACKGROUND_COLOR, TYPE_VERTEX, FONTCOLOR_NODE_IN_MAP, MINI_MAP_BACKGROUND_COLOR } from '@/shared/constants/ds-constants';
 import BuilderMapSideBar from '../builder-map-side-bar/builder-map-side-bar.vue';
+import BuilderMapAddDocumentsTool from '../builder-map-add-documents-tool/builder-map-add-documents-tool.vue';
 
 export const STEP_CONNECTOME_RENDER = {
   FIRST: 10,
@@ -23,6 +25,7 @@ const connectomeBuilderStore = namespace('connectomeBuilderStore');
 @Component({
   components: {
     'map-side-bar': BuilderMapSideBar,
+    'map-add-document-tool': BuilderMapAddDocumentsTool,
   },
 })
 export default class BuilderMap extends Vue {
@@ -95,7 +98,7 @@ export default class BuilderMap extends Vue {
     console.log(newVal);
 
     if (newVal.name.localeCompare('Builder') == 0) {
-      document.body.setAttribute('data-menu', 'connectome');
+      document.body.setAttribute('data-menu', 'collection-builder');
       //if(this.mounted){
       this.updateNetworkMap();
       //}
@@ -137,15 +140,14 @@ export default class BuilderMap extends Vue {
   private arrayDiff(a: Array<any>, b: Array<any>) {
     return [...a.filter(x => !b.includes(x)), ...b.filter(x => !a.includes(x))];
   }
-
+  localNodes: Array<ConnectomeNode> = [];
   updateNetworkMap() {
-    if (!this.getDocumentsSelected || this.getDocumentsSelected.size < 1) {
-      this.displayDummyChart(true);
-      return;
-    } else {
-      this.displayDummyChart(false);
-    }
-
+    // if (!this.getDocumentsSelected || this.getDocumentsSelected.size < 1) {
+    //   this.displayDummyChart(true);
+    //   return;
+    // } else {
+    //   this.displayDummyChart(false);
+    // }
     if (this.graph && this.getNodes && this.getNodes.length > 0 && this.getLinks) {
       console.log('MOUNTED: links ', this.getLinks);
       console.log('MOUNTED: Total after ', this.getNodes.length);
@@ -163,6 +165,7 @@ export default class BuilderMap extends Vue {
       this.isUserStartInteract = false;
       //this.displayDummyChart(true);
       //return;
+      this.localNodes = this.getNodes.map(x => x);
       this.graph
         .graphData({ nodes: this.getNodes, links: this.getLinks })
         .backgroundColor(MAP_BACKGROUND_COLOR)
@@ -170,7 +173,7 @@ export default class BuilderMap extends Vue {
         .height(this.height)
         .nodeId('id')
         .nodeLabel(node => {
-          return node.label;
+          return node.weight;
         })
         .nodeVisibility(node => {
           return true;
@@ -187,7 +190,7 @@ export default class BuilderMap extends Vue {
         .d3Force(
           'collision',
           d3.forceCollide(node => {
-            const size = this.getNodeSize(node) + 1000 / this.getNodeSize(node);
+            const size = this.getNodeSize(node) + 60;
             return size;
           })
         )
@@ -196,7 +199,7 @@ export default class BuilderMap extends Vue {
         .linkColor(() => '#DEDEDE')
         .linkCurvature('curvature')
         .linkWidth(link => {
-          return link.weight;
+          return link.weight * 2;
         })
         .d3AlphaDecay(0.06)
         .autoPauseRedraw(false)
@@ -206,7 +209,7 @@ export default class BuilderMap extends Vue {
             return;
           }
         })
-        .enableNodeDrag(false)
+        .enableNodeDrag(true)
         .enableZoomInteraction(true)
         .onEngineTick(() => {
           if (!this.isFirstStepPassed) {
@@ -251,7 +254,7 @@ export default class BuilderMap extends Vue {
     const tmpCircleColor = '#ffffff';
     for (let i = 0; i < node.relatedDocuments.length; i++) {
       ctx.beginPath();
-      const circleSize = size - i * 10;
+      const circleSize = size - i * 15;
       ctx.fillStyle = this.getDocumentColors.get(node.relatedDocuments[i]);
       ctx.arc(node.x, node.y, circleSize, 0, 2 * Math.PI, false);
       ctx.fill();
@@ -286,6 +289,14 @@ export default class BuilderMap extends Vue {
         }
       }
     }
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.strokeText(node.id, node.x, node.y - size / 2 - 5);
+    ctx.fillText(node.id, node.x, node.y - size / 2 - 5);
+    ctx.strokeText(this.localNodes.indexOf(node) + 1, node.x, node.y);
+    ctx.fillText(this.localNodes.indexOf(node) + 1, node.x, node.y);
     ctx.closePath();
 
     bckgDimensions = [2 * size + 3, 2 * size + 3].map(n => n + 5);
@@ -301,7 +312,7 @@ export default class BuilderMap extends Vue {
       return 5;
     }
 
-    const size = 5 + node.linkedNodes.length * 2 + node.relatedDocuments.length * 10;
+    const size = 10 + node.relatedDocuments.length * 15;
 
     return size;
   }
@@ -315,7 +326,7 @@ export default class BuilderMap extends Vue {
       return 12;
     }
 
-    const size = 12 + node.linkedNodes.length;
+    const size = 12 + node.weight;
 
     return size;
   }
@@ -581,4 +592,44 @@ export default class BuilderMap extends Vue {
     console.log('destroyed');
     this.graph?.graphData(initData);
   }
+
+  //#region filter
+  @connectomeBuilderStore.Getter
+  public getMinNodeWeight!: number;
+
+  @connectomeBuilderStore.Getter
+  public getMinLinkedNodes!: number;
+
+  @connectomeBuilderStore.Getter
+  public getMinRelatedDocuments!: number;
+
+  @connectomeBuilderStore.Action
+  public updateMinNodeWeight!: (value: number) => Promise<number>;
+
+  @connectomeBuilderStore.Action
+  public updateMinLinkedNodes!: (value: number) => Promise<number>;
+
+  @connectomeBuilderStore.Action
+  public updateMinRelatedDocuments!: (value: number) => Promise<number>;
+
+  @connectomeBuilderStore.Mutation
+  public setDataUpdate!: () => void;
+
+  cmpMinNodeWeight = 0;
+  cmpMinRelatedDocuments = 0;
+  cmpMinLinkedNodes = 0;
+
+  networkFiltersOnChange() {
+    this.updateMinLinkedNodes(this.cmpMinLinkedNodes).then(res => {
+      this.cmpMinLinkedNodes = res;
+    });
+    this.updateMinNodeWeight(this.cmpMinNodeWeight).then(res => {
+      this.cmpMinNodeWeight = res;
+    });
+    this.updateMinRelatedDocuments(this.cmpMinRelatedDocuments).then(res => {
+      this.cmpMinRelatedDocuments = res;
+    });
+    this.setDataUpdate();
+  }
+  //#endregion
 }

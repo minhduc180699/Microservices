@@ -121,4 +121,19 @@
     <changeSet id="00000000000039" author="system">
         <sqlFile dbms="mariadb" path="config/liquibase/changelog/migrate/20220916141400_create_entity_table_external_url_tracking.sql"/>
     </changeSet>
+    <changeSet id="00000000000040" author="system">
+        <sqlFile dbms="mariadb" path="config/liquibase/changelog/migrate/20220923111115_update_entity_table_external_url_tracking.sql"/>
+    </changeSet>
+    <changeSet id="00000000000041" author="system">
+        <sqlFile dbms="mariadb" path="config/liquibase/changelog/migrate/20220923141800_rename_entity_table_external_url_tracking.sql"/>
+    </changeSet>
+    <changeSet id="00000000000042" author="system">
+        <sqlFile dbms="mariadb" path="config/liquibase/changelog/migrate/20220923142400_create_entity_table_User_External_Url.sql"/>
+    </changeSet>
+    <changeSet id="00000000000043" author="system">
+        <sqlFile dbms="mariadb" path="config/liquibase/changelog/migrate/20220923103000_create_entity_table_user_device.sql"/>
+    </changeSet>
+    <changeSet id="00000000000044" author="system">
+        <sqlFile dbms="mariadb" path="config/liquibase/changelog/migrate/20220926214000_update_user_activity_log_table_query_params.sql"/>
+    </changeSet>
 </databaseChangeLog>

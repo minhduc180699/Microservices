@@ -6,10 +6,16 @@ import com.saltlux.deepsignal.web.domain.Authority;
 import com.saltlux.deepsignal.web.domain.Connectome;
 import com.saltlux.deepsignal.web.domain.User;
 import com.saltlux.deepsignal.web.exception.*;
-import com.saltlux.deepsignal.web.repository.*;
+import com.saltlux.deepsignal.web.repository.AuthorityRepository;
+import com.saltlux.deepsignal.web.repository.ConnectomeRepository;
+import com.saltlux.deepsignal.web.repository.PurposeRepository;
+import com.saltlux.deepsignal.web.repository.UserRepository;
 import com.saltlux.deepsignal.web.security.AuthoritiesConstants;
 import com.saltlux.deepsignal.web.security.SecurityUtils;
-import com.saltlux.deepsignal.web.service.dto.*;
+import com.saltlux.deepsignal.web.service.dto.AccountDTO;
+import com.saltlux.deepsignal.web.service.dto.AdminUserDTO;
+import com.saltlux.deepsignal.web.service.dto.UserDTO;
+import com.saltlux.deepsignal.web.service.dto.UserManagementDTO;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -202,13 +208,13 @@ public class UserService {
 
     @Transactional
     public User registerUserByPhone(AccountDTO accountDTO) {
-        Optional<User> existedUser = userRepository.findOneByLogin(accountDTO.getLogin());
+        //        Optional<User> existedUser = userRepository.findOneByLogin(accountDTO.getLogin());
         Optional<User> existedUserEditPhone = userRepository.findOneByLogin(accountDTO.getLogin());
         String encryptedPassword = passwordEncoder.encode(accountDTO.getCode());
         if (existedUserEditPhone.isPresent()) {
             User userEditPhone = existedUserEditPhone.get();
             userEditPhone.setPassword(encryptedPassword);
-            userEditPhone.setPhoneNumber(accountDTO.getPhoneNumber());
+            //            userEditPhone.setPhoneNumber(accountDTO.getPhoneNumber());
             if (userEditPhone.getTimeZone() == null && accountDTO.getTimeZone() != null) userEditPhone.setTimeZone(
                 accountDTO.getTimeZone()
             );
@@ -216,14 +222,14 @@ public class UserService {
             this.clearUserCaches(userEditPhone);
             return userEditPhone;
         }
-        if (existedUser.isPresent()) {
-            User user = existedUser.get();
-            user.setPassword(encryptedPassword);
-            if (user.getTimeZone() == null && accountDTO.getTimeZone() != null) user.setTimeZone(accountDTO.getTimeZone());
-            userRepository.save(user);
-            this.clearUserCaches(user);
-            return user;
-        }
+        //        if (existedUser.isPresent()) {
+        //            User user = existedUser.get();
+        //            user.setPassword(encryptedPassword);
+        //            if (user.getTimeZone() == null && accountDTO.getTimeZone() != null) user.setTimeZone(accountDTO.getTimeZone());
+        //            userRepository.save(user);
+        //            this.clearUserCaches(user);
+        //            return user;
+        //        }
         User newUser = new User();
         newUser.setLogin(accountDTO.getPhoneNumber());
         newUser.setPhoneNumber(accountDTO.getPhoneNumber());
@@ -794,6 +800,10 @@ public class UserService {
             log.error(e.getMessage());
             return null;
         }
+    }
+
+    public Optional<User> findUserByUserName(String userName) {
+        return userRepository.findOneByLogin(userName);
     }
 
     public Optional<AdminUserDTO> updateFailedAttemptLoginToLockAccount(String login) {

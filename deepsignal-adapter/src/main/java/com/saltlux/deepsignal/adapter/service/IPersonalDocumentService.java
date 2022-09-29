@@ -48,4 +48,6 @@ public interface IPersonalDocumentService {
     );
 
     List<PersonalDocument> findPersonalDocumentsByIds(List<String> ids, Boolean... optionalFlag);
+
+    List<PersonalDocument> findPersonalDocumentsByDocIds(List<String> docIds, Boolean... optionalFlag);
 }
