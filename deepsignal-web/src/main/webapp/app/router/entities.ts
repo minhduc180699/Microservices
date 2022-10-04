@@ -6,6 +6,7 @@ import NoticeList from '@/entities/help/notice/noticeList/noticeList.vue';
 import NoticeDetail from '@/entities/help/notice/noticeDetail/noticeDetail.vue';
 import LearningSocial from '@/entities/connectome/learning-management/learningSocial/leaningSocial.vue';
 import LearningWeb from '@/entities/connectome/learning-management/learningWeb/learningWeb.vue';
+import NewLearningCenterComponent from '@/entities/new-learning-center/new-learning-center.vue';
 
 /* tslint:disable */
 // prettier-ignore
@@ -97,6 +98,12 @@ export default [
     path: '/myconnectome/learning-management/learning-web',
     name: 'Learning-Web',
     component: LearningWeb,
+    meta: { authorities: [Authority.USER] },
+  },
+  {
+    path: '/new-learning-center',
+    name: 'New-Learning-Center',
+    component: NewLearningCenterComponent,
     meta: { authorities: [Authority.USER] },
   },
   {

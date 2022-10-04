@@ -33,17 +33,32 @@ icon-common
   &.icon-write {
     background-position: -20px -20px;
   }
+
   &.icon-newwindow {
     background-position: -140px -20px;
-  }
-  &.icon-list {
-    background-position: -180px 0;
   }
   &.icon-trash {
     background-position: -140px -40px;
   }
+
   &.icon-camera {
     background-position: -160px -40px;
+  }
+  &.icon-list {
+    background-position: -180px 0;
+  }
+  &.icon-folder-edit {
+    background-position: -180px -60px;
+  }
+
+  &.icon-pin {
+    background-position: -160px -80px;
+  }
+  &.icon-pin-on {
+    background-position: -180px -80px;
+  }
+  &.icon-pin-off {
+    background-position: -200px -80px;
   }
 
   /* shortcut icon */
@@ -100,12 +115,12 @@ icon-common
     }
   }
   &.icon-more {
-    background-position: -120px 0;
+    // background-position: -120px 0; /* horizontal */
+    background-position: -120px -40px; /* vertical */
   }
   .show-menu & {
-    &.icon-more {
-      background-position: -120px -20px;
-    }
+    // &.icon-more {background-position: -120px -20px} /* horizontal */
+    background-position: -120px -60px; /* vertical */
   }
 
   /* close icon */
@@ -250,6 +265,9 @@ icon-common-lg
   }
   &.icon-close {
     background-position: -72px -148px;
+  }
+  &.icon-folder {
+    background-position: -96px -148px;
   }
 }
 

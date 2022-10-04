@@ -10,3 +10,4 @@ src/main/webapp/app/entities/connectome/map/
 postcss.config.js
 src/main/webapp/index.html
 src/main/resources/templates/
+gitconfig/
