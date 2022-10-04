@@ -312,4 +312,14 @@ public class FileStorageResource {
     public ResponseEntity<Page<FileInfo>> searchDynamic(Pageable page, FileInfoFindParam fileInfoFindParam) {
         return new ResponseEntity<Page<FileInfo>>(fileResourceService.searchDynamic(page, fileInfoFindParam), HttpStatus.OK);
     }
+
+    @PostMapping("/saveForChromeEx/{connectoneId}")
+    public ResponseEntity<?> searchDynamic(@RequestBody FileInfo fileInfo, @PathVariable String connectoneId) {
+        try {
+            fileResourceService.saveForChromeEx(fileInfo, connectoneId);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+        return ResponseEntity.ok().body("OK");
+    }
 }

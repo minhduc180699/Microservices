@@ -9,24 +9,26 @@
               <span><span v-text="$t('connectome-map.fit-to-screen')" /></span>
             </button>
           </div>
-          <div style="margin: 5px">
+          <!-- <div style="margin: 5px">
             <b-form-input v-model="cmpMinNodeWeight" placeholder="title"></b-form-input>
             <b-form-input v-model="cmpMinRelatedDocuments" style="margin-top: 2px" placeholder="content"></b-form-input>
             <b-form-input v-model="cmpMinLinkedNodes" style="margin-top: 2px" placeholder="content"></b-form-input>
             <b-button variant="outline-primary" style="margin-top: 2px" @click="networkFiltersOnChange">Apply</b-button>
-          </div>
+          </div> -->
         </div>
       </div>
       <div class="control-topick">
         <b-button v-b-toggle.sidebar-footer><b-icon icon="layout-sidebar" aria-hidden="true" variant="outline-primary"></b-icon></b-button>
       </div>
-      <b-sidebar id="sidebar-footer" aria-label="Sidebar with custom footer" no-header shadow>
-        <template #footer="{ hide }">
+      <b-sidebar id="sidebar-footer" aria-label="Sidebar with custom footer">
+        <template #footer="{}">
           <div class="d-flex bg-dark text-light align-items-center px-3 py-2">
-            <b-button size="sm" @click="hide"><b-icon icon="x-square" aria-hidden="true" variant="outline-primary"></b-icon></b-button>
-            <b-button size="sm" v-b-modal.add-document-tool
-              ><b-icon icon="plus-circle" aria-hidden="true" variant="outline-primary"></b-icon
-            ></b-button>
+            <b-button size="sm" v-b-modal.add-document-tool style="margin-right: 5px"
+              ><b-icon icon="plus-circle" aria-hidden="true" variant="outline-primary"></b-icon> Add Documents</b-button
+            >
+            <b-button size="sm" @click="SaveContext"
+              ><b-icon icon="save2" aria-hidden="true" variant="outline-primary"></b-icon> Save current context</b-button
+            >
           </div>
         </template>
         <map-side-bar></map-side-bar>

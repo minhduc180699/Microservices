@@ -4,7 +4,7 @@ import * as d3ScaleChromatic from 'd3-scale-chromatic';
 import { NetworkNode } from './network-node-model';
 import { TYPE_CONNECTOME_MAP_DATA } from '@/shared/constants/ds-constants';
 import { MapNode } from './map-node-model';
-import { ConnectomeNode } from './connectome-node-model';
+import { ConnectomeNodeOld } from './connectome-node-model-old';
 
 // @Component({
 //   components: {
@@ -848,7 +848,7 @@ export default class ConnectomeMapComponent extends Vue {
 
   data(): {
     isWikiDescriptionExpanded: boolean;
-    focusNode: ConnectomeNode;
+    focusNode: ConnectomeNodeOld;
     isNetworkMapInitiate: boolean;
   } {
     return {

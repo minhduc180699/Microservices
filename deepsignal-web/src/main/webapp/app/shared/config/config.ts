@@ -53,6 +53,8 @@ import { axiosRequestLoader } from '@/shared/config/loader-interceptors';
 import { loaderStore } from '@/shared/config/store/loader-store';
 import { nodeStore } from '@/shared/config/store/node-store';
 import { connectomeNetworkStore } from '@/shared/config/store/connectome-network-store';
+import { connectomeBuilderStore } from '@/shared/config/store/connectome-builder-store';
+import { collectionManagerStore } from '@/shared/config/store/collection-manager-store';
 import { mapNetworkStore } from './store/map-network-store';
 import { miniConnectomeNetworkStore } from '@/shared/config/store/mini-connectome-network-store';
 import { miniMapNetworkStore } from './store/mini-map-network-store';
@@ -199,6 +201,8 @@ export function initVueXStore(vue) {
       interactionStore,
       userSettingStore,
       connectomeNetworkStore,
+      connectomeBuilderStore,
+      collectionManagerStore,
       mapNetworkStore,
       miniConnectomeNetworkStore,
       miniMapNetworkStore,

@@ -9,6 +9,7 @@ import ForceGraph, { ForceGraphInstance, LinkObject } from 'force-graph';
 import { MAP_BACKGROUND_COLOR, TYPE_VERTEX, FONTCOLOR_NODE_IN_MAP, MINI_MAP_BACKGROUND_COLOR } from '@/shared/constants/ds-constants';
 import BuilderMapSideBar from '../builder-map-side-bar/builder-map-side-bar.vue';
 import BuilderMapAddDocumentsTool from '../builder-map-add-documents-tool/builder-map-add-documents-tool.vue';
+import { ContextualMemoryCollection } from '@/shared/model/contextual-memory-collection.model';
 
 export const STEP_CONNECTOME_RENDER = {
   FIRST: 10,
@@ -21,6 +22,7 @@ const networkStore = namespace('connectomeNetworkStore');
 const mapNetworkStore = namespace('mapNetworkStore');
 
 const connectomeBuilderStore = namespace('connectomeBuilderStore');
+const collectionManagerStore = namespace('collectionManagerStore');
 
 @Component({
   components: {
@@ -66,6 +68,9 @@ export default class BuilderMap extends Vue {
   public getNodes!: Array<ConnectomeNode>;
 
   @connectomeBuilderStore.Getter
+  public getConnectome!: Array<ConnectomeNode>;
+
+  @connectomeBuilderStore.Getter
   public getLinks!: Array<ConnectomeLink>;
 
   @connectomeBuilderStore.Getter
@@ -74,9 +79,35 @@ export default class BuilderMap extends Vue {
   @connectomeBuilderStore.Getter
   public getDocumentColors!: Map<string, string>;
 
+  @collectionManagerStore.Getter
+  public getCurrentCollection!: ContextualMemoryCollection;
+
+  @connectomeBuilderStore.Mutation
+  public setConnectome!: (payload: { connectome: Array<ConnectomeNode> }) => void;
+
+  @collectionManagerStore.Action
+  public updateCollection!: (payload: { collection: ContextualMemoryCollection }) => Promise<any>;
+
   @Watch('getDocumentsSelected')
   onGetDocumentsSelectedChanged(data: Map<string, Array<ConnectomeNode>>) {
     console.log('onGetDocumentsSelectedChanged', data);
+  }
+
+  @Watch('getCurrentCollection')
+  onCurrentCollectionChanged(newValue: ContextualMemoryCollection) {
+    console.log('onCurrentCollectionChanged', newValue);
+
+    if (!newValue) {
+      this.setConnectome({ connectome: [] });
+      return;
+    }
+
+    if (!newValue.connectomeNodeList) {
+      this.setConnectome({ connectome: [] });
+      return;
+    }
+
+    this.setConnectome({ connectome: newValue.connectomeNodeList });
   }
 
   @Watch('getDataUpdated')
@@ -148,7 +179,7 @@ export default class BuilderMap extends Vue {
     // } else {
     //   this.displayDummyChart(false);
     // }
-    if (this.graph && this.getNodes && this.getNodes.length > 0 && this.getLinks) {
+    if (this.graph && this.getNodes && this.getLinks) {
       console.log('MOUNTED: links ', this.getLinks);
       console.log('MOUNTED: Total after ', this.getNodes.length);
       //console.log(nodes);
@@ -348,35 +379,6 @@ export default class BuilderMap extends Vue {
   }
 
   //map interaction
-  private zoomOnSelection(label: string) {
-    if (!label) {
-      return;
-    }
-    if (node) {
-      const nodeCount = this.selectedNodes.size + this.nodesLinkedToSelectedNodes.size;
-      let padding = 100;
-      console.log('nodeCount1', nodeCount, padding);
-      if ((node.x && node.y) || (node.fx && node.fy)) {
-        //   if (nodeCount < 3) {
-        //     console.log('node', node);
-        //     this.graph.centerAt(node.fx ? node.fx : node.x, node.fy ? node.fy : node.y, 200);
-        //     this.graph.zoom(0.5, 2000);
-        //     return;
-        //   } else if (nodeCount < 6) {
-        //     this.graph.centerAt(node.fx ? node.fx : node.x, node.fy ? node.fy : node.y, 200);
-        //     this.graph.zoom(0.25, 2000);
-        //     return;
-        //   }
-        // }
-        if (nodeCount < 10) {
-          padding = 150;
-        } else {
-          padding = 50;
-        }
-        this.graph.zoomToFit(0, padding, node => this.selectedNodes.has(node.label) || this.nodesLinkedToSelectedNodes.has(node.label));
-      }
-    }
-  }
 
   private clearSelection() {
     this.selectedNodes.clear();
@@ -632,4 +634,34 @@ export default class BuilderMap extends Vue {
     this.setDataUpdate();
   }
   //#endregion
+
+  SaveContext() {
+    const newContextToSave: ContextualMemoryCollection = this.getCurrentCollection;
+    newContextToSave.connectomeNodeList = this.getConnectome.map(x => x);
+    const docSet: Set<string> = new Set<string>();
+    const keywordSet: Set<string> = new Set<string>();
+    newContextToSave.connectomeNodeList.forEach(node => {
+      node.relatedDocuments.forEach(docId => {
+        docSet.add(docId);
+      });
+      node.keywordList.forEach(keyword => {
+        keywordSet.add(keyword);
+      });
+    });
+
+    console.log('add to context', docSet);
+    newContextToSave.documentIdList = new Array<string>();
+    docSet.forEach(element => {
+      newContextToSave.documentIdList.push(element);
+    });
+    newContextToSave.keywordList = new Array<string>();
+    keywordSet.forEach(element => {
+      newContextToSave.keywordList.push(element);
+    });
+    console.log(newContextToSave);
+
+    this.updateCollection({ collection: newContextToSave }).then(res => {
+      console.log(res);
+    });
+  }
 }

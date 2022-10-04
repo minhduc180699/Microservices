@@ -9,7 +9,7 @@ spring:
     username: deepsignal
     password: deeppass22
   zipkin:
-    baseUrl: http://127.0.0.1:9411
+    baseUrl: http://192.168.10.16:9411
   sleuth:
     sampler:
       probability: 1.0

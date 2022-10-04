@@ -194,6 +194,10 @@ public class ConnectomeFeedServiceImpl implements IConnectomeFeedService {
                         "')}, ";
                 } else if (filterFeed.getField().equals(Constants.FEED_FILTER.SEARCH_TYPE)) {
                     query = query + filterFeed.getField() + ": {$regex: '" + filterFeed.getValue() + "'}, ";
+                }
+                //fix for demo
+                else if (filterFeed.getField().equals("lang") && filterFeed.getValue().equals("'en'")) {
+                    query = query + "$or:[{lang:null},{lang:" + filterFeed.getValue() + "},{lang:''}]" + ", ";
                 } else {
                     query = query + filterFeed.getField() + ": " + filterFeed.getValue() + ", ";
                 }

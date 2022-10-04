@@ -9,7 +9,7 @@ import { NetworkNode } from '../network-node-model';
 import { NetworkLink } from '../network-link-model';
 import MapPopupComponent from '@/entities/connectome/map/map-popup/map-popup.vue';
 import { STEP_CONNECTOME_RENDER, TYPE_NODE_IN_MAP, TYPE_CONNECTOME_MAP_DATA } from '@/shared/constants/ds-constants';
-import { ConnectomeNode } from '../connectome-node-model';
+import { ConnectomeNodeOld } from '../connectome-node-model-old';
 // import { UnrealBloomPass } from '//cdn.skypack.dev/three/examples/jsm/postprocessing/UnrealBloomPass.js';
 
 @Component({
@@ -284,7 +284,7 @@ export default class ConnectomeMap3dByLink extends Vue {
     }
   }
 
-  focusOnNode(targetNode: ConnectomeNode) {
+  focusOnNode(targetNode: ConnectomeNodeOld) {
     if (!targetNode) {
       return;
     }

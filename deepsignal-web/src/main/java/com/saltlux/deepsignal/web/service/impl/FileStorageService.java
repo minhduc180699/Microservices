@@ -277,8 +277,8 @@ public class FileStorageService implements IFileStorageService {
                 //                } else {
                 if (
                     !urlUploadDTO.getSearchType().equals("searchFileType:ppt") &&
-                        !urlUploadDTO.getSearchType().equals("searchFileType:pdf") &&
-                        !urlUploadDTO.getSearchType().equals("searchFileType:docx")
+                    !urlUploadDTO.getSearchType().equals("searchFileType:pdf") &&
+                    !urlUploadDTO.getSearchType().equals("searchFileType:docx")
                 ) {
                     FileInfo fileInfo = new FileInfo();
                     BeanUtils.copyProperties(urlUploadDTO, fileInfo);
@@ -354,6 +354,10 @@ public class FileStorageService implements IFileStorageService {
                     fileInfo.setSize(file.getSize());
                     fileInfo.setMineType(file.getContentType());
                     fileInfo.setType(Constants.UploadType.FILE.toString());
+                    if (getPathFile(fileName) == null) {
+                        continue;
+                    }
+                    fileInfo.setFileType(getSearchType(fileName));
                     fileInfo.setUser(user);
                     fileInfo.setConnectomes(connectomeSet);
                     fileInfo.setLang(language);
@@ -507,6 +511,9 @@ public class FileStorageService implements IFileStorageService {
     }
 
     private void uploadFileByAPI(List<FileInfoDTO> fileInfoDTOS, String url) {
+        if (fileInfoDTOS.size() == 0) {
+            return;
+        }
         try {
             UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url + DOC_CONVERT);
             HttpHeaders headers = new HttpHeaders();
@@ -550,6 +557,25 @@ public class FileStorageService implements IFileStorageService {
             restTemplate.postForObject(API + Constants.KAFKA_PUBLISH_FILE_INFO, fileInfoDTOS, FileInfoDTO[].class);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private String getSearchType(String fileName) {
+        String searchType = "";
+        if (fileName.contains(".")) {
+            searchType = searchType + fileName.substring(fileName.lastIndexOf(".") + 1);
+            int index = -1;
+            for (int i = 0; i < Constants.SearchFileType.FILETYPE.length; i++) {
+                if (Constants.SearchFileType.FILETYPE[i].equals(searchType)) {
+                    index = i;
+                }
+            }
+            if (index == -1) {
+                return null;
+            }
+            return searchType.toLowerCase();
+        } else {
+            return null;
         }
     }
 }

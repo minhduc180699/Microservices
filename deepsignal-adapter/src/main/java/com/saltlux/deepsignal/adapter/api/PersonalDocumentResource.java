@@ -140,7 +140,7 @@ public class PersonalDocumentResource {
         @PathVariable(value = "connectomeId") String connectomeId,
         @RequestParam(value = "page", defaultValue = "0") int page,
         @RequestParam(value = "size", defaultValue = "10") int size,
-        @RequestParam(value = "orderBy", defaultValue = "published_at") String orderBy,
+        @RequestParam(value = "orderBy", defaultValue = "createdDate") String orderBy,
         @RequestParam(value = "sortDirection", defaultValue = "desc") String sortDirection
     ) {
         try {

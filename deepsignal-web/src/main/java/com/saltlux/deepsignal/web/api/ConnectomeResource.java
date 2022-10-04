@@ -12,12 +12,14 @@ import com.saltlux.deepsignal.web.repository.ConnectomeRepository;
 import com.saltlux.deepsignal.web.security.SecurityUtils;
 import com.saltlux.deepsignal.web.service.IConnectomeService;
 import com.saltlux.deepsignal.web.service.dto.ApiResponse;
+import com.saltlux.deepsignal.web.service.dto.CollectionResponseDTO;
 import com.saltlux.deepsignal.web.service.dto.ConnectomeDTO;
 import com.saltlux.deepsignal.web.service.dto.ConnectomeNetworkDTO;
 import com.saltlux.deepsignal.web.service.dto.ConnectomeNodeDTO;
 import com.saltlux.deepsignal.web.service.dto.ConnectomeOnTextRequestBody;
 import com.saltlux.deepsignal.web.service.dto.ConnectomePersonalDocumentDTO;
 import com.saltlux.deepsignal.web.service.dto.ConnectomeStatusDTO;
+import com.saltlux.deepsignal.web.service.dto.CreateCollectionRequestBody;
 import com.saltlux.deepsignal.web.service.dto.EdgeDTO;
 import com.saltlux.deepsignal.web.service.dto.FeedRes;
 import com.saltlux.deepsignal.web.service.dto.VertexDocsRes;
@@ -60,6 +62,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -1047,8 +1050,8 @@ public class ConnectomeResource {
             Map<String, Object> requestBody = new HashMap<>();
             requestBody.put("connectomeId", content.getConnectomeId());
             requestBody.put("documentId", content.getDocumentIds().get(0));
-            // requestBody.put("title", content.getTitle());
-            // requestBody.put("contents", content.getContent());
+            requestBody.put("title", content.getTitle());
+            requestBody.put("contents", content.getContent());
             System.out.println(requestBody);
             HttpEntity<Object> request = new HttpEntity<>(requestBody);
             HttpEntity<ConnectomeNodeDTO[]> response = restTemplate.postForEntity(url.toString(), request, ConnectomeNodeDTO[].class);
@@ -1084,4 +1087,210 @@ public class ConnectomeResource {
             return new ResponseEntity(new ApiResponse(false, "call of external api " + e.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
+
+    //#region Demo 10/04 collection APIS
+    @PostMapping("/doc-graph")
+    @Operation(summary = "get graph from docId", tags = { "Demo 10/04" })
+    public ResponseEntity<?> postDocumentGraphByDocId(
+        @RequestParam(value = "language", defaultValue = "en") String lang,
+        @RequestBody ConnectomeOnTextRequestBody content
+    ) {
+        if (Objects.isNull(content) || Objects.isNull(content.getDocumentIds()) || Objects.isNull(content.getConnectomeId())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(content);
+        }
+
+        StringBuilder url = new StringBuilder();
+        url.append(APIConnectomeTest).append(Constants.POST_TEXT_CONNECTOME_URI).append("/").append(lang);
+        try {
+            Map<String, Object> requestBody = new HashMap<>();
+            requestBody.put("connectomeId", content.getConnectomeId());
+            requestBody.put("documentId", content.getDocumentIds().get(0));
+            //System.out.println(requestBody);
+            HttpEntity<Object> request = new HttpEntity<>(requestBody);
+            HttpEntity<ConnectomeNodeDTO[]> response = restTemplate.postForEntity(url.toString(), request, ConnectomeNodeDTO[].class);
+
+            ConnectomeNodeDTO[] connectome = response.getBody();
+
+            // ArrayList<EdgeDTO> edgesFiltered = new ArrayList<EdgeDTO>();
+
+            if (connectome == null) {
+                System.out.println("Doc connectome Request Body");
+                System.out.println(requestBody);
+                return new ResponseEntity(new ApiResponse(false, "Body response empty"), HttpStatus.OK);
+            }
+
+            if (connectome.length == 0) {
+                System.out.println("Connectome is empty");
+                System.out.println(requestBody.get("connectomeId"));
+                System.out.println(requestBody.get("documentId"));
+            }
+
+            ConnectomePersonalDocumentDTO responseToSend = new ConnectomePersonalDocumentDTO();
+            responseToSend.setDocumentIds(content.getDocumentIds());
+            responseToSend.setConnectome(connectome);
+
+            return ResponseEntity
+                .ok()
+                .body(new ResponseEntity<ConnectomePersonalDocumentDTO>(responseToSend, response.getHeaders(), HttpStatus.OK));
+        } catch (Exception e) {
+            System.out.println("Error");
+            System.out.println(e.getMessage());
+            return new ResponseEntity(new ApiResponse(false, "call of external api " + e.getMessage()), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("/collection/create")
+    @Operation(summary = "create a collection with connectomeId and language", tags = { "Demo 10/04" })
+    public ResponseEntity<?> createCollectionWithConnectomeIdAndLanguage(@RequestBody CreateCollectionRequestBody content) {
+        if (Objects.isNull(content) || Objects.isNull(content.getConnectomeId()) || content.getConnectomeId().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(content);
+        }
+
+        StringBuilder url = new StringBuilder();
+        url.append(APIConnectomeTest).append(Constants.POST_CONTEXTUAL_MEMORY_GET_COLLECTION_ID_URI);
+        try {
+            CreateCollectionRequestBody requestBody = new CreateCollectionRequestBody();
+            requestBody.setConnectomeId(content.getConnectomeId());
+            requestBody.setConnectomeNodeList(content.getConnectomeNodeList());
+            requestBody.setDocumentIdList(content.getDocumentIdList());
+            requestBody.setLang(content.getLang());
+            if (Objects.isNull(content.getLang()) || content.getLang().isEmpty()) {
+                requestBody.setLang("en");
+            }
+
+            HttpEntity<Object> request = new HttpEntity<>(requestBody);
+            HttpEntity<CollectionResponseDTO> response = restTemplate.postForEntity(url.toString(), request, CollectionResponseDTO.class);
+
+            CollectionResponseDTO collectionResponse = response.getBody();
+
+            if (collectionResponse == null) {
+                System.out.println("Doc connectome Request Body");
+                System.out.println(requestBody);
+                return new ResponseEntity(new ApiResponse(false, "Body response empty"), HttpStatus.OK);
+            }
+
+            return ResponseEntity
+                .ok()
+                .body(new ResponseEntity<CollectionResponseDTO>(collectionResponse, response.getHeaders(), HttpStatus.OK));
+        } catch (Exception e) {
+            System.out.println("Error");
+            System.out.println(e.getMessage());
+            return new ResponseEntity(new ApiResponse(false, "call of external api " + e.getMessage()), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/collection/get/all")
+    @Operation(summary = "create a collection with connectomeId and language", tags = { "Demo 10/04" })
+    public ResponseEntity<?> getCollectionsByConnectomeIdAndLanguage(@RequestHeader HttpHeaders headers) {
+        if (Objects.isNull(headers) || Objects.isNull(headers.get("connectomeId")) || headers.get("connectomeId").isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(headers);
+        }
+
+        StringBuilder url = new StringBuilder();
+        url.append(APIConnectomeTest).append(Constants.GET_CONTEXTUAL_MEMORY_GET_LIST_COLLECTION_URI);
+        try {
+            if (Objects.isNull(headers.get("lang"))) {
+                headers.add("lang", "en");
+            }
+
+            if (headers.get("lang").isEmpty()) {
+                headers.set("lang", "en");
+            }
+
+            String urlTemplate = UriComponentsBuilder
+                .fromHttpUrl(url.toString())
+                .queryParam("connectomeId", headers.get("connectomeId"))
+                .queryParam("lang", headers.get("lang"))
+                .build()
+                .toUriString();
+            HttpEntity<CollectionResponseDTO[]> response = restTemplate.getForEntity(urlTemplate, CollectionResponseDTO[].class);
+
+            // HttpEntity<String> entity = new HttpEntity<String>(headers);
+            // HttpEntity<CollectionResponseDTO[]> response = restTemplate.exchange(urlTemplate.toString(), HttpMethod.GET, entity,CollectionResponseDTO[].class);
+
+            CollectionResponseDTO[] collectionsResponse = response.getBody();
+
+            if (collectionsResponse == null) {
+                System.out.println("get collection Request Body");
+                return new ResponseEntity(new ApiResponse(false, "Body response empty"), HttpStatus.OK);
+            }
+
+            return ResponseEntity
+                .ok()
+                .body(new ResponseEntity<CollectionResponseDTO[]>(collectionsResponse, response.getHeaders(), HttpStatus.OK));
+        } catch (Exception e) {
+            System.out.println("Error");
+            for (String iterable_element : headers.toSingleValueMap().values()) {
+                System.out.println(iterable_element);
+            }
+            System.out.println(headers.get("lang"));
+            System.out.println(headers.get("connectomeId"));
+            System.out.println(e.getMessage());
+            return new ResponseEntity(new ApiResponse(false, "call of external api " + e.getMessage()), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PutMapping("/collection/update")
+    @Operation(summary = "update a collection by updated collection", tags = { "Demo 10/04" })
+    public ResponseEntity<?> updateCollection(@RequestBody CollectionResponseDTO content) {
+        if (Objects.isNull(content) || Objects.isNull(content.getConnectomeId()) || content.getConnectomeId().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(content);
+        }
+
+        if (Objects.isNull(content.getCollectionId()) || content.getCollectionId().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(content);
+        }
+
+        StringBuilder url = new StringBuilder();
+        url.append(APIConnectomeTest).append(Constants.PUT_CONTEXTUAL_MEMORY_UPSERT_URI);
+        try {
+            restTemplate.put(url.toString(), content);
+            return ResponseEntity.ok().body(new ResponseEntity<CollectionResponseDTO>(content, HttpStatus.OK));
+        } catch (Exception e) {
+            System.out.println("Error");
+            System.out.println(e.getMessage());
+            return new ResponseEntity(new ApiResponse(false, "call of external api " + e.getMessage()), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/collection/get")
+    @Operation(summary = "get a collection with collectionId", tags = { "Demo 10/04" })
+    public ResponseEntity<?> getCollectionsByCollectionId(
+        @RequestParam(value = "collectionId") String collectionId,
+        @RequestHeader HttpHeaders headers
+    ) {
+        if (Objects.isNull(collectionId) || collectionId.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+
+        StringBuilder url = new StringBuilder();
+        url.append(APIConnectomeTest).append(Constants.GET_CONTEXTUAL_MEMORY_GET_COLLECTION_URI);
+        try {
+            String urlTemplate = UriComponentsBuilder
+                .fromHttpUrl(url.toString())
+                .queryParam("collectionId", collectionId)
+                .build()
+                .toUriString();
+            HttpEntity<CollectionResponseDTO[]> response = restTemplate.getForEntity(urlTemplate, CollectionResponseDTO[].class);
+
+            CollectionResponseDTO[] collectionResponse = response.getBody();
+
+            // ArrayList<EdgeDTO> edgesFiltered = new ArrayList<EdgeDTO>();
+
+            if (collectionResponse == null) {
+                System.out.println("get collection");
+                System.out.println(urlTemplate);
+                return new ResponseEntity(new ApiResponse(false, "Body response empty"), HttpStatus.OK);
+            }
+
+            return ResponseEntity
+                .ok()
+                .body(new ResponseEntity<CollectionResponseDTO[]>(collectionResponse, response.getHeaders(), HttpStatus.OK));
+        } catch (Exception e) {
+            System.out.println("Error");
+            System.out.println(e.getMessage());
+            return new ResponseEntity(new ApiResponse(false, "call of external api " + e.getMessage()), HttpStatus.BAD_REQUEST);
+        }
+    }
+    //#endregion
 }

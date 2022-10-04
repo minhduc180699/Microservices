@@ -161,6 +161,16 @@ public class FileResourceService {
         return new File(pathFile);
     }
 
+    public FileInfo saveForChromeEx(FileInfo fileInfo, String connectomeId) {
+        Optional<Connectome> connectome = connectomeRepository.findConnectomeByConnectomeId(connectomeId);
+        if (!connectome.isPresent()) {
+            return null;
+        }
+        User user = connectome.get().getUser();
+        fileInfo.setUser(user);
+        return fileStorageRepository.save(fileInfo);
+    }
+
     public Page<FileInfo> searchDynamic(Pageable page, FileInfoFindParam fileInfoFindParam) {
         Page<FileInfo> pageResult = fileStorageRepository.findAll(
             new Specification<FileInfo>() {
@@ -199,6 +209,7 @@ public class FileResourceService {
                                 )
                             );
                         }
+                        predicates.add(criteriaBuilder.and(criteriaBuilder.isNotNull(root.get("path"))));
                     }
                     return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
                 }

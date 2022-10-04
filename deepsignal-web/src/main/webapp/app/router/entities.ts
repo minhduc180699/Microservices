@@ -20,6 +20,7 @@ const LearningCenter = () => import('@/entities/my-ai/learning-center/learning-c
 const ConnectomeMap = () => import('@/entities/my-ai/connectome/connectome-map-v2.vue');
 const Map2dNetwork = () => import('@/entities/my-ai/connectome/map-2d-network/map-2d-network.vue');
 const Map3dNetwork = () => import('@/entities/my-ai/connectome/map-3d-network/map-3d-network.vue');
+const ConnectomeBuilder = () => import('@/entities/my-ai/connectome-builder/builder-map/builder-map.vue');
 const MiniConnectomeMap = () => import('@/entities/my-ai/mini-connectome/mini-connectome-map.vue');
 const MiniMap2dNetwork = () => import('@/entities/my-ai/mini-connectome/mini-map-2d-network/mini-map-2d-network.vue');
 export default [
@@ -117,6 +118,11 @@ export default [
             path: '/my-ai/connectome/3dnetwork',
             name: '3DNetwork',
             component: Map3dNetwork,
+          },
+          {
+            path: '/my-ai/connectome/builder',
+            name: 'Builder',
+            component: ConnectomeBuilder,
           },
         ],
         redirect: to => {

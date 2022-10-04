@@ -13,6 +13,7 @@ const keyStoreEntityLabelSelected = 'mapNetworkEntityLabelSelected';
 const keyStoreEntityDetailsSelected = 'mapNetworkEntityDetailsSelected';
 const keyStoreEntityPersonalDocuments = 'mapNetworkEntityPersonalDocumentsSelected';
 const keyStoreEntityFeeds = 'mapNetworkEntityFeedsSelected';
+const keyStoreEntityChannels = 'mapNetworkEntityChannels';
 const keyStoreViewSettings = 'mapNetworkViewSettings';
 const keyStoreClusterExpanded = 'mapNetworkClusterExpanded';
 const keyStoreSecondaryClustersExpanded = 'mapNetworkSecondaryClustersExpanded';
@@ -22,6 +23,7 @@ export interface mapNetworkStorable {
   entityDetailsSelected: any;
   entityPersonalDocuments: Array<any>;
   entityFeeds: Array<any>;
+  entityChannels: Array<string>;
   isMapNetworkInitialized: boolean;
   searchResult: Array<ConnectomeNetworkVertex>;
   refreshMapCommand: number;
@@ -39,13 +41,14 @@ export const mapNetworkStore: Module<mapNetworkStorable, any> = {
     entityDetailsSelected: JSON.parse(sessionStorage.getItem(keyStoreEntityDetailsSelected)),
     entityPersonalDocuments: convertLocalStorageToArray(sessionStorage.getItem(keyStoreEntityPersonalDocuments)),
     entityFeeds: convertLocalStorageToArray(sessionStorage.getItem(keyStoreEntityFeeds)),
-    clusterExpanded: sessionStorage.getItem(keyStoreClusterExpanded),
+    entityChannels: convertLocalStorageToArray(sessionStorage.getItem(keyStoreEntityChannels)),
     isMapNetworkInitialized: false,
     searchResult: new Array<ConnectomeNetworkVertex>(),
     refreshMapCommand: 0,
     centerAtSelectionCommand: 0,
     learnMore: 0,
     viewParameters: JSON.parse(sessionStorage.getItem(keyStoreViewSettings)),
+    clusterExpanded: sessionStorage.getItem(keyStoreClusterExpanded),
     secondaryClustersExpanded: convertLocalStorageToArrayString(sessionStorage.getItem(keyStoreSecondaryClustersExpanded)),
   },
   getters: {
@@ -81,6 +84,11 @@ export const mapNetworkStore: Module<mapNetworkStorable, any> = {
       state.entityFeeds = feeds;
       sessionStorage.removeItem(keyStoreEntityFeeds);
       sessionStorage.setItem(keyStoreEntityFeeds, JSON.stringify(feeds));
+    },
+    setEntityChannels(state, channels: any) {
+      state.entityChannels = channels;
+      sessionStorage.removeItem(keyStoreEntityChannels);
+      sessionStorage.setItem(keyStoreEntityChannels, JSON.stringify(channels));
     },
     clearEntityLabelSelected(state) {
       if (sessionStorage.getItem(keyStoreEntityLabelSelected)) {
@@ -345,13 +353,27 @@ export const mapNetworkStore: Module<mapNetworkStorable, any> = {
           }
 
           const response = res.data.body;
-
+          const channels = new Set();
           if (response.feeds) {
             context.commit('setEntityFeedsSelected', response.feeds);
+            response.feeds.forEach(element => {
+              if (element.writerName) {
+                channels.add(element.writerName);
+              }
+            });
+          } else {
+            context.commit('setEntityFeedsSelected', []);
           }
 
           if (response.personalDocuments) {
             context.commit('setEntityPersonalDocumentsSelected', response.personalDocuments);
+            response.personalDocuments.forEach(element => {
+              if (element.writerName) {
+                channels.add(element.writerName);
+              }
+            });
+          } else {
+            context.commit('setEntityPersonalDocumentsSelected', []);
           }
 
           return res;

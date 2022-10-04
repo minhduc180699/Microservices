@@ -17,6 +17,7 @@ import { contentIsNullOrShorten } from '@/util/ds-feed-util';
 const baseConnectomeApiUrl = '/api/connectome';
 const getDataUrl = baseConnectomeApiUrl + '/pd-map/';
 const getTextDataUrl = baseConnectomeApiUrl + '/text-map/';
+const getDocGraphUrl = baseConnectomeApiUrl + '/doc-graph/';
 
 const keyStorePdList = 'ConnectomeBuilderPdIds';
 const keyStoreStorageList = 'ConnectomeBuilderStorageList';
@@ -145,6 +146,7 @@ export const connectomeBuilderStore: Module<ConnectomeBuilderStorable, any> = {
       state,
       PdData: {
         docId: string;
+        keyword: string;
         connectome: Array<ConnectomeNode>;
       }
     ) {
@@ -162,19 +164,56 @@ export const connectomeBuilderStore: Module<ConnectomeBuilderStorable, any> = {
       PdData.connectome.forEach(element => {
         const node = state.connectome.find(elem => elem.id === element.id);
         if (node) {
+          if (node.relatedDocuments && node.relatedDocuments.length > 0) {
+            node.weight = node.weight / node.relatedDocuments.length + element.weight;
+          } else {
+            node.weight = element.weight;
+          }
           node.relatedDocuments.push(PdData.docId);
-          node.weight = node.weight + element.weight;
+          node.keywordList.push(...element.keywordList);
+          node.weight = node.weight * node.relatedDocuments.length;
           node.linkedNodes.push(...element.linkedNodes);
         } else {
           state.connectome.push(new ConnectomeNode(element));
         }
       });
+
       state.documentsSelected.set(
         PdData.docId,
         PdData.connectome.map(x => new ConnectomeNode(x))
       );
       // console.log('documentsSelected', state.documentsSelected);
-      // console.log('added doc', state.connectome);
+      console.log('added keyword', PdData.keyword);
+      console.log('added doc', PdData.connectome);
+      state.dataUpdated++;
+    },
+    addPdList(
+      state,
+      PdData: {
+        docId: string;
+        keyword: string;
+        connectome: Array<ConnectomeNode>;
+      }
+    ) {
+      if (!PdData) {
+        return;
+      }
+
+      if (!PdData.docId) {
+        return;
+      }
+
+      if (state.documentsSelected.has(PdData.docId)) {
+        return;
+      }
+
+      state.documentsSelected.set(
+        PdData.docId,
+        PdData.connectome.map(x => new ConnectomeNode(x))
+      );
+      // console.log('documentsSelected', state.documentsSelected);
+      console.log('added to pdlist keyword', PdData.keyword);
+      console.log('added to pdlist  doc', PdData.connectome);
       state.dataUpdated++;
     },
     removePd(
@@ -206,19 +245,53 @@ export const connectomeBuilderStore: Module<ConnectomeBuilderStorable, any> = {
         if (node) {
           const indexDocId = node.relatedDocuments.indexOf(PdData.docId);
           if (indexDocId > -1) {
+            node.weight = node.weight / node.relatedDocuments.length - element.weight;
             node.relatedDocuments.splice(indexDocId, 1);
+            node.weight = node.weight * node.relatedDocuments.length;
             element.linkedNodes.forEach(linkedNode => {
               const indexNodeToRemove = node.linkedNodes.indexOf(linkedNode);
               if (indexNodeToRemove > -1) {
                 node.linkedNodes.splice(indexNodeToRemove, 1);
               }
             });
+            element.keywordList.forEach(keyword => {
+              const indexNodeToRemove = node.keywordList.indexOf(keyword);
+              if (indexNodeToRemove > -1) {
+                node.keywordList.splice(indexNodeToRemove, 1);
+              }
+            });
           }
-          node.weight = node.weight - element.weight;
         }
       });
-
       state.connectome = state.connectome.filter(x => x.relatedDocuments.length > 0);
+      // console.log('remove doc', state.connectome);
+      state.documentsSelected.delete(PdData.docId);
+      state.dataUpdated++;
+    },
+    removePdList(
+      state,
+      PdData: {
+        docId: string;
+      }
+    ) {
+      if (!PdData) {
+        return;
+      }
+
+      if (!PdData.docId) {
+        return;
+      }
+
+      if (!state.documentsSelected.has(PdData.docId)) {
+        return;
+      }
+      const connectomeToRemove = state.documentsSelected.get(PdData.docId);
+
+      if (!connectomeToRemove) {
+        return;
+      }
+      // console.log('connectome to remove', connectomeToRemove);
+      //const tmpConnectome = state.connectome.map(x => x);
       // console.log('remove doc', state.connectome);
       state.documentsSelected.delete(PdData.docId);
       state.dataUpdated++;
@@ -279,6 +352,14 @@ export const connectomeBuilderStore: Module<ConnectomeBuilderStorable, any> = {
       state.minRelatedDocuments = payload.value;
     },
     setDataUpdate(state) {
+      state.dataUpdated++;
+    },
+    setConnectome(state, payload: { connectome: Array<ConnectomeNode> }) {
+      if (!payload.connectome) {
+        return;
+      }
+
+      state.connectome = payload.connectome.map(x => new ConnectomeNode(x));
       state.dataUpdated++;
     },
     resetData(state) {},
@@ -346,9 +427,9 @@ export const connectomeBuilderStore: Module<ConnectomeBuilderStorable, any> = {
 
       const apiCallConnectomeData = new Promise<any>((resolve, reject) => {
         axios
-          .post(getDataUrl + payload.connectomeId, {
-            sourceLang: language,
-            ids: payload.ids,
+          .post(getDocGraphUrl, {
+            connectomeId: payload.connectomeId,
+            documentIds: payload.ids,
           })
           .then(res => resolve(res))
           .catch(err => reject(err));
@@ -381,6 +462,7 @@ export const connectomeBuilderStore: Module<ConnectomeBuilderStorable, any> = {
         connectomeId: string;
         documentId: string;
         language: string;
+        keyword: string;
         title: string;
         content: string;
       }
@@ -433,11 +515,9 @@ export const connectomeBuilderStore: Module<ConnectomeBuilderStorable, any> = {
 
       const apiCallConnectomeData = new Promise<any>((resolve, reject) => {
         axios
-          .post(getTextDataUrl + language, {
+          .post(getDocGraphUrl, {
             connectomeId: payload.connectomeId,
             documentIds: [docId],
-            title: payload.title,
-            content: payload.content,
           })
           .then(res => resolve(res))
           .catch(err => reject(err));
@@ -451,7 +531,11 @@ export const connectomeBuilderStore: Module<ConnectomeBuilderStorable, any> = {
           const response = res.data.body;
           console.log('getELData', response);
           response.documentIds.forEach(element => {
-            context.commit('addPd', { docId: element, connectome: response.connectome });
+            response.connectome.forEach(element => {
+              element.keywordList = new Array<string>();
+              if (payload.keyword) element.keywordList.push(payload.keyword);
+            });
+            context.commit('addPd', { docId: element, keyword: payload.keyword, connectome: response.connectome });
             context.commit('addPdColor', { docId: element });
           });
 
@@ -464,6 +548,63 @@ export const connectomeBuilderStore: Module<ConnectomeBuilderStorable, any> = {
             documentIds: [docId],
             title: payload.title,
             content: payload.content,
+          });
+        })
+        .finally(() => {});
+    },
+    loadDocumentFromContext: async (
+      context,
+      payload: {
+        connectomeId: string;
+        documentId: string;
+        keyword: string;
+      }
+    ) => {
+      if (!payload.documentId) {
+        return;
+      }
+
+      if (context.getters.getDocumentsSelected.has(payload.documentId)) {
+        return { documentIds: [payload.documentId], connectome: [] };
+      }
+
+      const apiCallConnectomeData = new Promise<any>((resolve, reject) => {
+        axios
+          .post(getDocGraphUrl, {
+            connectomeId: payload.connectomeId,
+            documentIds: [payload.documentId],
+          })
+          .then(res => resolve(res))
+          .catch(err => reject(err));
+      });
+
+      return apiCallConnectomeData
+        .then(res => {
+          if (!res.data.body) {
+            return;
+          }
+
+          const response = res.data.body;
+          console.log('getELData', response);
+          response.documentIds.forEach(element => {
+            response.connectome.forEach(element => {
+              element.keywordList = new Array<string>();
+              if (payload.keyword) {
+                element.keywordList.push(payload.keyword);
+                console.log('loadDocumentFromContext element.keywordList', element.keywordList);
+              }
+            });
+            context.commit('addPdList', { docId: element, keyword: payload.keyword, connectome: response.connectome });
+            context.commit('addPdColor', { docId: element });
+          });
+
+          return response;
+        })
+        .catch(reason => {
+          console.log('Reason', reason);
+          console.log('Reason  getELData', getDocGraphUrl, {
+            connectomeId: payload.connectomeId,
+            documentIds: [payload.documentId],
           });
         })
         .finally(() => {});

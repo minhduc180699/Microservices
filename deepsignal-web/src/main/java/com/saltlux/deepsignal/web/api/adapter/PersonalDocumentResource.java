@@ -53,7 +53,7 @@ public class PersonalDocumentResource {
         @PathVariable(value = "connectomeId") String connectomeId,
         @RequestParam(value = "page", defaultValue = "0") int page,
         @RequestParam(value = "size", defaultValue = "20") int size,
-        @RequestParam(value = "orderBy", defaultValue = "published_at") String orderBy,
+        @RequestParam(value = "orderBy", defaultValue = "createdDate") String orderBy,
         @RequestParam(value = "sortDirection", defaultValue = "desc") String sortDirection,
         @RequestParam(value = "uploadType", defaultValue = "") String uploadType,
         @RequestParam(value = "isDelete", defaultValue = "0") int isDelete
@@ -188,6 +188,23 @@ public class PersonalDocumentResource {
         try {
             StringBuilder uriPersonalDocument = new StringBuilder();
             uriPersonalDocument.append(connectAdapterApi.getExternalApi() + "/personal-documents/getByIds");
+            if (isDeleted != null) uriPersonalDocument.append("?isDeleted=" + isDeleted);
+            String response = connectAdapterApi.getDataFromAdapterApi(uriPersonalDocument.toString(), null, HttpMethod.POST, null, ids);
+            return ResponseEntity.ok().body(response);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @PostMapping("/getByDocIds")
+    @Operation(summary = "Get all personal document by many id", tags = { "Personal Documents Management" })
+    public ResponseEntity<?> getByDocIds(
+        @RequestBody List<String> ids,
+        @RequestParam(value = "isDeleted", required = false) Boolean isDeleted
+    ) {
+        try {
+            StringBuilder uriPersonalDocument = new StringBuilder();
+            uriPersonalDocument.append(connectAdapterApi.getExternalApi() + "/personal-documents/getByDocIds");
             if (isDeleted != null) uriPersonalDocument.append("?isDeleted=" + isDeleted);
             String response = connectAdapterApi.getDataFromAdapterApi(uriPersonalDocument.toString(), null, HttpMethod.POST, null, ids);
             return ResponseEntity.ok().body(response);

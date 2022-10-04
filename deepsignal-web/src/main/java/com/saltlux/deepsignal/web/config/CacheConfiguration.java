@@ -156,6 +156,7 @@ public class CacheConfiguration {
             createCache(cm, com.saltlux.deepsignal.web.domain.UserSetting.class.getName(), jcacheConfiguration);
             createCache(cm, ExternalUrl.class.getName(), jcacheConfiguration);
             createCache(cm, UserUrlTracking.class.getName(), jcacheConfiguration);
+            createCache(cm, com.saltlux.deepsignal.web.domain.ChromeBookmarkTrained.class.getName(), jcacheConfiguration);
         };
     }
 

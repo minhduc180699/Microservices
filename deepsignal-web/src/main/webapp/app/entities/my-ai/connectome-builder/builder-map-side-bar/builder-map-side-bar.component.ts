@@ -1,28 +1,19 @@
 import FeedService from '@/core/home/feed/feed.service';
-import ConnectomeService from '@/entities/connectome/connectome.service';
 import { ShowMoreMixin } from '@/mixins/show-more';
 import { PrincipalService } from '@/service/principal.service';
 import { CardModel } from '@/shared/cards/card.model';
 import DsCards from '@/shared/cards/ds-cards.vue';
 import ShowMore from '@/shared/cards/footer/show-more/show-more.vue';
-import { DOCUMENT_TYPE, TYPE_VERTEX } from '@/shared/constants/ds-constants';
-import { ACTIVITY, CARD_SIZE } from '@/shared/constants/feed-constants';
 //import { ConnectomeNetworkVertex } from '@/shared/model/connectome-network-vertex.model';
-import { ConnectomeNetwork } from '@/shared/model/connectome-network.model';
+import { ContextualMemoryCollection } from '@/shared/model/contextual-memory-collection.model';
 import { documentCard } from '@/shared/model/document-card.model';
-import { documentMetadataPlus } from '@/shared/model/document-metadata-plus.model';
-import axios from 'axios';
-import moment from 'moment';
-import { userInfo } from 'os';
-import { stringify } from 'querystring';
-import { start } from 'repl';
 import { mixins } from 'vue-class-component';
-import { Component, Inject, Vue, Watch } from 'vue-property-decorator';
+import { Component, Inject, Watch } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
-import LearnedDocument from '../../learning-center/learned-document/learned-document.component';
 
 const networkStore = namespace('connectomeNetworkStore');
 const connectomeBuilderStore = namespace('connectomeBuilderStore');
+const collectionManagerStore = namespace('collectionManagerStore');
 
 @Component({
   components: {
@@ -38,6 +29,125 @@ export default class BuilderMapSideBar extends mixins(ShowMoreMixin) {
 
   @networkStore.Getter
   public lang!: string;
+
+  @collectionManagerStore.Getter
+  public getCollections!: Array<ContextualMemoryCollection>;
+
+  @collectionManagerStore.Getter
+  public getCurrentCollection!: ContextualMemoryCollection;
+
+  @collectionManagerStore.Getter
+  public isUpdated!: number;
+
+  @collectionManagerStore.Getter
+  public getCurrentDocumentSet!: Array<string>;
+
+  @collectionManagerStore.Mutation
+  public setCurrentDocumentSet!: (payload: { docSet: Array<string> }) => void;
+
+  @collectionManagerStore.Action
+  public loadUserCollections!: (payload: { connectomeId: string; language: string }) => Promise<any>;
+
+  @collectionManagerStore.Action
+  public loadCurrentCollection!: (payload: { collectionId: string }) => Promise<any>;
+
+  @collectionManagerStore.Action
+  public loadDocumentsFromCollection!: (payload: { docIds: Array<string> }) => Promise<any>;
+
+  collectionCardItems: Array<documentCard> = new Array<documentCard>();
+
+  @Watch('getCurrentCollection')
+  onCurrentCollectionChange(newVal: ContextualMemoryCollection) {
+    console.log('onCurrentCollectionChange', newVal);
+    this.labelcontext = '';
+    if (!newVal.documentIdList) {
+      return;
+    }
+
+    //this.documentCardItems = [];
+
+    this.setCurrentDocumentSet({ docSet: newVal.documentIdList });
+    if (newVal && newVal.collectionId) {
+      this.labelcontext = newVal.collectionId;
+      const card = this.collectionCardItems.forEach(card => {
+        if (card.id === newVal.collectionId) {
+          card.isAdded = true;
+          card.style = 'background-color:Lime';
+        } else {
+          card.isAdded = false;
+          card.style = '';
+        }
+      });
+    }
+  }
+  labelcontext = '';
+
+  @Watch('getCurrentDocumentSet')
+  onCurrentDocumentSetChange(newVal: Array<string>) {
+    console.log('getCurrentDocumentSet', newVal);
+    if (!newVal) {
+      return;
+    }
+
+    this.documentCardItems = [];
+
+    if (newVal.length == 0) {
+      return;
+    }
+
+    this.loadDocumentsFromCollection({ docIds: newVal }).then(res => {
+      console.log('loadDocumentsFromCollection', res);
+      res.forEach(item => {
+        const card = new documentCard();
+
+        card.id = item.docId;
+        card.author = item.author;
+        card.type = item.type;
+        card.title = item.title;
+        card.content = item.contentSummary;
+        card.keyword = item.keyword;
+        card.addedAt = new Date(item.publishedAt);
+        card.modifiedAt = new Date(item.publishedAt);
+        if (this.getCurrentCollection && this.getCurrentCollection.documentIdList.indexOf(item.docId) > -1) {
+          console.log('loadDocumentFromContext inside');
+          this.loadDocumentFromContext({ connectomeId: this.connectomeId, documentId: item.docId, keyword: item.keyword }).then(res => {
+            console.log('loadDocumentFromContext', res);
+            if (!res) {
+              return;
+            }
+            card.isAdded = true;
+            card.style = 'background-color:' + this.getDocumentColors.get(card.id);
+          });
+        }
+        this.documentCardItems.push(card);
+      });
+      // console.log(res);
+    });
+  }
+
+  @Watch('getCollections')
+  onCollectionsChange(newVal: Array<ContextualMemoryCollection>) {
+    console.log('onCollectionsChange', newVal);
+    this.collectionCardItems = [];
+    newVal.forEach(item => {
+      const card = new documentCard();
+      card.id = item.collectionId;
+      card.author = 'collection';
+      card.type = 'COLLECTION';
+      card.title = item.collectionId;
+      card.content = item.documentIdList.length + ' documents included';
+      card.keyword = item.keywordList.join(',');
+      card.addedAt = null;
+      card.modifiedAt = null;
+      this.collectionCardItems.push(card);
+    });
+  }
+
+  @Watch('isUpdated')
+  onDataChange(newVal: number) {
+    console.log('onDataChange', newVal);
+    console.log('getCollections', this.getCollections);
+  }
 
   @connectomeBuilderStore.Getter
   public getSequenceNote!: number;
@@ -68,9 +178,13 @@ export default class BuilderMapSideBar extends mixins(ShowMoreMixin) {
     connectomeId: string;
     documentId: string;
     language: string;
+    keyword: string;
     title: string;
     content: string;
   }) => Promise<any>;
+
+  @connectomeBuilderStore.Action
+  public loadDocumentFromContext!: (payload: { connectomeId: string; documentId: string; keyword: string }) => Promise<any>;
 
   @connectomeBuilderStore.Action
   public removePdConnectomeData!: (payload: { id: string }) => Promise<any>;
@@ -103,22 +217,38 @@ export default class BuilderMapSideBar extends mixins(ShowMoreMixin) {
   mounted() {
     const userId = this.principalService().getUserInfo().id;
     const connectomeId = this.principalService().getConnectomeInfo().connectomeId;
-    this.cmpMinLinkedNodes = this.getMinLinkedNodes;
-    this.cmpMinNodeWeight = this.getMinNodeWeight;
-    this.cmpMinRelatedDocuments = this.getMinRelatedDocuments;
     this.connectomeId = connectomeId;
     this.userId = userId;
-    this.getPDApi();
+
+    this.loadUserCollections({ connectomeId: this.connectomeId, language: this.lang }).then(res => {
+      if (!res) {
+        return;
+      }
+    });
   }
 
   noteTitle: string = null;
   noteContent: string = null;
+  onOpenCollectionClick(card: documentCard) {
+    if (!card.id) return;
 
-  onBtnAddPersonalDocumentsToConnectomeClick(card: CardModel) {
+    this.loadCurrentCollection({ collectionId: card.id })
+      .then(res => {
+        if (!res) {
+          return;
+        }
+      })
+      .catch(reason => {
+        console.log('catch get mini connectome', reason);
+      });
+  }
+
+  onBtnAddPersonalDocumentsToConnectomeClick(card: documentCard) {
     this.addTextConnectomeData({
       connectomeId: this.connectomeId,
       documentId: card.id,
       language: this.lang,
+      keyword: card.keyword,
       title: card.title,
       content: card.content,
     })
@@ -164,38 +294,6 @@ export default class BuilderMapSideBar extends mixins(ShowMoreMixin) {
     //   });
   }
 
-  public scrollLoader() {
-    this.getPDApi();
-  }
-
-  public onScroll(event) {
-    console.log(event);
-  }
-  // public onScroll({ target: { scrollTop, clientHeight, scrollHeight } }) {
-  //   //console.log(event);
-  //   console.log(scrollTop,clientHeight,scrollHeight);
-  //   if (scrollTop + clientHeight >= scrollHeight) {
-  //     this.getPDApi();
-  //   }
-  // }
-
-  public onMore(event) {
-    //console.log(event);
-    this.getPDApi();
-  }
-
-  onBtnSidebarFoldingClick(event) {
-    event.preventDefault();
-    console.log('onBtnSidebarFoldingClick', $(this));
-    $('#btn-sidebar-folding').toggleClass('active');
-    $('.connectome-home').toggleClass('active');
-  }
-
-  onBtnPanelSubCloseClick(event) {
-    event.preventDefault();
-    this.panelSub = 'panel-sub';
-  }
-
   onMouseOverDocumentCard(event) {
     //console.log('test mouse hver');
   }
@@ -210,159 +308,6 @@ export default class BuilderMapSideBar extends mixins(ShowMoreMixin) {
       solid: true,
       autoHideDelay: 5000,
     });
-  }
-
-  private page = 0;
-  private size = 50;
-  private totalFeeds = 0;
-  private sortDirection = 'desc';
-  private loaderDisable = false;
-
-  private listFilter = [{ field: 'liked', value: 1 }];
-
-  private totalItems = 0;
-
-  getPDApi() {
-    const connectomeId = JSON.parse(localStorage.getItem('ds-connectome')).connectomeId;
-
-    axios
-      .get(`/api/personal-documents/getListDocuments/${connectomeId}`, {
-        params: {
-          page: this.page,
-          size: this.size,
-          uploadType: '',
-          isDelete: 0,
-        },
-      })
-      .then(res => {
-        res.data.results.length < this.size ? (this.loaderDisable = true) : (this.page += 1);
-        if (this.totalItems != res.data.totalItems) {
-          this.totalFeeds = res.data.totalItems;
-        }
-        res.data.results.forEach(item => {
-          const card = new documentCard();
-
-          card.id = item.docId;
-          card.author = item.author;
-          card.type = item.type;
-          card.title = item.title;
-          card.content = item.contentSummary;
-          card.keyword = item.keyword;
-          card.addedAt = new Date(item.publishedAt);
-          card.modifiedAt = new Date(item.publishedAt);
-          this.documentCardItems.push(card);
-        });
-        console.log(res);
-      });
-  }
-
-  // addNote() {
-  //   if (!this.noteTitle && !this.noteContent) {
-  //     return;
-  //   }
-  //   const noteId = 'note_' + this.getSequenceNote;
-  //   const uniqueId = this.getSequenceNote;
-  //   this.incrementSequenceNote();
-  //   const now = new Date();
-  //   const card = new documentCard();
-
-  //   card.id = noteId;
-  //   card.author = 'Me';
-  //   card.type = 'Note';
-  //   card.title = this.noteTitle;
-  //   card.content = this.noteContent;
-  //   card.keyword = null;
-  //   card.addedAt = now;
-  //   card.modifiedAt = now;
-  //   this.documentCardItems.unshift(card);
-  //   this.noteTitle = null;
-  //   this.noteContent = null;
-  // }
-
-  // getData() {
-  //   const connectomeId = JSON.parse(localStorage.getItem('ds-connectome')).connectomeId;
-
-  //   // .get(`/api/personal-documents/getListDocuments/${connectomeId}`, {
-  //   //   params: {
-  //   //     page: this.page,
-  //   //     size: this.size,
-  //   //     uploadType: '',
-  //   //     isDelete: 0,
-  //   //   },
-  //   // })
-
-  //   const nowPlus = new Date();
-  //   //console.log(nowPlus);
-  //   nowPlus.setDate(nowPlus.getDate() + 1);
-  //   //console.log(nowPlus.getMonth());
-  //   //console.log(('0' + nowPlus.getMonth()).slice(-2));
-  //   const yearBefore = new Date();
-  //   yearBefore.setFullYear(yearBefore.getFullYear() - 1);
-
-  //   axios
-  //     .get(`https://deepsignal.ai/api/user-activity-log/getTrainingDocuments/${connectomeId}`, {
-  //       params: {
-  //         type: 'all',
-  //         from:
-  //           yearBefore.getFullYear() + '-' + ('0' + (yearBefore.getMonth() + 1)).slice(-2) + '-' + ('0' + yearBefore.getDate()).slice(-2),
-  //         to: nowPlus.getFullYear() + '-' + ('0' + (nowPlus.getMonth() + 1)).slice(-2) + '-' + ('0' + nowPlus.getDate()).slice(-2),
-  //       },
-  //     })
-  //     .then(res => {
-  //       console.log(res);
-  //       //try to convert data
-  //       res.data.forEach(item => {
-  //         console.log('item', item);
-  //         const pdId = 'pd_' + this.getSequenceNote;
-  //         this.incrementSequenceNote();
-  //         const metadata = new documentMetadataPlus();
-  //         metadata.author = item.author;
-  //         metadata.type = item.type;
-  //         metadata.name = item.name;
-  //         metadata.description = item.description;
-  //         metadata.keyword = item.keyword;
-  //         metadata.url = item.url;
-  //         metadata.type = item.type;
-  //         metadata.datetime = item.datetime;
-  //         this.documentMetadataPlusItems.push(metadata);
-  //       });
-  //       console.log('pd results', this.documentMetadataPlusItems);
-  //       this.getPDApi();
-  //     });
-  // }
-
-  cmpMinNodeWeight = 0;
-  cmpMinRelatedDocuments = 0;
-  cmpMinLinkedNodes = 0;
-
-  networkFiltersOnChange() {
-    this.updateMinLinkedNodes(this.cmpMinLinkedNodes).then(res => {
-      this.cmpMinLinkedNodes = res;
-    });
-    this.updateMinNodeWeight(this.cmpMinNodeWeight).then(res => {
-      this.cmpMinNodeWeight = res;
-    });
-    this.updateMinRelatedDocuments(this.cmpMinRelatedDocuments).then(res => {
-      this.cmpMinRelatedDocuments = res;
-    });
-    this.setDataUpdate();
-  }
-
-  handleActivity(item, activity) {}
-
-  onSearchInput(event) {
-    //console.log('filterTerms', this.filterTerms);
-    let entitiesMatched: Array<documentCard> = [];
-    if (event.target.value) {
-      const regOption = new RegExp(event.target.value, 'ig');
-      entitiesMatched = this.documentCardItems
-        .filter(card => card.title.match(regOption) || card.content.match(regOption) || card.author.match(regOption))
-        .map(x => x);
-    } else {
-      entitiesMatched = this.documentCardItems.map(x => x);
-    }
-    //this.setSearchResultList(entitiesMatched);
-    //}
   }
 
   convertGMTToLocalTime(dateToConvert: string) {

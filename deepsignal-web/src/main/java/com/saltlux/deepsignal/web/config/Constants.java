@@ -26,6 +26,10 @@ public final class Constants {
     public static final String GET_CONNECTOMES_URI = "/connectomes";
     public static final String POST_MINI_CONNECTOMES_URI = "/connectomes/training/instant/ids";
     public static final String POST_TEXT_CONNECTOME_URI = "/connectomes/training/instant/text/pageRank";
+    public static final String POST_CONTEXTUAL_MEMORY_GET_COLLECTION_ID_URI = "/contextualMemory/getCollectionId";
+    public static final String GET_CONTEXTUAL_MEMORY_GET_LIST_COLLECTION_URI = "/contextualMemory/ctxmmList";
+    public static final String PUT_CONTEXTUAL_MEMORY_UPSERT_URI = "/contextualMemory/upsert";
+    public static final String GET_CONTEXTUAL_MEMORY_GET_COLLECTION_URI = "/contextualMemory/getCollection";
     public static final String PATCH_DISABLE_ENTITY_URI = "/vertex/toggle/disable";
     public static final String PATCH_FAVORITE_ENTITY_URI = "/vertex/toggle/favorite";
     public static final String GET_CONNECTOMES_STATUS_URI = "/status";
@@ -265,4 +269,16 @@ public final class Constants {
     }
 
     private Constants() {}
+
+    public static class SearchFileType {
+
+        public static final String PDF = "pdf";
+        public static final String PPT = "ppt";
+        public static final String DOC = "doc";
+        public static final String PPTX = "pptx";
+        public static final String DOCX = "docx";
+        public static final String XLS = "xls";
+        public static final String XLSX = "xlsx";
+        public static final String[] FILETYPE = { "pdf", "ppt", "pptx", "doc", "docx", "xls", "xlsx" };
+    }
 }

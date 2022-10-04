@@ -174,4 +174,19 @@ public class PublicResource {
         //        }
         messagingTemplate.convertAndSend("/topic/updateFeed", new RabbitmqConsumer.WebLoggingReceiver(connectomeId, date));
     }
+
+    @PostMapping("/previewByUrl-v2")
+    @Operation(summary = "Get the location by Ip Address", tags = { "Public Resource Management" })
+    @UserActivity(activityName = Constants.UserActivities.PREVIEW_URL)
+    public ResponseEntity<?> previewByUrlV2(
+        @RequestBody String url,
+        @RequestParam(value = "connectomeId", required = false) String connectomeId
+    ) {
+        try {
+            return ResponseEntity.ok().body(learningService.previewByUrl(url));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().body(null);
+        }
+    }
 }

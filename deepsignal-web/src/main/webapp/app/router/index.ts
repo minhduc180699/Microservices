@@ -17,6 +17,7 @@ const DsIntelligence = () => import('@/core/home/intelligence/ds-intelligence.vu
 const Error = () => import('@/core/error/error.vue');
 const qrCodeCheck = () => import('@/qrCode/qrCodeCheck.vue');
 const Notifications = () => import('@/core/notification/notifications/notifications.vue');
+const RedirectComponent = () => import('@/core/redirect/redirect.vue');
 import account from '@/router/account';
 import admin from '@/router/admin';
 import entities from '@/router/entities';
@@ -106,6 +107,12 @@ export default new Router({
       path: '/qrCodeCheck',
       name: 'QrCodeCheck',
       component: qrCodeCheck,
+    },
+    {
+      path: '/deepsignal/:shortUrl',
+      name: 'RedirectComponent',
+      props: true,
+      component: RedirectComponent,
     },
     ...account,
     ...admin,

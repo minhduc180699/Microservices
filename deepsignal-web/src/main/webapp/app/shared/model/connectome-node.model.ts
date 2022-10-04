@@ -5,6 +5,7 @@ export class ConnectomeNode {
   label: string = null;
   weight = 0;
   relatedDocuments: Array<string> = [];
+  keywordList: Array<string> = [];
   linkedNodes: Array<string> = [];
   favorite = false;
   disable = false;
@@ -14,6 +15,7 @@ export class ConnectomeNode {
       this.id = element.id;
       this.label = element.label;
       this.relatedDocuments = element.relatedDocuments?.map(x => x);
+      if (element.keywordList) this.keywordList = element.keywordList?.map(x => x);
       this.linkedNodes = element.linkedNodes?.map(x => x);
       this.weight = element.weight;
     }
