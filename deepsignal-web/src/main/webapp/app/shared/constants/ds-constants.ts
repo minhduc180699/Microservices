@@ -224,3 +224,5 @@ export const CHART_STOCK_STYLE = {
   LIST: 'View by list',
   CHART: 'View by chart',
 };
+
+export const COLLECTION_SERVER = 'http://192.168.9.181:8081/';
