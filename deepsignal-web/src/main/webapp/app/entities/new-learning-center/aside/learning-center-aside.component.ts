@@ -1,11 +1,17 @@
-import {Vue, Component, Watch} from 'vue-property-decorator';
+import { Vue, Component, Watch } from 'vue-property-decorator';
 import vueCustomScrollbar from 'vue-custom-scrollbar';
-import axios from "axios";
-import {COLLECTION_SERVER} from "@/shared/constants/ds-constants";
+import axios from 'axios';
+import { COLLECTION_SERVER } from '@/shared/constants/ds-constants';
+import listCardGroup from '@/entities/new-learning-center/aside/list-card-group/list-card-group.vue';
+import singleCard from '@/entities/new-learning-center/aside/single-card/single-card.vue';
+import groupCard from '@/entities/new-learning-center/aside/group-card/group-card.vue';
 
 @Component({
   components: {
     vueCustomScrollbar: vueCustomScrollbar,
+    listCard: listCardGroup,
+    singleCard: singleCard,
+    groupCard: groupCard,
   },
 })
 export default class LearningCenterAsideComponent extends Vue {
@@ -15,10 +21,14 @@ export default class LearningCenterAsideComponent extends Vue {
     wheelPropagation: false,
   };
 
+  private showList = false;
+  private loading = false;
+  private listData = [];
+
   data() {
     return {
       collections: this.collections,
-    }
+    };
   }
 
   @Watch('collections')
@@ -31,33 +41,6 @@ export default class LearningCenterAsideComponent extends Vue {
         });
       }
     });
-
-    // axios
-    //   .post(COLLECTION_SERVER + 'api/personal-documents/getByDocIds', documents)
-    //   .then( res => {
-    //       if (res?.data?.connectomePersonalDocuments) {
-    //         this.collections.forEach(collection => {
-    //           for (let document of res.data.connectomePersonalDocuments) {
-    //             // debugger;
-    //             const item = collection?.documentList.find(item => item?.docId == document?.docId);
-    //             if (collection?.documentList?.length > 0 && item) {
-    //               const image = document.ogImageUrl
-    //                 || document.ogImageBase64
-    //                 || (document.imageUrl && document.imageUrl[0])
-    //                 || (document.imageBase64 && document.imageBase64[0])
-    //                 || '';
-    //
-    //               collection.documentList = [];
-    //               collection.documentList.push({
-    //                 docId: document.docId,
-    //                 image: image,
-    //               });
-    //             }
-    //           }
-    //         })
-    //       }
-    //     }
-    //   );
   }
 
   created(): void {
@@ -67,11 +50,27 @@ export default class LearningCenterAsideComponent extends Vue {
     axios
       .get(COLLECTION_SERVER + 'api/connectome/collection/get/all', {
         headers: {
-          'connectomeId': connectomeId ? connectomeId : null,
-        }
+          connectomeId: connectomeId ? connectomeId : null,
+        },
       })
       .then(res => {
         this.collections = res.data?.body;
-      })
+        for (let i = 0; i < this.collections.length; i++) {
+          if (this.collections[i].documentIdList.length == 0) {
+            this.collections.splice(i, 1);
+            i--;
+          }
+        }
+        console.log('collections', this.collections);
+      });
+  }
+
+  backToList() {
+    this.showList = false;
+  }
+
+  showListGroupCard(data) {
+    this.showList = true;
+    this.listData = data;
   }
 }

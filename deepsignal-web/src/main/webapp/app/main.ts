@@ -65,6 +65,7 @@ import { SignalService } from '@/service/signal.service';
 import { CacheService } from '@/service/cache.service';
 import { DetailFeedService } from '@/service/detail-feed.service';
 import { UserSettingService } from '@/service/usersetting.service';
+import { asideService } from '@/entities/new-learning-center/aside/aside-service/aside.service';
 import VueToggles from 'vue-toggles';
 /* tslint:disable */
 
@@ -271,6 +272,7 @@ new Vue({
     learnedDocumentService: () => new LearnedDocumentService(),
     detailFeedService: () => new DetailFeedService(),
     userSettingService: () => new UserSettingService(),
+    asideService: () => new asideService(),
   },
   i18n,
   store,
