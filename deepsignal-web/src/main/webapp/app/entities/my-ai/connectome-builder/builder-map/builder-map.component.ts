@@ -82,32 +82,15 @@ export default class BuilderMap extends Vue {
   @collectionManagerStore.Getter
   public getCurrentCollection!: ContextualMemoryCollection;
 
-  @connectomeBuilderStore.Mutation
-  public setConnectome!: (payload: { connectome: Array<ConnectomeNode> }) => void;
-
   @collectionManagerStore.Action
   public updateCollection!: (payload: { collection: ContextualMemoryCollection }) => Promise<any>;
+
+  @collectionManagerStore.Action
+  public createCollection!: (payload: { connectomeId: string; language: string }) => Promise<any>;
 
   @Watch('getDocumentsSelected')
   onGetDocumentsSelectedChanged(data: Map<string, Array<ConnectomeNode>>) {
     console.log('onGetDocumentsSelectedChanged', data);
-  }
-
-  @Watch('getCurrentCollection')
-  onCurrentCollectionChanged(newValue: ContextualMemoryCollection) {
-    console.log('onCurrentCollectionChanged', newValue);
-
-    if (!newValue) {
-      this.setConnectome({ connectome: [] });
-      return;
-    }
-
-    if (!newValue.connectomeNodeList) {
-      this.setConnectome({ connectome: [] });
-      return;
-    }
-
-    this.setConnectome({ connectome: newValue.connectomeNodeList });
   }
 
   @Watch('getDataUpdated')
@@ -115,9 +98,11 @@ export default class BuilderMap extends Vue {
     console.log('onDataChanged', data);
     this.updateNetworkMap();
   }
-
-  @Watch('getNodes')
-  onGetNodesChanged(data: any) {}
+  localNodes: Array<ConnectomeNode> = [];
+  @Watch('getConnectome')
+  onGetNodesChanged(data: Array<ConnectomeNode>) {
+    this.localNodes = this.getNodes.map(x => x);
+  }
 
   calculateCanvasSize() {
     this.width = Math.max($('.connectome-area').width(), 350);
@@ -171,7 +156,7 @@ export default class BuilderMap extends Vue {
   private arrayDiff(a: Array<any>, b: Array<any>) {
     return [...a.filter(x => !b.includes(x)), ...b.filter(x => !a.includes(x))];
   }
-  localNodes: Array<ConnectomeNode> = [];
+
   updateNetworkMap() {
     // if (!this.getDocumentsSelected || this.getDocumentsSelected.size < 1) {
     //   this.displayDummyChart(true);
@@ -180,8 +165,9 @@ export default class BuilderMap extends Vue {
     //   this.displayDummyChart(false);
     // }
     if (this.graph && this.getNodes && this.getLinks) {
-      console.log('MOUNTED: links ', this.getLinks);
-      console.log('MOUNTED: Total after ', this.getNodes.length);
+      // console.log('MOUNTED: links ', this.getLinks);
+      //console.log('MOUNTED: Total after ', this.getNodes);
+      //console.log('MOUNTED: connectome ', this.getConnectome);
       //console.log(nodes);
       // if (this.entityLabelSelected) {
       //   const vertex = this.vertice(this.entityLabelSelected);
@@ -196,7 +182,7 @@ export default class BuilderMap extends Vue {
       this.isUserStartInteract = false;
       //this.displayDummyChart(true);
       //return;
-      this.localNodes = this.getNodes.map(x => x);
+
       this.graph
         .graphData({ nodes: this.getNodes, links: this.getLinks })
         .backgroundColor(MAP_BACKGROUND_COLOR)
@@ -276,7 +262,7 @@ export default class BuilderMap extends Vue {
     if (!node.label) return;
 
     const label = node.label;
-    const fontSize = this.getFontSize(node);
+    let fontSize = this.getFontSize(node);
     const textWidth = ctx.measureText(label).width;
     const bckgDimensions = [textWidth, fontSize].map(n => n + fontSize * 0.2); // some padding
 
@@ -298,34 +284,18 @@ export default class BuilderMap extends Vue {
     ctx.strokeStyle = FONTCOLOR_NODE_IN_MAP.COMMON_STROKE;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    if (globalScale >= 0.1 || node.linkedNodes.length > 5) {
-      ctx.font = `${fontSize}px Sans-Serif`;
-      ctx.strokeText(label, node.x, node.y - size - 5);
-      ctx.fillText(label, node.x, node.y - size - 5);
-      node.__bckgDimensions = bckgDimensions;
-    } else if (node.linkedNodes.length < 2) {
-      if (globalScale >= 0.08) {
-        fontSize = this.getFontSize(node) / (globalScale * 2);
-        ctx.font = `${fontSize}px Sans-Serif`;
-        ctx.strokeText(label, node.x, node.y - size - 5);
-        ctx.fillText(label, node.x, node.y - size - 5);
-        node.__bckgDimensions = bckgDimensions;
-      } else {
-        if (globalScale >= 0.05) {
-          fontSize = this.getFontSize(node) / (globalScale * 3);
-          ctx.font = `${fontSize}px Sans-Serif`;
-          ctx.strokeText(label, node.x, node.y - size - 5);
-          ctx.fillText(label, node.x, node.y - size - 5);
-          node.__bckgDimensions = bckgDimensions;
-        }
-      }
-    }
+    /// (globalScale)
+    fontSize = this.getFontSize(node);
+    ctx.font = `${fontSize}px sans-serif`;
+    //console.log(fontSize);
+    ctx.strokeText(label, node.x, node.y - size - 5);
+    ctx.fillText(label, node.x, node.y - size - 5);
+    node.__bckgDimensions = bckgDimensions;
+
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.strokeText(node.id, node.x, node.y - size / 2 - 5);
-    ctx.fillText(node.id, node.x, node.y - size / 2 - 5);
+    // ctx.strokeText(node.id, node.x, node.y - size / 2 - 5);
+    // ctx.fillText(node.id, node.x, node.y - size / 2 - 5);
     ctx.strokeText(this.localNodes.indexOf(node) + 1, node.x, node.y);
     ctx.fillText(this.localNodes.indexOf(node) + 1, node.x, node.y);
     ctx.closePath();
@@ -350,14 +320,14 @@ export default class BuilderMap extends Vue {
 
   private getFontSize(node: ConnectomeNode): number | undefined {
     if (!node) {
-      return 12;
+      return 18;
     }
 
     if (!node.linkedNodes) {
-      return 12;
+      return 18;
     }
 
-    const size = 12 + node.weight;
+    const size = 22 + ((this.localNodes.length - this.localNodes.indexOf(node)) / this.localNodes.length) * 12;
 
     return size;
   }
@@ -634,8 +604,12 @@ export default class BuilderMap extends Vue {
     this.setDataUpdate();
   }
   //#endregion
-
-  SaveContext() {
+  createEmptyContext() {
+    this.createCollection({ connectomeId: this.connectomeId, language: this.lang }).then(res => {
+      console.log('createEmptyCollection', res);
+    });
+  }
+  saveContext() {
     const newContextToSave: ContextualMemoryCollection = this.getCurrentCollection;
     newContextToSave.connectomeNodeList = this.getConnectome.map(x => x);
     const docSet: Set<string> = new Set<string>();

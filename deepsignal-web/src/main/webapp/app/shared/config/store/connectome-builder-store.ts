@@ -93,7 +93,8 @@ export const connectomeBuilderStore: Module<ConnectomeBuilderStorable, any> = {
           node =>
             node.weight >= state.minNodeWeight &&
             node.linkedNodes.length >= state.minLinkedNodes &&
-            node.relatedDocuments.length >= state.minRelatedDocuments
+            node.relatedDocuments.length >= state.minRelatedDocuments &&
+            !node.disable
         )
         .sort((a, b) => (a.weight > b.weight ? -1 : 1)),
     getLinks: (state, getters) => {
@@ -110,10 +111,6 @@ export const connectomeBuilderStore: Module<ConnectomeBuilderStorable, any> = {
 
       getters.getNodes.forEach(node => {
         if (node.linkedNodes) {
-          let nodesMatched: Array<ConnectomeNode> = [];
-          const regOption = new RegExp(node.label, 'ig');
-          nodesMatched = getters.getNodes.filter(vertex => vertex.label.match(regOption));
-
           node.linkedNodes.forEach(linkedNode => {
             const child = getters.getNodes.findIndex(x => x.id === linkedNode);
             if (child == -1) {
@@ -165,13 +162,13 @@ export const connectomeBuilderStore: Module<ConnectomeBuilderStorable, any> = {
         const node = state.connectome.find(elem => elem.id === element.id);
         if (node) {
           if (node.relatedDocuments && node.relatedDocuments.length > 0) {
-            node.weight = node.weight / node.relatedDocuments.length + element.weight;
+            node.weight = node.weight / (node.relatedDocuments.length * node.relatedDocuments.length) + element.weight;
           } else {
             node.weight = element.weight;
           }
           node.relatedDocuments.push(PdData.docId);
           node.keywordList.push(...element.keywordList);
-          node.weight = node.weight * node.relatedDocuments.length;
+          node.weight = node.weight * (node.relatedDocuments.length * node.relatedDocuments.length);
           node.linkedNodes.push(...element.linkedNodes);
         } else {
           state.connectome.push(new ConnectomeNode(element));
@@ -238,16 +235,16 @@ export const connectomeBuilderStore: Module<ConnectomeBuilderStorable, any> = {
       if (!connectomeToRemove) {
         return;
       }
-      // console.log('connectome to remove', connectomeToRemove);
+      console.log('connectome to remove', connectomeToRemove);
       //const tmpConnectome = state.connectome.map(x => x);
       connectomeToRemove.forEach(element => {
         const node = state.connectome.find(elem => elem.id === element.id);
         if (node) {
           const indexDocId = node.relatedDocuments.indexOf(PdData.docId);
           if (indexDocId > -1) {
-            node.weight = node.weight / node.relatedDocuments.length - element.weight;
+            node.weight = node.weight / (node.relatedDocuments.length * node.relatedDocuments.length) - element.weight;
             node.relatedDocuments.splice(indexDocId, 1);
-            node.weight = node.weight * node.relatedDocuments.length;
+            node.weight = node.weight * node.relatedDocuments.length * node.relatedDocuments.length;
             element.linkedNodes.forEach(linkedNode => {
               const indexNodeToRemove = node.linkedNodes.indexOf(linkedNode);
               if (indexNodeToRemove > -1) {
@@ -362,100 +359,57 @@ export const connectomeBuilderStore: Module<ConnectomeBuilderStorable, any> = {
       state.connectome = payload.connectome.map(x => new ConnectomeNode(x));
       state.dataUpdated++;
     },
-    resetData(state) {},
+    disableOrphans(state) {
+      console.log('disableOrphans');
+      state.connectome.forEach(node => {
+        if (!node.linkedNodes) {
+          return;
+        }
+        const linkedNodeSet = new Set<string>();
+        node.linkedNodes.forEach(docId => {
+          linkedNodeSet.add(docId);
+        });
+
+        if (linkedNodeSet.size < 1) {
+          console.log('node is disabled:' + node.label);
+          node.disable = true;
+        } else if (linkedNodeSet.size == 1) {
+          console.log('candidate to disable:' + node.label + ':' + linkedNodeSet.values().next().value);
+          const regOption = new RegExp(node.label.toLowerCase(), 'ig');
+          const targetNodes = state.connectome.filter(target => target.id === linkedNodeSet.values().next().value);
+          console.log('target node:', targetNodes);
+          if (targetNodes && targetNodes.length == 1) {
+            if (targetNodes[0].label.toLowerCase().match(regOption)) {
+              console.log('node is disabled1:' + node.label);
+              node.disable = true;
+            } else if (targetNodes[0].label.toLowerCase().includes(node.label.toLowerCase())) {
+              console.log('node is disabled2:' + node.label);
+              node.disable = true;
+            } else {
+              node.disable = false;
+            }
+          } else {
+            node.disable = false;
+          }
+        } else {
+          node.disable = false;
+        }
+      });
+    },
+    resetConnectomeBuilderData(state) {
+      state.documentsSelected = new Map<string, Array<ConnectomeNode>>();
+      state.documentColors = new Map<string, string>();
+      state.connectome = new Array<ConnectomeNode>();
+      state.dataUpdated = 0;
+      state.minNodeWeight = 0;
+      state.minLinkedNodes = 0;
+      state.minRelatedDocuments = 0;
+      state.noteSequence = 0;
+      state.colorSequence = 0;
+      console.log('connectome builder reset');
+    },
   },
   actions: {
-    addPdConnectomeData: async (
-      context,
-      payload: {
-        connectomeId: string;
-        language: string;
-        ids: Array<string>;
-      }
-    ) => {
-      let language = 'en';
-      if (payload.language) {
-        switch (payload.language.toLowerCase()) {
-          case 'en':
-          case 'english':
-          case 'uk':
-          case 'us':
-            language = 'en';
-            break;
-          case 'kr':
-          case 'ko':
-          case 'korea':
-          case 'korean':
-          case 'south korea':
-          case '한국어':
-            language = 'ko';
-            break;
-          default:
-            language = 'en';
-        }
-      }
-      console.log('mini getPdConnectome', {
-        sourceLang: language,
-        ids: payload.ids,
-      });
-
-      if (!payload.ids) {
-        return;
-      }
-
-      if (payload.ids.length == 0) {
-        return;
-      }
-
-      let shouldContinue = true;
-
-      payload.ids.forEach(element => {
-        if (!element) {
-          shouldContinue = false;
-        }
-      });
-
-      if (!shouldContinue) {
-        return;
-      }
-
-      if (context.getters.getDocumentsSelected.has(payload.ids[0])) {
-        context.commit('removePd', { docId: payload.ids[0] });
-        context.commit('removePdColor', { docId: payload.ids[0] });
-        return;
-      }
-
-      const apiCallConnectomeData = new Promise<any>((resolve, reject) => {
-        axios
-          .post(getDocGraphUrl, {
-            connectomeId: payload.connectomeId,
-            documentIds: payload.ids,
-          })
-          .then(res => resolve(res))
-          .catch(err => reject(err));
-      });
-
-      return apiCallConnectomeData
-        .then(res => {
-          if (!res.data.body) {
-            return;
-          }
-          const response = res.data.body;
-          console.log('getPdConnectomeData', response);
-
-          context.commit('addPd', { docId: response.id, connectome: response.connectome });
-          context.commit('addPdColor', { docId: response.id });
-          return res;
-        })
-        .catch(reason => {
-          console.log('Reason', reason);
-          console.log('Reason mini getMiniConnectomeData', {
-            sourceLang: language,
-            feedIds: payload.ids,
-          });
-        })
-        .finally(() => {});
-    },
     addTextConnectomeData: async (
       context,
       payload: {
@@ -510,6 +464,7 @@ export const connectomeBuilderStore: Module<ConnectomeBuilderStorable, any> = {
         console.log('remove Pd' + docId);
         context.commit('removePd', { docId: docId });
         context.commit('removePdColor', { docId: docId });
+        context.commit('disableOrphans');
         return { documentIds: [docId], connectome: [] };
       }
 
@@ -537,6 +492,7 @@ export const connectomeBuilderStore: Module<ConnectomeBuilderStorable, any> = {
             });
             context.commit('addPd', { docId: element, keyword: payload.keyword, connectome: response.connectome });
             context.commit('addPdColor', { docId: element });
+            context.commit('disableOrphans');
           });
 
           return response;
@@ -591,7 +547,7 @@ export const connectomeBuilderStore: Module<ConnectomeBuilderStorable, any> = {
               element.keywordList = new Array<string>();
               if (payload.keyword) {
                 element.keywordList.push(payload.keyword);
-                console.log('loadDocumentFromContext element.keywordList', element.keywordList);
+                //console.log('loadDocumentFromContext element.keywordList', element.keywordList);
               }
             });
             context.commit('addPdList', { docId: element, keyword: payload.keyword, connectome: response.connectome });

@@ -1,15 +1,21 @@
 <template>
   <div class="asset-panel">
-    <div style="height: 40%; padding-bottom: 10px">
+    <div style="padding-bottom: 10px">
       <div>
         <span class="total" v-text="'collections:' + collectionCardItems.length"></span>
       </div>
       <div class="list-scrollable">
         <ul id="listCollections">
           <li v-for="card in collectionCardItems" :key="card.id">
-            <b-card :style="card.style" v-on:click="onOpenCollectionClick(card)">
+            <b-card
+              :style="card.style"
+              border-variant="warning"
+              header-bg-variant="warning"
+              header="warning"
+              v-on:click="onOpenCollectionClick(card)"
+            >
               <template #header>
-                <b-card-text>{{ card.Type }}</b-card-text>
+                <b-card-text>{{ card.type }}</b-card-text>
               </template>
               <b-card-body>
                 <b-card-sub-title class="mb-2">{{ card.title }}</b-card-sub-title>
@@ -23,7 +29,7 @@
         </ul>
       </div>
     </div>
-    <div style="height: 60%">
+    <div>
       <div>
         <span class="total" v-text="'context:' + labelcontext"></span>
       </div>
@@ -46,6 +52,29 @@
                 <b-card-text class="small text-muted">{{ convertGMTToLocalTime(card.addedAt) }}</b-card-text>
               </b-card-body>
             </b-card>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div>
+      <div>
+        <span class="total" v-text="'Nodes:' + getNodes.length"></span>
+      </div>
+      <div class="list-scrollable">
+        <ul id="listNodes">
+          <li v-for="node in getNodes" :key="node.id">
+            <b-icon
+              v-for="(docId, index) in node.relatedDocuments"
+              :key="index"
+              :style="'color:' + getDocumentColors.get(docId)"
+              icon="circle-fill"
+            />
+            <label>|</label>
+            <label>{{ localNodes.indexOf(node) + 1 }}</label>
+            <label>|</label>
+            <label>{{ node.label }}</label>
+            <label>|</label>
+            <label>{{ Math.round(node.weight * 1000) / 1000 }}</label>
           </li>
         </ul>
       </div>

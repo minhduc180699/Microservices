@@ -61,7 +61,8 @@ export interface CollectionManagerStorable {
   indexSessionStorage: Map<string, string>;
   collections: Array<ContextualMemoryCollection>;
   currentCollection: ContextualMemoryCollection;
-  currentDocumentSet: Array<string>;
+  currentDocumentSet: Set<string>;
+  currentDocumentSetUpdated: number;
   dataUpdated: number;
 }
 
@@ -71,7 +72,8 @@ export const collectionManagerStore: Module<CollectionManagerStorable, any> = {
     indexSessionStorage: new Map<string, string>(),
     collections: new Array<ContextualMemoryCollection>(),
     currentCollection: new ContextualMemoryCollection(null),
-    currentDocumentSet: new Array<string>(),
+    currentDocumentSet: new Set<string>(),
+    currentDocumentSetUpdated: 0,
     dataUpdated: 0,
   },
   getters: {
@@ -79,6 +81,7 @@ export const collectionManagerStore: Module<CollectionManagerStorable, any> = {
     getCollections: state => state.collections,
     getCurrentCollection: state => state.currentCollection,
     getCurrentDocumentSet: state => state.currentDocumentSet,
+    isCurrentDocumentSetUpdated: state => state.currentDocumentSetUpdated,
     isUpdated: state => state.dataUpdated,
   },
   mutations: {
@@ -98,17 +101,54 @@ export const collectionManagerStore: Module<CollectionManagerStorable, any> = {
       state.dataUpdated++;
     },
     setCurrentDocumentSet(state, payload: { docSet: Array<string> }) {
+      state.currentDocumentSet = new Set<string>();
       if (!payload.docSet) {
-        state.currentDocumentSet = new Array<string>();
+        state.currentDocumentSetUpdated++;
         state.dataUpdated++;
         return;
       }
       if (payload.docSet.length == 0) {
-        state.currentDocumentSet = new Array<string>();
+        state.currentDocumentSetUpdated++;
         state.dataUpdated++;
         return;
       }
-      state.currentDocumentSet = payload.docSet.map(x => x);
+
+      payload.docSet.forEach(docId => {
+        state.currentDocumentSet.add(docId);
+      });
+      state.currentDocumentSetUpdated++;
+      state.dataUpdated++;
+    },
+    AddToCurrentDocumentSet(state, payload: { docToAdd: Array<string> }) {
+      console.log('AddToCurrentDocumentSet', payload);
+      if (!payload.docToAdd) {
+        return;
+      }
+      if (payload.docToAdd.length == 0) {
+        return;
+      }
+
+      payload.docToAdd.forEach(docId => {
+        state.currentDocumentSet.add(docId);
+      });
+      state.currentDocumentSetUpdated++;
+      state.dataUpdated++;
+    },
+    RemoveFromCurrentDocumentSet(state, payload: { docToRemove: Array<string> }) {
+      console.log('RemoveFromCurrentDocumentSet', payload);
+      if (!payload.docToRemove) {
+        return;
+      }
+      if (payload.docToRemove.length == 0) {
+        return;
+      }
+
+      payload.docToRemove.forEach(docId => {
+        if (state.currentDocumentSet.has(docId)) {
+          state.currentDocumentSet.delete(docId);
+        }
+      });
+      state.currentDocumentSetUpdated++;
       state.dataUpdated++;
     },
     resetData(state) {},
@@ -304,28 +344,6 @@ export const collectionManagerStore: Module<CollectionManagerStorable, any> = {
           console.log('Reason mini getMiniConnectomeData', payload);
         })
         .finally(() => {});
-    },
-    AddToCurrentDocumentSet(
-      context,
-      payload: {
-        docToAdd: Array<string>;
-      }
-    ) {
-      if (!payload.docToAdd) {
-        return;
-      }
-      if (payload.docToAdd.length == 0) {
-        return;
-      }
-      const newDocSet = context.getters.getCurrentDocumentSet.map(x => x);
-      payload.docToAdd.forEach(item => {
-        const indexDoc = context.getters.getCurrentDocumentSet.indexOf(item);
-        if (indexDoc == -1) {
-          newDocSet.push(item);
-        }
-      });
-      console.log('AddToCurrentDocumentSet', newDocSet);
-      context.commit('setCurrentDocumentSet', { docSet: newDocSet });
     },
     updateCollection: async (
       context,

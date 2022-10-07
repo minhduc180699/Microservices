@@ -42,11 +42,20 @@ export default class BuilderMapAddDocumentsTool extends mixins(ShowMoreMixin) {
   @collectionManagerStore.Getter
   public getCurrentCollection!: ContextualMemoryCollection;
 
-  @collectionManagerStore.Action
+  @collectionManagerStore.Getter
+  public getCurrentDocumentSet!: Set<string>;
+
+  @collectionManagerStore.Mutation
   public AddToCurrentDocumentSet!: (payload: { docToAdd: Array<string> }) => void;
+
+  @collectionManagerStore.Mutation
+  public RemoveFromCurrentDocumentSet!: (payload: { docToRemove: Array<string> }) => void;
 
   @collectionManagerStore.Action
   public createCollection!: (payload: { connectomeId: string; language: string }) => Promise<any>;
+
+  @collectionManagerStore.Action
+  public loadDocumentsFromCollection!: (payload: { docIds: Array<string> }) => Promise<any>;
 
   @connectomeBuilderStore.Mutation
   public setDataUpdate!: () => void;
@@ -94,7 +103,7 @@ export default class BuilderMapAddDocumentsTool extends mixins(ShowMoreMixin) {
         console.log('createCollection', res);
       });
     }
-
+    this.loadDocumentSet();
     this.getPDApi();
   }
 
@@ -102,8 +111,10 @@ export default class BuilderMapAddDocumentsTool extends mixins(ShowMoreMixin) {
   noteContent: string = null;
 
   onBtnAddPersonalDocumentsToCartClick(card: documentCard) {
+    console.log('onBtnAddPersonalDocumentsToCartClick', card);
     if (!card) return;
     this.cartDocumentCardItems.push(card);
+    console.log('onBtnAddPersonalDocumentsToCartClick', this.cartDocumentCardItems);
 
     const indexcard = this.documentCardItems.indexOf(card);
     if (indexcard > -1) {
@@ -112,7 +123,9 @@ export default class BuilderMapAddDocumentsTool extends mixins(ShowMoreMixin) {
   }
 
   onBtnRemovePersonalDocumentsFromCartClick(card: documentCard) {
+    console.log('onBtnAddPersonalDocumentsToCartClick', card);
     if (!card) return;
+    console.log('onBtnAddPersonalDocumentsToCartClick', this.cartDocumentCardItems);
 
     this.documentCardItems.push(card);
 
@@ -120,6 +133,9 @@ export default class BuilderMapAddDocumentsTool extends mixins(ShowMoreMixin) {
     if (indexcard > -1) {
       this.cartDocumentCardItems.splice(indexcard, 1);
     }
+
+    this.removePdConnectomeData({ id: card.id });
+    this.RemoveFromCurrentDocumentSet({ docToRemove: [card.id] });
   }
 
   onAddToCurrentContext() {
@@ -127,8 +143,9 @@ export default class BuilderMapAddDocumentsTool extends mixins(ShowMoreMixin) {
     this.cartDocumentCardItems.forEach(item => {
       docSet.push(item.id);
     });
-    console.log('add to context', docSet);
+    console.log('from add doc tool add to context', docSet);
     this.AddToCurrentDocumentSet({ docToAdd: docSet });
+    this.$bvModal.hide('add-document-tool');
   }
 
   public scrollLoader() {
@@ -144,24 +161,11 @@ export default class BuilderMapAddDocumentsTool extends mixins(ShowMoreMixin) {
   }
 
   public onMore(event) {
-    //console.log(event);
-    this.getPDApi();
-  }
-
-  onBtnSidebarFoldingClick(event) {
-    event.preventDefault();
-    console.log('onBtnSidebarFoldingClick', $(this));
-    $('#btn-sidebar-folding').toggleClass('active');
-    $('.connectome-home').toggleClass('active');
-  }
-
-  onBtnPanelSubCloseClick(event) {
-    event.preventDefault();
-    this.panelSub = 'panel-sub';
-  }
-
-  onMouseOverDocumentCard(event) {
-    // console.log('test mouse hver');
+    if (!this.searchTerms || this.searchTerms.length == 0) {
+      this.getPDApi();
+    } else {
+      this.getApiFilterByKeyword(this.searchTerms);
+    }
   }
 
   isOrderByDate = true;
@@ -186,6 +190,71 @@ export default class BuilderMapAddDocumentsTool extends mixins(ShowMoreMixin) {
 
   private totalItems = 0;
 
+  inputSearchTerms = '';
+  searchTerms = '';
+
+  @Watch('inputSearchTerms')
+  onSearchInput(input: string) {
+    if (!input) {
+      this.searchTerms = '';
+      this.page = 0;
+      this.size = 50;
+      this.totalFeeds = 0;
+      this.sortDirection = 'desc';
+      this.loaderDisable = false;
+      this.documentCardItems = [];
+      this.getPDApi();
+      return;
+    }
+
+    if (this.searchTerms.localeCompare(input) != 0) {
+      this.searchTerms = input;
+      this.page = 0;
+      this.size = 50;
+      this.totalFeeds = 0;
+      this.sortDirection = 'desc';
+      this.loaderDisable = false;
+      this.documentCardItems = [];
+      return;
+    }
+  }
+
+  searchOnPersonalDocument() {
+    this.documentCardItems = [];
+    if (!this.searchTerms || this.searchTerms.length == 0) {
+      this.getPDApi();
+    } else {
+      this.getApiFilterByKeyword(this.searchTerms);
+    }
+  }
+
+  loadDocumentSet() {
+    this.cartDocumentCardItems = [];
+    this.loadDocumentsFromCollection({ docIds: Array.from(this.getCurrentDocumentSet) }).then(res => {
+      console.log('onCurrentDocumentSetChanged res', res);
+      this.documentCardItems = [];
+      res.forEach(item => {
+        const idx = this.documentCardItems.find(x => x.id === item.docId);
+        if (idx) {
+          return;
+        }
+        const card = new documentCard();
+        card.id = item.docId;
+        card.author = item.author;
+        card.type = item.type;
+        card.title = item.title;
+        card.content = item.contentSummary;
+        card.keyword = item.keyword;
+        card.addedAt = new Date(item.publishedAt);
+        card.modifiedAt = new Date(item.publishedAt);
+        card.isAdded = false;
+        card.style = '';
+
+        this.cartDocumentCardItems.push(card);
+      });
+    });
+  }
+
   getPDApi() {
     const connectomeId = JSON.parse(localStorage.getItem('ds-connectome')).connectomeId;
     axios
@@ -203,6 +272,16 @@ export default class BuilderMapAddDocumentsTool extends mixins(ShowMoreMixin) {
           this.totalFeeds = res.data.totalItems;
         }
         res.data.results.forEach(item => {
+          if (this.getCurrentDocumentSet.has(item.docId)) {
+            return;
+          }
+
+          const cartCard = this.cartDocumentCardItems.find(x => x.id === item.docId);
+
+          if (cartCard) {
+            return;
+          }
+
           const card = new documentCard();
 
           card.id = item.docId;
@@ -221,21 +300,57 @@ export default class BuilderMapAddDocumentsTool extends mixins(ShowMoreMixin) {
       });
   }
 
-  handleActivity(item, activity) {}
+  getApiFilterByKeyword(searchTerms: string) {
+    const connectomeId = JSON.parse(localStorage.getItem('ds-connectome')).connectomeId;
+    console.log('1: documents from ' + searchTerms);
 
-  onSearchInput(event) {
-    //console.log('filterTerms', this.filterTerms);
-    let entitiesMatched: Array<documentCard> = [];
-    if (event.target.value) {
-      const regOption = new RegExp(event.target.value, 'ig');
-      entitiesMatched = this.documentCardItems
-        .filter(card => card.title.match(regOption) || card.content.match(regOption) || card.author.match(regOption))
-        .map(x => x);
-    } else {
-      entitiesMatched = this.documentCardItems.map(x => x);
+    const params = {
+      page: this.page,
+      size: this.size,
+      uploadType: '',
+      isDelete: 0,
+    };
+
+    if (searchTerms) {
+      Object.assign(params, { keyword: searchTerms });
     }
-    //this.setSearchResultList(entitiesMatched);
-    //}
+    axios
+      .post(`/api/personal-documents/getListDocuments/${connectomeId}`, [], {
+        params,
+      })
+      .then(res => {
+        // console.log('2: documents from ' + entityLabel, res);
+        res.data.results.length < this.size ? (this.loaderDisable = true) : (this.page += 1);
+        if (this.totalItems != res.data.totalItems) {
+          this.totalFeeds = res.data.totalItems;
+        }
+        //try to convert data
+        res.data.results.forEach(item => {
+          const card = new documentCard();
+
+          if (this.getCurrentDocumentSet.has(item.docId)) {
+            return;
+          }
+
+          const cartCard = this.cartDocumentCardItems.find(x => x.id === item.docId);
+
+          if (cartCard) {
+            return;
+          }
+
+          card.id = item.docId;
+          card.author = item.author;
+          card.type = item.type;
+          card.title = item.title;
+          card.content = item.contentSummary;
+          card.keyword = item.keyword;
+          card.group.push(item.keyword);
+          card.addedAt = new Date(item.publishedAt);
+          card.modifiedAt = new Date(item.publishedAt);
+
+          this.documentCardItems.push(card);
+        });
+      });
   }
 
   convertGMTToLocalTime(dateToConvert: string) {

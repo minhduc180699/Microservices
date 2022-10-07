@@ -263,6 +263,8 @@ public class PersonalDocumentServiceImpl implements IPersonalDocumentService {
                 keyword +
                 "', $options: 'i'} }, { content: {$regex: '" +
                 keyword +
+                "', $options: 'i'} }, { keyword: {$regex: '" +
+                keyword +
                 "', $options: 'i'} } ]}";
         }
         return query;

@@ -4,6 +4,7 @@ import { PrincipalService } from '@/service/principal.service';
 import { CardModel } from '@/shared/cards/card.model';
 import DsCards from '@/shared/cards/ds-cards.vue';
 import ShowMore from '@/shared/cards/footer/show-more/show-more.vue';
+import { ConnectomeNode } from '@/shared/model/connectome-node.model';
 //import { ConnectomeNetworkVertex } from '@/shared/model/connectome-network-vertex.model';
 import { ContextualMemoryCollection } from '@/shared/model/contextual-memory-collection.model';
 import { documentCard } from '@/shared/model/document-card.model';
@@ -40,10 +41,16 @@ export default class BuilderMapSideBar extends mixins(ShowMoreMixin) {
   public isUpdated!: number;
 
   @collectionManagerStore.Getter
-  public getCurrentDocumentSet!: Array<string>;
+  public isCurrentDocumentSetUpdated!: number;
+
+  @collectionManagerStore.Getter
+  public getCurrentDocumentSet!: Set<string>;
 
   @collectionManagerStore.Mutation
   public setCurrentDocumentSet!: (payload: { docSet: Array<string> }) => void;
+
+  @collectionManagerStore.Mutation
+  public AddToCurrentDocumentSet!: (payload: { docToAdd: Array<string> }) => void;
 
   @collectionManagerStore.Action
   public loadUserCollections!: (payload: { connectomeId: string; language: string }) => Promise<any>;
@@ -55,75 +62,6 @@ export default class BuilderMapSideBar extends mixins(ShowMoreMixin) {
   public loadDocumentsFromCollection!: (payload: { docIds: Array<string> }) => Promise<any>;
 
   collectionCardItems: Array<documentCard> = new Array<documentCard>();
-
-  @Watch('getCurrentCollection')
-  onCurrentCollectionChange(newVal: ContextualMemoryCollection) {
-    console.log('onCurrentCollectionChange', newVal);
-    this.labelcontext = '';
-    if (!newVal.documentIdList) {
-      return;
-    }
-
-    //this.documentCardItems = [];
-
-    this.setCurrentDocumentSet({ docSet: newVal.documentIdList });
-    if (newVal && newVal.collectionId) {
-      this.labelcontext = newVal.collectionId;
-      const card = this.collectionCardItems.forEach(card => {
-        if (card.id === newVal.collectionId) {
-          card.isAdded = true;
-          card.style = 'background-color:Lime';
-        } else {
-          card.isAdded = false;
-          card.style = '';
-        }
-      });
-    }
-  }
-  labelcontext = '';
-
-  @Watch('getCurrentDocumentSet')
-  onCurrentDocumentSetChange(newVal: Array<string>) {
-    console.log('getCurrentDocumentSet', newVal);
-    if (!newVal) {
-      return;
-    }
-
-    this.documentCardItems = [];
-
-    if (newVal.length == 0) {
-      return;
-    }
-
-    this.loadDocumentsFromCollection({ docIds: newVal }).then(res => {
-      console.log('loadDocumentsFromCollection', res);
-      res.forEach(item => {
-        const card = new documentCard();
-
-        card.id = item.docId;
-        card.author = item.author;
-        card.type = item.type;
-        card.title = item.title;
-        card.content = item.contentSummary;
-        card.keyword = item.keyword;
-        card.addedAt = new Date(item.publishedAt);
-        card.modifiedAt = new Date(item.publishedAt);
-        if (this.getCurrentCollection && this.getCurrentCollection.documentIdList.indexOf(item.docId) > -1) {
-          console.log('loadDocumentFromContext inside');
-          this.loadDocumentFromContext({ connectomeId: this.connectomeId, documentId: item.docId, keyword: item.keyword }).then(res => {
-            console.log('loadDocumentFromContext', res);
-            if (!res) {
-              return;
-            }
-            card.isAdded = true;
-            card.style = 'background-color:' + this.getDocumentColors.get(card.id);
-          });
-        }
-        this.documentCardItems.push(card);
-      });
-      // console.log(res);
-    });
-  }
 
   @Watch('getCollections')
   onCollectionsChange(newVal: Array<ContextualMemoryCollection>) {
@@ -139,15 +77,128 @@ export default class BuilderMapSideBar extends mixins(ShowMoreMixin) {
       card.keyword = item.keywordList.join(',');
       card.addedAt = null;
       card.modifiedAt = null;
+      if (
+        this.getCurrentCollection &&
+        this.getCurrentCollection.collectionId &&
+        this.getCurrentCollection.collectionId === item.collectionId
+      ) {
+        card.isAdded = true;
+        card.style = 'background-color:Lime';
+      } else {
+        card.isAdded = false;
+        card.style = '';
+      }
       this.collectionCardItems.push(card);
+    });
+  }
+
+  @Watch('getCurrentCollection')
+  onCurrentCollectionChanged(newVal: ContextualMemoryCollection) {
+    console.log('onCurrentCollectionChange', newVal);
+    this.labelcontext = '';
+
+    this.setCurrentDocumentSet({ docSet: [] });
+
+    if (!newVal) {
+      this.resetConnectomeBuilderData();
+      return;
+    }
+
+    if (newVal.documentIdList) {
+      this.loadDocumentsFromCollection({ docIds: newVal.documentIdList }).then(res => {
+        console.log('loadDocumentsFromCollection', res);
+        res.forEach(item => {
+          this.loadDocumentFromContext({ connectomeId: this.connectomeId, documentId: item.docId, keyword: item.keyword }).then(res => {
+            if (!res) {
+              return;
+            }
+
+            if (!res.documentIds) {
+              return;
+            }
+            this.AddToCurrentDocumentSet({ docToAdd: res.documentIds });
+          });
+        });
+      });
+    }
+
+    if (!newVal.connectomeNodeList || newVal.connectomeNodeList.length == 0) {
+      this.resetConnectomeBuilderData();
+    } else {
+      this.setConnectome({ connectome: newVal.connectomeNodeList });
+      this.disableOrphans();
+    }
+
+    if (newVal.collectionId) {
+      this.labelcontext = newVal.collectionId;
+      const card = this.collectionCardItems.forEach(card => {
+        if (card.id === newVal.collectionId) {
+          card.isAdded = true;
+          card.style = 'background-color:Lime';
+        } else {
+          card.isAdded = false;
+          card.style = '';
+        }
+      });
+    }
+  }
+
+  labelcontext = '';
+
+  @Watch('isCurrentDocumentSetUpdated')
+  onCurrentDocumentSetChanged(newVal: number) {
+    console.log('getCurrentDocumentSet', newVal);
+    if (!this.getCurrentDocumentSet) {
+      return;
+    }
+
+    this.documentCardItems = [];
+
+    if (this.getCurrentDocumentSet.size == 0) {
+      return;
+    }
+
+    this.loadDocumentsFromCollection({ docIds: Array.from(this.getCurrentDocumentSet) }).then(res => {
+      console.log('onCurrentDocumentSetChanged res', res);
+      this.documentCardItems = [];
+      res.forEach(item => {
+        const idx = this.documentCardItems.find(x => x.id === item.docId);
+        if (idx) {
+          return;
+        }
+        const card = new documentCard();
+        card.id = item.docId;
+        card.author = item.author;
+        card.type = item.type;
+        card.title = item.title;
+        card.content = item.contentSummary;
+        card.keyword = item.keyword;
+        card.addedAt = new Date(item.publishedAt);
+        card.modifiedAt = new Date(item.publishedAt);
+        if (this.getDocumentsSelected.has(item.docId)) {
+          console.log(' inside getDocumentsSelected');
+          card.isAdded = true;
+          card.style = 'background-color:' + this.getDocumentColors.get(card.id);
+        } else {
+          card.isAdded = false;
+          card.style = '';
+        }
+        this.documentCardItems.push(card);
+      });
     });
   }
 
   @Watch('isUpdated')
   onDataChange(newVal: number) {
-    console.log('onDataChange', newVal);
-    console.log('getCollections', this.getCollections);
+    // console.log('onDataChange', newVal);
+    // console.log('getCollections', this.getCollections);
   }
+
+  @connectomeBuilderStore.Getter
+  public getNodes!: Array<ConnectomeNode>;
+
+  @connectomeBuilderStore.Getter
+  public getConnectome!: Array<ConnectomeNode>;
 
   @connectomeBuilderStore.Getter
   public getSequenceNote!: number;
@@ -162,10 +213,22 @@ export default class BuilderMapSideBar extends mixins(ShowMoreMixin) {
   public getMinRelatedDocuments!: number;
 
   @connectomeBuilderStore.Getter
+  public getDocumentsSelected!: Map<string, Array<ConnectomeNode>>;
+
+  @connectomeBuilderStore.Getter
   public getDocumentColors!: Map<string, string>;
 
   @connectomeBuilderStore.Mutation
+  public setConnectome!: (payload: { connectome: Array<ConnectomeNode> }) => void;
+
+  @connectomeBuilderStore.Mutation
+  public disableOrphans!: () => void;
+
+  @connectomeBuilderStore.Mutation
   public incrementSequenceNote!: () => void;
+
+  @connectomeBuilderStore.Mutation
+  public resetConnectomeBuilderData!: () => void;
 
   @connectomeBuilderStore.Mutation
   public setDataUpdate!: () => void;
@@ -198,6 +261,13 @@ export default class BuilderMapSideBar extends mixins(ShowMoreMixin) {
   @connectomeBuilderStore.Action
   public updateMinRelatedDocuments!: (value: number) => Promise<number>;
 
+  localNodes: Array<ConnectomeNode> = [];
+  @Watch('getConnectome')
+  onGetNodesChanged(data: Array<ConnectomeNode>) {
+    console.log('connectomeUpdated');
+    this.localNodes = this.getNodes.map(x => x);
+  }
+
   connectomeId: string = null;
   userId: string = null;
   trainingDocumentCount = 0;
@@ -217,6 +287,7 @@ export default class BuilderMapSideBar extends mixins(ShowMoreMixin) {
   mounted() {
     const userId = this.principalService().getUserInfo().id;
     const connectomeId = this.principalService().getConnectomeInfo().connectomeId;
+    //const connectomeId ='CID_b0b8a423-69fa-4d07-b880-866a0e34487e';
     this.connectomeId = connectomeId;
     this.userId = userId;
 
@@ -232,6 +303,8 @@ export default class BuilderMapSideBar extends mixins(ShowMoreMixin) {
   onOpenCollectionClick(card: documentCard) {
     if (!card.id) return;
 
+    this.resetConnectomeBuilderData();
+    //card.id = 'ctxmm_fcd19151-ae56-4565-86d8-97def8c64ba7';
     this.loadCurrentCollection({ collectionId: card.id })
       .then(res => {
         if (!res) {
