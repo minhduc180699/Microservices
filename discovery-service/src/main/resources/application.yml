@@ -2,12 +2,12 @@ spring:
   application:
     name: discovery-service
   config:
-    import: "optional:configserver:http://192.168.10.16:8088"
+    import: "optional:configserver:http://13.21.34.201:8088"
   rabbitmq:
-    host: 192.168.10.12
+    host: 13.21.34.201
     port: 5672
-    username: deepsignal
-    password: deeppass22
+    username: guest
+    password: guest
 logging:
   level:
     ROOT: INFO

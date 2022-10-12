@@ -1,0 +1,24 @@
+spring:
+  cloud:
+    bus:
+      enabled: true
+    config:
+      server:
+        git:
+          uri: https://deepsignal.ziny.us/deepsignal/deepsignal-cloud-config.git
+          username: deepsignalai
+          password: Deepsignal123!@#
+          default-label: main
+          skip-ssl-validation: true
+  rabbitmq:
+    host: 192.168.10.12
+    port: 5672
+    username: deepsignal
+    password: deeppass22
+management:
+  security:
+    enabled: false
+logging:
+  level:
+    ROOT: INFO
+    com.saltlux.deepsignal: INFO

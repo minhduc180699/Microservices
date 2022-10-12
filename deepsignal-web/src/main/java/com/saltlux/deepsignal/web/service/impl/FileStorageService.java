@@ -83,13 +83,13 @@ public class FileStorageService implements IFileStorageService {
 
     @Override
     public void init() {
-        try {
-            if (!Files.exists(rootLocation)) {
-                Files.createDirectory(rootLocation);
-            }
-        } catch (IOException e) {
-            throw new RuntimeException("Could not initialize folder for upload!");
-        }
+        //        try {
+        //            if (!Files.exists(rootLocation)) {
+        //                Files.createDirectory(rootLocation);
+        //            }
+        //        } catch (IOException e) {
+        //            throw new RuntimeException("Could not initialize folder for upload!");
+        //        }
     }
 
     @Override
@@ -118,6 +118,15 @@ public class FileStorageService implements IFileStorageService {
         int numOfSuccess = 0;
         int numOfFail = 0;
         List<FileInfo> fileInfos = new ArrayList<>();
+
+        try {
+            if (!Files.exists(rootLocation)) {
+                Files.createDirectory(rootLocation);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Could not initialize folder for upload!");
+        }
+
         for (MultipartFile file : files) {
             String fileName = file.getOriginalFilename();
             try {

@@ -104,4 +104,7 @@ public class PersonalDocument implements Serializable {
     private boolean bookmarked;
     private boolean memo;
     private boolean deleted;
+
+    @Field("html_content")
+    private String htmlContent;
 }

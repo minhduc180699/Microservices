@@ -1,0 +1,21 @@
+spring:
+  cloud:
+    bus:
+      enabled: true
+    config:
+      server:
+        git:
+          uri: /Users/thienha/Saltlux.INC/02.Development/DeepSignal/goover-cloud-config
+          cloneOnStart: true
+  rabbitmq:
+    host: 13.21.34.201
+    port: 5672
+    username: guest
+    password: guest
+management:
+  security:
+    enabled: false
+logging:
+  level:
+    ROOT: INFO
+    com.saltlux.deepsignal: INFO

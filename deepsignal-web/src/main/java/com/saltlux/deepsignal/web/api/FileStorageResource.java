@@ -1,8 +1,5 @@
 package com.saltlux.deepsignal.web.api;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.saltlux.deepsignal.web.config.Constants;
 import com.saltlux.deepsignal.web.domain.FileInfo;
 import com.saltlux.deepsignal.web.exception.UploadException;
@@ -13,7 +10,6 @@ import com.saltlux.deepsignal.web.service.IFileStorageService;
 import com.saltlux.deepsignal.web.service.UserService;
 import com.saltlux.deepsignal.web.service.dto.ApiResponse;
 import com.saltlux.deepsignal.web.service.dto.FileInfoFindParam;
-import com.saltlux.deepsignal.web.service.dto.UploadWrapper;
 import com.saltlux.deepsignal.web.service.dto.UrlUploadDTO;
 import com.saltlux.deepsignal.web.service.template.FileResourceService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,7 +22,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;

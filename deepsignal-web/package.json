@@ -63,12 +63,6 @@
     "ci:frontend:test": "npm run ci:frontend:build && npm test",
     "postinstall": "patch-package"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged",
-      "commit-msg": "node ./gitconfig/validate-commit-msg.js"
-    }
-  },
   "config": {
     "backend_port": "8080",
     "default_environment": "prod",
