@@ -95,45 +95,53 @@
           </div>
         </div>
         <div class="list-wrap">
-          <vue-custom-scrollbar class="list-inner overflow-y-scroll customScroll csScrollPosition ps" :settings="scrollSettings">
-            <ul class="lc-card-list lc-resource-list" :key="updateList">
-              <li class="lc-card-item" aria-selected="true" v-for="(file, key) of uploadQueueFiles" :key="key">
-                <div class="item-wrap">
-                  <div class="content-box">
-                    <div class="lc-check">
-                      <button
-                        type="button"
-                        :class="['btn btn-check', file.selected ? 'focus active' : '']"
-                        data-toggle="button"
-                        aria-pressed="true"
-                        @click="selectCard(key)"
-                      ></button>
-                    </div>
-                    <div class="lc-media">
-                      <a class="media-file" href="#">
-                        <img v-bind:src="file.name | fileExtension" />
-                      </a>
-                      <div class="media-body">
-                        <a class="media-title" href="#">{{ file.name }}</a>
-                        <div class="media-info">
-                          <div class="info-item">
-                            <div class="source">
-                              <div class="source-img" v-if="file.document == 'drive'">
-                                <img src="content/images/icon-google-drive.png" />
+          <div class="list-inner">
+            <vue-custom-scrollbar class="overflow-y-scroll customScroll csScrollPosition ps" :settings="scrollSettings">
+              <ul class="lc-card-list lc-resource-list row" :key="updateList">
+                <li
+                  :class="['lc-card-item', fullScreenMode ? 'col-6' : '']"
+                  aria-selected="true"
+                  v-for="(file, key) of uploadQueueFiles"
+                  :key="key"
+                  style="height: 100px"
+                >
+                  <div class="item-wrap">
+                    <div class="content-box">
+                      <div class="lc-check">
+                        <button
+                          type="button"
+                          :class="['btn btn-check', file.selected ? 'focus active' : '']"
+                          data-toggle="button"
+                          aria-pressed="true"
+                          @click="selectCard(key)"
+                        ></button>
+                      </div>
+                      <div class="lc-media">
+                        <a class="media-file" href="#">
+                          <img v-bind:src="file.name | fileExtension" />
+                        </a>
+                        <div class="media-body">
+                          <a class="media-title" href="#">{{ file.name }}</a>
+                          <div class="media-info">
+                            <div class="info-item">
+                              <div class="source">
+                                <div class="source-img" v-if="file.document == 'drive'">
+                                  <img src="content/images/icon-google-drive.png" />
+                                </div>
+                                {{ file.document == 'drive' ? 'Google Driver' : 'My Computer' }}
                               </div>
-                              {{ file.document == 'drive' ? 'Google Driver' : 'My Computer' }}
                             </div>
+                            <div class="info-item">{{ file.size | fileSize }}</div>
+                            <div class="info-item">3일전</div>
                           </div>
-                          <div class="info-item">{{ file.size | fileSize }}</div>
-                          <div class="info-item">3일전</div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </li>
-            </ul>
-          </vue-custom-scrollbar>
+                </li>
+              </ul>
+            </vue-custom-scrollbar>
+          </div>
         </div>
       </div>
       <div class="panel-footer">

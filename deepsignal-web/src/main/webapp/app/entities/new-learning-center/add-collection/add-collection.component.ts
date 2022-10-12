@@ -9,7 +9,12 @@ import collection from '@/entities/new-learning-center/add-collection/collection
   },
 })
 export default class addCollection extends Vue {
+  private fullScreenMode = false;
   mounted() {
     document.body.setAttribute('data-menu', 'connectome');
+  }
+
+  handleFullScreen(data) {
+    this.fullScreenMode = data;
   }
 }

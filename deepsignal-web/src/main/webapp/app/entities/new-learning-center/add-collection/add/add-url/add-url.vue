@@ -19,9 +19,14 @@
         </div>
         <div class="list-wrap">
           <div class="list-inner">
-            <div class="overflow-y-scroll">
-              <ul class="lc-card-list lc-resource-list" :key="updateList">
-                <li class="lc-card-item" aria-selected="true" v-for="(model, index) of previewModels" :key="index">
+            <vue-custom-scrollbar class="overflow-y-scroll customScroll csScrollPosition ps" :settings="scrollSettings">
+              <ul class="lc-card-list lc-resource-list row" :key="updateList">
+                <li
+                  :class="['lc-card-item', fullScreenMode ? 'col-6' : '']"
+                  aria-selected="true"
+                  v-for="(model, index) of previewModels"
+                  :key="index"
+                >
                   <div class="item-wrap">
                     <div class="content-box">
                       <div class="lc-check">
@@ -47,7 +52,7 @@
                   </div>
                 </li>
               </ul>
-            </div>
+            </vue-custom-scrollbar>
           </div>
         </div>
       </div>

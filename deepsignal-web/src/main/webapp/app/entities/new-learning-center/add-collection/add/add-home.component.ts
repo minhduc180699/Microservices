@@ -21,6 +21,7 @@ export default class addHome extends Vue {
   ];
   private currentTab = 'addSearch';
   private displayMode = 'grid';
+  private fullScreenMode = false;
 
   changeTab(tab, e) {
     e.preventDefault();
@@ -31,5 +32,15 @@ export default class addHome extends Vue {
         t.active = true;
       }
     });
+  }
+
+  fullScreen() {
+    this.fullScreenMode = !this.fullScreenMode;
+    this.$emit('fullScreenMode', this.fullScreenMode);
+  }
+
+  closeFullScreenMode() {
+    this.fullScreenMode = false;
+    this.$emit('fullScreenMode', this.fullScreenMode);
   }
 }

@@ -1,4 +1,4 @@
-import { Component, Vue, Watch } from 'vue-property-decorator';
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { GOOGLE_CONFIG, UPLOAD_FILE_SUPPORT } from '@/shared/constants/ds-constants';
 import { getExtensionFileByName } from '@/util/ds-util';
 import vueCustomScrollbar from 'vue-custom-scrollbar';
@@ -12,6 +12,7 @@ let access_token = null;
   },
 })
 export default class addDocument extends Vue {
+  @Prop(Boolean) readonly fullScreenMode: false | any;
   private scrollSettings = {
     wheelPropagation: false,
   };
@@ -209,6 +210,7 @@ export default class addDocument extends Vue {
       }
     }
     this.$store.commit('setDocumentCards', data);
+    this.closeFullScreenMode();
   }
 
   checkDisableButton() {
@@ -219,5 +221,9 @@ export default class addDocument extends Vue {
       this.disableButton = false;
       this.countActive = check.length;
     }
+  }
+
+  closeFullScreenMode() {
+    this.$emit('closeFullScreenMode');
   }
 }

@@ -39,8 +39,8 @@
         </div>
         <div class="list-wrap">
           <vue-custom-scrollbar class="list-inner overflow-y-scroll customScroll csScrollPosition ps" :settings="scrollSettings">
-            <ul class="lc-card-list lc-resource-list" v-for="index in 10" :key="index">
-              <li class="lc-card-item" aria-selected="false">
+            <ul class="lc-card-list lc-resource-list row">
+              <li :class="['lc-card-item', fullScreenMode ? 'col-6' : '']" aria-selected="false" v-for="index in 10" :key="index">
                 <div class="item-wrap">
                   <div class="content-box">
                     <div class="lc-check">

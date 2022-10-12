@@ -1,4 +1,4 @@
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import vueCustomScrollbar from 'vue-custom-scrollbar';
 import axios from 'axios';
 
@@ -8,6 +8,7 @@ import axios from 'axios';
   },
 })
 export default class addSearch extends Vue {
+  @Prop(Boolean) readonly fullScreenMode: false | any;
   private scrollSettings = {
     wheelPropagation: false,
   };

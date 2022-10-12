@@ -1,5 +1,5 @@
 <template>
-  <div class="col-5">
+  <div class="col-5" v-show="!fullScreenMode">
     <div class="go-panel panel-LS-content">
       <div class="panel-header" style="border-bottom: 1px solid #efeff0; height: 56px">
         <div class="panel-title">

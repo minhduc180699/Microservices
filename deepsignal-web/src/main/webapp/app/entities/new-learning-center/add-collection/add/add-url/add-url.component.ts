@@ -1,10 +1,19 @@
-import { Component, Inject, Vue, Watch } from 'vue-property-decorator';
+import { Component, Inject, Prop, Vue, Watch } from 'vue-property-decorator';
 import PublicService from '@/service/public.service';
+import vueCustomScrollbar from 'vue-custom-scrollbar';
 
-@Component({})
+@Component({
+  components: {
+    vueCustomScrollbar: vueCustomScrollbar,
+  },
+})
 export default class addUrl extends Vue {
+  @Prop(Boolean) readonly fullScreenMode: false | any;
   @Inject('publicService')
   private publicService: () => PublicService;
+  private scrollSettings = {
+    wheelPropagation: false,
+  };
   private searchValue = '';
   private isShowSpinner = false;
   public previewModels = [];
@@ -70,7 +79,9 @@ export default class addUrl extends Vue {
         i--;
       }
     }
+    this.disableButton = true;
     this.$store.commit('setUrlCards', data);
+    this.closeFullScreenMode();
   }
 
   checkDisableButton() {
@@ -81,5 +92,9 @@ export default class addUrl extends Vue {
         return;
       }
     });
+  }
+
+  closeFullScreenMode() {
+    this.$emit('closeFullScreenMode');
   }
 }
