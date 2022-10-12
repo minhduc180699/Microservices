@@ -1,3 +1,29 @@
+.go-icon-common {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  vertical-align: middle;
+  background-image: url('../images/common/go-icon-common-set.png');
+  background-position: 0 0;
+
+  /* Add learning source icon */
+  &.icon-document-add {
+    background-position: 0 0;
+  }
+  &.icon-link-add {
+    background-position: -24px 0;
+  }
+  &.icon-websearch {
+    background-position: -48px 0;
+  }
+  &.icon-memo-write {
+    background-position: -72px 0;
+  }
+  &.icon-storage {
+    background-position: -96px 0;
+  }
+}
+
 /*
 ----------------------------------------
 icon-common
@@ -51,6 +77,15 @@ icon-common
     background-position: -180px -60px;
   }
 
+  &.icon-search {
+    background-position: -80px -80px;
+  }
+  &.icon-search-pirmary {
+    background-position: -100px -80px;
+  }
+  &.icon-link-pirmary {
+    background-position: -140px -80px;
+  }
   &.icon-pin {
     background-position: -160px -80px;
   }

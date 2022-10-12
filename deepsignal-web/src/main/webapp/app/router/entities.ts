@@ -6,7 +6,7 @@ import NoticeList from '@/entities/help/notice/noticeList/noticeList.vue';
 import NoticeDetail from '@/entities/help/notice/noticeDetail/noticeDetail.vue';
 import LearningSocial from '@/entities/connectome/learning-management/learningSocial/leaningSocial.vue';
 import LearningWeb from '@/entities/connectome/learning-management/learningWeb/learningWeb.vue';
-import NewLearningCenterComponent from '@/entities/new-learning-center/new-learning-center.vue';
+import ListCollection from '@/entities/new-learning-center/list-collection.vue';
 
 /* tslint:disable */
 // prettier-ignore
@@ -24,6 +24,8 @@ const Map3dNetwork = () => import('@/entities/my-ai/connectome/map-3d-network/ma
 const ConnectomeBuilder = () => import('@/entities/my-ai/connectome-builder/builder-map/builder-map.vue');
 const MiniConnectomeMap = () => import('@/entities/my-ai/mini-connectome/mini-connectome-map.vue');
 const MiniMap2dNetwork = () => import('@/entities/my-ai/mini-connectome/mini-map-2d-network/mini-map-2d-network.vue');
+const AddCollection = () => import('@/entities/new-learning-center/add-collection/add-collection.vue');
+const NewLearningCenterHome = () => import('@/entities/new-learning-center/new-learning-center-home.vue');
 export default [
   {
     path: '/upload',
@@ -103,8 +105,20 @@ export default [
   {
     path: '/new-learning-center',
     name: 'New-Learning-Center',
-    component: NewLearningCenterComponent,
+    component: NewLearningCenterHome,
     meta: { authorities: [Authority.USER] },
+    children: [
+      {
+        path: '/new-learning-center/list-collection',
+        name: 'List-Collection',
+        component: ListCollection,
+      },
+      {
+        path: '/new-learning-center/add-collection',
+        name: 'Add-Collection',
+        component: AddCollection,
+      },
+    ],
   },
   {
     path: '/my-ai',

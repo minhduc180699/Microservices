@@ -66,6 +66,7 @@ import { isJwtExpired } from 'jwt-check-expiration/src/index';
 import { cardStore } from '@/shared/config/store/card-store';
 import { appStore } from '@/shared/config/store/app-store';
 import { userSettingStore } from '@/shared/config/store/user-setting-store';
+import { learningCenter } from '@/shared/config/store/learning-center-store';
 
 const dateTimeFormats: DateTimeFormats = {
   en: {
@@ -210,6 +211,7 @@ export function initVueXStore(vue) {
       notificationViewStateStore,
       cardStore,
       appStore,
+      learningCenter,
     },
   });
 }

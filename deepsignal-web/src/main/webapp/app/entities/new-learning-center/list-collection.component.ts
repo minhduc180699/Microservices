@@ -7,7 +7,7 @@ import learningCenterAside from '@/entities/new-learning-center/aside/learning-c
     learningCenterAside: learningCenterAside,
   },
 })
-export default class NewLearningCenterComponent extends Vue {
+export default class ListCollectionComponent extends Vue {
   mounted(): void {
     document.body.setAttribute('data-menu', 'connectome');
   }

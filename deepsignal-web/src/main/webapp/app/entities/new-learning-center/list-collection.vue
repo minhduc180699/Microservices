@@ -36,4 +36,4 @@
     </div>
   </div>
 </template>
-<script lang="ts" src="./new-learning-center.component.ts"></script>
+<script lang="ts" src="./list-collection.component.ts"></script>
