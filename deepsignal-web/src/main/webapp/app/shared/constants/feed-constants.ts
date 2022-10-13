@@ -148,10 +148,10 @@ function getPeriod(number: number, type: string) {
 
 export const FEED_FILTER_CATEGORY = [
   { text: 'all', filter: { field: FEED_FILTER.searchType, value: null }, selected: true },
-  { text: 'article', filter: { field: FEED_FILTER.searchType, value: 'searchNews' }, selected: false },
+  { text: 'article', filter: { field: FEED_FILTER.searchType, value: 'News' }, selected: false },
   // { text: 'social', filter: { field: FEED_FILTER.searchType, value: 'searchSocial' }, selected: false },
-  { text: 'video', filter: { field: FEED_FILTER.searchType, value: 'searchVideo' }, selected: false },
-  { text: 'document', filter: { field: FEED_FILTER.searchType, value: 'searchFileType' }, selected: false },
+  { text: 'video', filter: { field: FEED_FILTER.searchType, value: 'Video' }, selected: false },
+  { text: 'document', filter: { field: FEED_FILTER.searchType, value: 'File' }, selected: false },
 ];
 
 export default function checkMobile() {
