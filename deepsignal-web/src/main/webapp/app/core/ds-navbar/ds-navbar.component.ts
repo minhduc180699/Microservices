@@ -18,7 +18,9 @@ import { PAGE } from '@/shared/constants/ds-constants';
 import { PrincipalService } from '@/service/principal.service';
 import checkMobile from '@/shared/constants/feed-constants';
 import PopupUserSetting from '@/shared/cards/popup-setting/popup-user-setting.vue';
+import { CmCollectionsItem } from '@/shared/model/cm-collections-item.model';
 const networkStore = namespace('connectomeNetworkStore');
+const collectionsManagerStore = namespace('collectionsManagerStore');
 const notificationViewState = namespace('notificationViewStateStore');
 
 @Component({
@@ -85,6 +87,20 @@ export default class DsNavbar extends Vue {
   @networkStore.Action
   public getConnectomeUpdate!: (payload: { connectomeId: string; language: string }) => Promise<any>;
 
+  @collectionsManagerStore.Action
+  public loadUserContext!: (payload: {
+    connectomeId: string;
+    language: string;
+  }) => Promise<{ status: string; message: string; result: any }>;
+
+  @collectionsManagerStore.Action
+  public getAllCollections!: () => Promise<{ status: string; message: string; result: Array<CmCollectionsItem> }>;
+
+  @collectionsManagerStore.Action
+  public getCollectionsFromDocIds: (payload: {
+    docIds: Array<string>;
+  }) => Promise<{ status: string; message: string; result: Array<CmCollectionsItem> }>;
+
   @notificationViewState.Action
   public pressNotification!: (payload: { countPressNotification: number }) => void;
 
@@ -113,6 +129,17 @@ export default class DsNavbar extends Vue {
     localStorage.setItem('ds-connectome', JSON.stringify(value));
     if (this.connectome && this.connectome.connectomeId && this.connectome.user && this.connectome.user.id) {
       this.getConnectomeUpdate({ connectomeId: this.connectome.connectomeId, language: this.currentLanguage }).then(() => {});
+      this.loadUserContext({ connectomeId: this.connectome.connectomeId, language: this.currentLanguage }).then(res => {
+        console.log('loadUserContext', res);
+
+        this.getAllCollections().then(res => {
+          console.log('getAllCollections', res);
+        });
+
+        this.getCollectionsFromDocIds({ docIds: ['ds-web_data-eng-N4518173107571863632-0-0'] }).then(res => {
+          console.log('getCollectionsFromDocIds', res);
+        });
+      });
       this.initWebsocket();
     }
   }
@@ -151,6 +178,7 @@ export default class DsNavbar extends Vue {
         //localStorage.removeItem('ds-selectedConnectomeNode');
         sessionStorage.setItem('requested-url', this.$route.fullPath);
         this.$store.dispatch('connectomeNetworkStore/logout');
+        this.$store.dispatch('collectionsManagerStore/logout');
         this.$store.dispatch('mapNetworkStore/logout');
         this.$store.commit('logout');
         this.$root.$emit('bv::hide::modal', 'modal-my-info');

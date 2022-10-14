@@ -2,7 +2,7 @@ spring:
   application:
     name: discovery-service
   config:
-    import: "optional:configserver:http://13.21.34.201:8088"
+    import: "optional:configserver:http://localhost:8088"
   rabbitmq:
     host: 13.21.34.201
     port: 5672

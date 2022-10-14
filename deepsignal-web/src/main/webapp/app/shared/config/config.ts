@@ -55,6 +55,7 @@ import { nodeStore } from '@/shared/config/store/node-store';
 import { connectomeNetworkStore } from '@/shared/config/store/connectome-network-store';
 import { connectomeBuilderStore } from '@/shared/config/store/connectome-builder-store';
 import { collectionManagerStore } from '@/shared/config/store/collection-manager-store';
+import { collectionsManagerStore } from '@/shared/config/store/collections-manager-store';
 import { mapNetworkStore } from './store/map-network-store';
 import { miniConnectomeNetworkStore } from '@/shared/config/store/mini-connectome-network-store';
 import { miniMapNetworkStore } from './store/mini-map-network-store';
@@ -66,7 +67,6 @@ import { isJwtExpired } from 'jwt-check-expiration/src/index';
 import { cardStore } from '@/shared/config/store/card-store';
 import { appStore } from '@/shared/config/store/app-store';
 import { userSettingStore } from '@/shared/config/store/user-setting-store';
-import { learningCenter } from '@/shared/config/store/learning-center-store';
 
 const dateTimeFormats: DateTimeFormats = {
   en: {
@@ -204,6 +204,7 @@ export function initVueXStore(vue) {
       connectomeNetworkStore,
       connectomeBuilderStore,
       collectionManagerStore,
+      collectionsManagerStore,
       mapNetworkStore,
       miniConnectomeNetworkStore,
       miniMapNetworkStore,
@@ -211,7 +212,6 @@ export function initVueXStore(vue) {
       notificationViewStateStore,
       cardStore,
       appStore,
-      learningCenter,
     },
   });
 }

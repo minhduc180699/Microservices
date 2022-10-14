@@ -27,8 +27,12 @@ public final class Constants {
     public static final String POST_MINI_CONNECTOMES_URI = "/connectomes/training/instant/ids";
     public static final String POST_TEXT_CONNECTOME_URI = "/connectomes/training/instant/text/pageRank";
     public static final String POST_CONTEXTUAL_MEMORY_GET_COLLECTION_ID_URI = "/contextualMemory/getCollectionId";
+    public static final String POST_CONTEXTUAL_MEMORY_CREATE_COLLECTION_URI = "/contextualMemory/createCollection";
     public static final String GET_CONTEXTUAL_MEMORY_GET_LIST_COLLECTION_URI = "/contextualMemory/ctxmmList";
+    public static final String GET_CONTEXTUAL_MEMORY_GET_COLLECTION_LIST_URI = "/contextualMemory/getCollectionList";
+    public static final String POST_CONTEXTUAL_MEMORY_UPDATE_URI = "/contextualMemory/updateCollection";
     public static final String PUT_CONTEXTUAL_MEMORY_UPSERT_URI = "/contextualMemory/upsert";
+    public static final String DELETE_CONTEXTUAL_MEMORY_DELETE_URI = "/contextualMemory/delete";
     public static final String GET_CONTEXTUAL_MEMORY_GET_COLLECTION_URI = "/contextualMemory/getCollection";
     public static final String PATCH_DISABLE_ENTITY_URI = "/vertex/toggle/disable";
     public static final String PATCH_FAVORITE_ENTITY_URI = "/vertex/toggle/favorite";

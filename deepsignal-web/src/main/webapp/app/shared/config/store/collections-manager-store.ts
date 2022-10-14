@@ -7,12 +7,14 @@ import { Module } from 'vuex';
 import { ContextualMemoryCollection } from '@/shared/model/contextual-memory-collection.model';
 import { CmCollectionsItem } from '@/shared/model/cm-collections-item.model';
 import { CmCollection } from '@/shared/model/cm-collection.model';
+import { State } from 'vuex-class';
+import { async } from 'rxjs';
 
-const baseConnectomeApiUrl = '/api/connectome';
-const getCollectionsURL = baseConnectomeApiUrl + '/collection/get/all';
-const getCollectionURL = baseConnectomeApiUrl + '/collection/get';
-const postCreateCollectionURL = baseConnectomeApiUrl + '/collection/create';
-const putCollectionURL = baseConnectomeApiUrl + '/collection/update';
+const baseConnectomeApiUrl = '/api/collections';
+const getCollectionsURL = baseConnectomeApiUrl + '/get/all';
+const getCollectionURL = baseConnectomeApiUrl + '/get';
+const postCreateCollectionURL = baseConnectomeApiUrl + '/create';
+const postUpdateCollectionURL = baseConnectomeApiUrl + '/update';
 
 const basePersonalDocumentsApiUrl = '/api/personal-documents';
 const getPersonalDocumentsByDocIdsUrl = basePersonalDocumentsApiUrl + '/getByDocIds';
@@ -61,8 +63,11 @@ const defaultNoColor = '#DEDEDE';
 
 export interface CollectionsManagerStorable {
   indexSessionStorage: Map<string, string>;
+  connectomeId: string;
+  lang: string;
   collections: Array<CmCollectionsItem>;
   currentCollection: CmCollection;
+  nodesListByDocument: Map<string, Array<ConnectomeNode>>;
   collectionsChanged: number;
   currentCollectionChanged: number;
 }
@@ -71,16 +76,21 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
   namespaced: true,
   state: {
     indexSessionStorage: new Map<string, string>(),
+    connectomeId: null,
+    lang: null,
     collections: new Array<CmCollectionsItem>(),
     currentCollection: new CmCollection(null),
+    nodesListByDocument: new Map<string, Array<ConnectomeNode>>(),
     collectionsChanged: 0,
     currentCollectionChanged: 0,
   },
   getters: {
     getIndexSessionStorage: state => state.indexSessionStorage,
+    getConnectomeId: state => state.connectomeId,
+    getLang: State => State.lang,
     getCollections: state => state.collections,
     getCurrentCollection: state => state.currentCollection,
-    getCollectionsFromDocument: (state, docId: string) => {
+    getCollectionsFromDocument: state => (docId: string) => {
       if (!state.collections) {
         return [];
       }
@@ -101,10 +111,64 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
 
       return collections;
     },
+    getCollectionsFromDocuments: (state, getters) => (docIds: Array<string>) => {
+      if (!state.collections) {
+        return [];
+      }
+
+      if (!docIds) {
+        return [];
+      }
+
+      if (docIds.length == 0) {
+        return [];
+      }
+      console.log(docIds);
+      const result = new Array<CmCollectionsItem>();
+      docIds.forEach(docId => {
+        const listCollections = getters.getCollectionsFromDocument(docId);
+        listCollections.forEach(collection => {
+          if (!result.includes(collection)) result.push(collection);
+        });
+      });
+
+      return result;
+    },
     isCollectionsChanged: state => state.collectionsChanged,
     isCurrentCollectionChanged: state => state.currentCollectionChanged,
   },
   mutations: {
+    setConnectomeId(state, connectomeId: string) {
+      if (!connectomeId) {
+        return;
+      }
+
+      state.connectomeId = connectomeId;
+    },
+    setLang(state, lang: string) {
+      let language = 'en';
+      if (lang) {
+        switch (lang.toLowerCase()) {
+          case 'en':
+          case 'english':
+          case 'uk':
+          case 'us':
+            language = 'en';
+            break;
+          case 'kr':
+          case 'ko':
+          case 'korea':
+          case 'korean':
+          case 'south korea':
+          case '한국어':
+            language = 'ko';
+            break;
+          default:
+            language = 'en';
+        }
+      }
+      state.lang = language;
+    },
     setCollections(state, payload: { collections: Array<CmCollectionsItem> }) {
       if (!payload.collections) {
         return;
@@ -126,10 +190,10 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
         return;
       }
       payload.collections.forEach(collectionToRemove => {
-        const indexCollecctionToRemove = state.collections.findIndex(
+        const indexCollectionToRemove = state.collections.findIndex(
           collection => collection.collectionId === collectionToRemove.collectionId
         );
-        state.collections.splice(indexCollecctionToRemove, 1);
+        state.collections.splice(indexCollectionToRemove, 1);
       });
       state.collectionsChanged++;
     },
@@ -145,7 +209,7 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
       }
 
       collectionToUpdate.documentIdList = payload.collectionUpdated.documentIdList.map(x => x);
-      collectionToUpdate.modified = payload.collectionUpdated.modified;
+      collectionToUpdate.modifiedDate = payload.collectionUpdated.modifiedDate;
       state.collectionsChanged++;
     },
     setCurrentCollection(state, payload: { collection: CmCollection }) {
@@ -175,7 +239,7 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
 
       payload.docToAdd.forEach(docId => {
         state.currentCollection.documentIdList.push(docId);
-        state.currentCollection.modified = new Date();
+        state.currentCollection.modifiedDate = new Date();
       });
 
       state.currentCollectionChanged++;
@@ -193,49 +257,67 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
         const indexToRemove = state.currentCollection.documentIdList.findIndex(x => x === docId);
         if (indexToRemove > -1) {
           state.currentCollection.documentIdList.splice(indexToRemove, 1);
-          state.currentCollection.modified = new Date();
+          state.currentCollection.modifiedDate = new Date();
         }
       });
       state.currentCollectionChanged++;
+    },
+    AddNodesList(state, payload: { documentId: string; nodesList: Array<ConnectomeNode> }) {
+      if (!payload.documentId) {
+        return;
+      }
+
+      if (!payload.nodesList) {
+        return;
+      }
+
+      if (!state.nodesListByDocument) {
+        state.nodesListByDocument = new Map<string, Array<ConnectomeNode>>();
+      }
+
+      state.nodesListByDocument.set(payload.documentId, payload.nodesList);
     },
     ProcessCurrentDocumentList(state) {},
     resetData(state) {},
   },
   actions: {
-    loadUserCollections: async (
+    loadUserContext: async (
       context,
       payload: {
         connectomeId: string;
         language: string;
       }
     ) => {
-      let language = 'en';
-      if (payload.language) {
-        switch (payload.language.toLowerCase()) {
-          case 'en':
-          case 'english':
-          case 'uk':
-          case 'us':
-            language = 'en';
-            break;
-          case 'kr':
-          case 'ko':
-          case 'korea':
-          case 'korean':
-          case 'south korea':
-          case '한국어':
-            language = 'ko';
-            break;
-          default:
-            language = 'en';
-        }
-      }
-      if (!payload.connectomeId) {
+      if (!payload) {
         return;
       }
 
-      axios.defaults.headers.common['connectomeId'] = payload.connectomeId;
-      axios.defaults.headers.common['lang'] = language;
+      context.commit('setConnectomeId', payload.connectomeId);
+      context.commit('setLang', payload.language);
+
+      return context
+        .dispatch('loadUserCollections')
+        .then(res => {
+          if (!res) {
+            return { status: 'NOK', message: 'error load User Context', result: null };
+          }
+          return { status: 'OK', message: 'user context loaded', result: res };
+        })
+        .catch(reason => {
+          console.log('Reason', reason);
+          return { status: 'NOK', message: 'error load User Context', result: null };
+        })
+        .finally(() => {});
+    },
+    loadUserCollections: async context => {
+      if (!context.getters.getConnectomeId || !context.getters.getLang) {
+        context.commit('setCollections', { collections: new Array<CmCollectionsItem>() });
+        return;
+      }
+
+      axios.defaults.headers.common['connectomeId'] = context.getters.getConnectomeId;
+      axios.defaults.headers.common['lang'] = context.getters.getLang;
+
       const apiCallConnectomeData = new Promise<any>((resolve, reject) => {
         axios
           .get(getCollectionsURL)
@@ -251,7 +333,7 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
           const response = res.data.body;
           console.log('loadUserCollections', response);
 
-          const responseCollections = response.map(x => new ContextualMemoryCollection(x));
+          const responseCollections = response.map(x => new CmCollectionsItem(x));
           context.commit('setCollections', { collections: responseCollections });
 
           return response;
@@ -261,12 +343,14 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
         })
         .finally(() => {});
     },
-    loadCurrentCollection: async (
-      context,
-      payload: {
-        collectionId: string;
+    loadCollection: async (context, payload: { collectionId: string }) => {
+      if (!context.getters.getConnectomeId() || !context.getters.getLang()) {
+        return;
       }
-    ) => {
+
+      axios.defaults.headers.common['connectomeId'] = context.getters.getConnectomeId;
+      axios.defaults.headers.common['lang'] = context.getters.getLang;
+
       if (!payload.collectionId) {
         return;
       }
@@ -284,52 +368,8 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
             return;
           }
 
-          if (res.data.body.length == 0) {
-            return;
-          }
-          const response = res.data.body[0];
+          const response = res.data.body;
           context.commit('setCurrentCollection', { collection: response });
-
-          return response;
-        })
-        .catch(reason => {
-          console.log('Reason', reason);
-        })
-        .finally(() => {});
-    },
-    loadDocumentsFromCollection: async (
-      context,
-      payload: {
-        docIds: Array<string>;
-      }
-    ) => {
-      if (!payload.docIds) {
-        return;
-      }
-
-      if (payload.docIds.length == 0) {
-        return;
-      }
-
-      const apiCallConnectomeData = new Promise<any>((resolve, reject) => {
-        axios
-          .post(getPersonalDocumentsByDocIdsUrl, payload.docIds)
-          .then(res => resolve(res))
-          .catch(err => reject(err));
-      });
-
-      return apiCallConnectomeData
-        .then(res => {
-          console.log('loadDocumentsFromCollection', res);
-          if (!res) {
-            return;
-          }
-
-          if (!res.data) {
-            return;
-          }
-          const response = res.data.connectomePersonalDocuments;
-          console.log('loadDocumentsFromCollection', response);
 
           return response;
         })
@@ -341,34 +381,21 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
     createCollection: async (
       context,
       payload: {
-        connectomeId: string;
-        language: string;
+        docIds: Array<string>;
       }
     ) => {
-      let language = 'en';
-      if (payload.language) {
-        switch (payload.language.toLowerCase()) {
-          case 'en':
-          case 'english':
-          case 'uk':
-          case 'us':
-            language = 'en';
-            break;
-          case 'kr':
-          case 'ko':
-          case 'korea':
-          case 'korean':
-          case 'south korea':
-          case '한국어':
-            language = 'ko';
-            break;
-          default:
-            language = 'en';
-        }
+      if (!context.getters.getConnectomeId() || !context.getters.getLang()) {
+        return;
       }
+
+      axios.defaults.headers.common['connectomeId'] = context.getters.getConnectomeId;
+      axios.defaults.headers.common['lang'] = context.getters.getLang;
+
       const newCollection = new ContextualMemoryCollection(null);
-      newCollection.connectomeId = payload.connectomeId;
-      newCollection.lang = language;
+      newCollection.connectomeId = context.getters.getConnectomeId();
+      newCollection.lang = context.getters.getLang();
+      newCollection.documentIdList = payload.docIds.map(x => x);
+
       const apiCallConnectomeData = new Promise<any>((resolve, reject) => {
         axios
           .post(postCreateCollectionURL, newCollection)
@@ -383,8 +410,22 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
           }
           const response = res.data.body;
           console.log('create new collection', response);
-          context.commit('setCurrentCollection', { collection: response });
-          context.commit('setCurrentDocumentSet', { docSet: [] });
+
+          // context.commit('setCurrentCollection', { collection: response });
+          // context.commit('setCurrentDocumentSet', { docSet: [] });
+          context
+            .dispatch('loadUserCollections')
+            .then(res => {
+              if (!res) {
+                return { status: 'NOK', message: 'error load User Context', result: null };
+              }
+              return { status: 'OK', message: 'user context loaded', result: res };
+            })
+            .catch(reason => {
+              console.log('Reason', reason);
+              return { status: 'NOK', message: 'error load User Context', result: null };
+            })
+            .finally(() => {});
           return res;
         })
         .catch(reason => {
@@ -396,14 +437,21 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
     updateCollection: async (
       context,
       payload: {
-        collection: ContextualMemoryCollection;
+        collection: CmCollection;
       }
     ) => {
+      if (!context.getters.getConnectomeId() || !context.getters.getLang()) {
+        return;
+      }
+
+      axios.defaults.headers.common['connectomeId'] = context.getters.getConnectomeId;
+      axios.defaults.headers.common['lang'] = context.getters.getLang;
+
       if (!payload.collection) return;
 
       const apiCallConnectomeData = new Promise<any>((resolve, reject) => {
         axios
-          .put(putCollectionURL, payload.collection)
+          .post(postUpdateCollectionURL, payload.collection)
           .then(res => resolve(res))
           .catch(err => reject(err));
       });
@@ -415,11 +463,20 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
           }
 
           console.log('create new collection', res);
-          context.commit('setCurrentCollection', { collection: payload.collection });
-          context.dispatch('loadUserCollections', {
-            connectomeId: payload.collection.connectomeId,
-            language: payload.collection.lang,
-          });
+          //context.commit('setCurrentCollection', { collection: payload.collection });
+          context
+            .dispatch('loadUserCollections')
+            .then(res => {
+              if (!res) {
+                return { status: 'NOK', message: 'error load User Context', result: null };
+              }
+              return { status: 'OK', message: 'user context loaded', result: res };
+            })
+            .catch(reason => {
+              console.log('Reason', reason);
+              return { status: 'NOK', message: 'error load User Context', result: null };
+            })
+            .finally(() => {});
           return res;
         })
         .catch(reason => {
@@ -428,6 +485,156 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
         })
         .finally(() => {});
     },
+    logout(context) {},
+
+    //#region Interface with SLT
+    getAllCollections: async context => {
+      //return list of collection contains this docIds
+      return { status: 'OK', message: 'user context loaded', result: context.getters.getCollections };
+    },
+    //return list of collection contains this docIds
+    getCollectionsFromDocIds: async (
+      context,
+      payload: {
+        docIds: Array<string>;
+      }
+    ) => {
+      if (!payload.docIds) {
+        return { status: 'NOK', message: 'docIds list is undefined', result: [] };
+      }
+
+      if (payload.docIds.length == 0) {
+        return { status: 'OK', message: 'docIds list is empty', result: [] };
+      }
+
+      return {
+        status: 'OK',
+        message: 'list collection containing the docIds',
+        result: context.getters.getCollectionsFromDocuments(payload.docIds),
+      };
+    },
+    //return the collection and set it as current collection
+    editCollection: async (
+      context,
+      payload: {
+        collectionId: string;
+      }
+    ) => {
+      if (!payload) {
+        return { status: 'NOK', message: 'paramters undefined', result: null };
+      }
+
+      if (!payload.collectionId) {
+        return { status: 'NOK', message: 'collectionId is undefined', result: null };
+      }
+
+      const collectionItemIndex = context.getters.getCollections.findIndex(collection => collection.collectionId == payload.collectionId);
+      console.log('editCollection:collectionItemIndex', collectionItemIndex);
+      if (collectionItemIndex < 0) {
+        return { status: 'NOK', message: 'collectionId not include in collections', result: null };
+      }
+
+      const collectionItem = context.getters.getCollections[collectionItemIndex];
+      console.log('editCollection:collectionItem', collectionItem);
+
+      if (!collectionItem) {
+        return { status: 'NOK', message: 'collection is undefined', result: null };
+      }
+
+      const newCurrentCollection = new CmCollection(collectionItem);
+
+      context.commit('setCurrentCollection', { collection: newCurrentCollection });
+
+      return { status: 'OK', message: 'collection to be edited', result: newCurrentCollection };
+    },
+    getCurrentDraftCollection: async (
+      context,
+      payload: {
+        collectionId: string;
+      }
+    ) => {
+      if (!context.getters.getCurrentCollection) {
+        return { status: 'NOK', message: 'no current Colleciton defined', result: null };
+      }
+
+      return { status: 'OK', message: 'user context loaded', result: context.getters.getCurrentCollection };
+      //return the current collection
+    },
+    //add bookmarks to the current draft collection.  if a collection is selected to Add, you should send the documentlist from this collection
+    addBookmarksToCurrentCollection: async (
+      context,
+      payload: {
+        docIds: Array<string>;
+      }
+    ) => {
+      if (!context.getters.getCurrentCollection) {
+        return { status: 'NOK', message: 'no current Colleciton defined', result: null };
+      }
+
+      context.commit('AddDocumentsToCurrentCollection', { docToAdd: payload.docIds });
+
+      return { status: 'OK', message: 'documents added', result: context.getters.getCurrentCollection };
+    },
+    //from the current draft collection container, remove the bookmark
+    removeBookmarksFromCurrentCollection: async (
+      context,
+      payload: {
+        docIds: Array<string>;
+      }
+    ) => {
+      if (!context.getters.getCurrentCollection) {
+        return { status: 'NOK', message: 'no current Colleciton defined', result: null };
+      }
+
+      context.commit('RemoveFromCurrentCollection', { docToRemove: payload.docIds });
+
+      return { status: 'OK', message: 'documents removed', result: context.getters.getCurrentCollection };
+    },
+    saveCurrentDraftCollection: async context => {
+      if (!context.getters.getCurrentCollection) {
+        return { status: 'NOK', message: 'no current Colleciton defined', result: null };
+      }
+      if (!context.getters.getCurrentCollection.collectionId) {
+        return context
+          .dispatch('createCollection', {
+            docIds: context.getters.getCurrentCollection.documentIdList,
+          })
+          .then(res => {
+            if (!res) {
+              return { status: 'NOK', message: 'cannot create the collection', result: null };
+            }
+            context.commit('setCurrentCollection', { collection: new CmCollection(null) });
+            return { status: 'OK', message: 'draft saved', result: null };
+          });
+      } else {
+        return context
+          .dispatch('updateCollection', {
+            collection: context.getters.getCurrentCollection.documentIdList,
+          })
+          .then(res => {
+            if (!res) {
+              return { status: 'NOK', message: 'cannot create the collection', result: null };
+            }
+            context.commit('setCurrentCollection', { collection: new CmCollection(null) });
+            return { status: 'OK', message: 'collection updated', result: null };
+          });
+      }
+    },
+    closeCurrentDraftCollection: async context => {
+      if (!context.getters.getCurrentCollection) {
+        return { status: 'NOK', message: 'no current Colleciton defined', result: null };
+      }
+
+      context.commit('setCurrentCollection', { collection: new CmCollection(null) });
+      return { status: 'OK', message: 'draft saved', result: null };
+    },
+    deleteCollection: async (
+      context,
+      payload: {
+        collectionId: string;
+      }
+    ) => {},
+    //#endregion
   },
 };
 

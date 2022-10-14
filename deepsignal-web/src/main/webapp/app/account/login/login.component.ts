@@ -205,6 +205,7 @@ export default class LoginForm extends Vue {
     localStorage.removeItem('openLearningCenter');
     sessionStorage.setItem('requested-url', this.$route.fullPath);
     this.$store.dispatch('connectomeNetworkStore/logout');
+    this.$store.dispatch('collectionsManagerStore/logout');
     this.$store.commit('logout');
     this.$root.$emit('bv::hide::modal', 'modal-my-info');
     this.$root.$emit('bv::show::modal', 'modal-logged-out');

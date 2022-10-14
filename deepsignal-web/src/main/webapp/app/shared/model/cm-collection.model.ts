@@ -1,4 +1,5 @@
 import { getVertexTypeInNetwork, TYPE_VERTEX } from '@/shared/constants/ds-constants';
+import { CmCollectionStatus } from './cm-collectionStatus.model';
 import { ConnectomeNode } from './connectome-node.model';
 
 export class CmCollection {
@@ -8,7 +9,8 @@ export class CmCollection {
   nodeList: Array<ConnectomeNode> = [];
   requestsList: Array<ConnectomeNode> = [];
   documentIdList: Array<string> = [];
-  modified: Date = null;
+  modifiedDate: Date = null;
+  status: CmCollectionStatus = null;
 
   constructor(element: any) {
     if (element) {
@@ -18,7 +20,8 @@ export class CmCollection {
       this.nodeList = element.connectomeNodeList?.map(x => new ConnectomeNode(x));
       this.requestsList = element.connectomeNodeList?.map(x => new ConnectomeNode(x));
       this.documentIdList = element.documentIdList?.map(x => x);
-      this.modified = element.modified;
+      this.modifiedDate = element.modifiedDate;
+      this.status = new CmCollectionStatus(element.status);
     }
   }
 }

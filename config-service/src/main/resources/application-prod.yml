@@ -8,7 +8,7 @@ spring:
           uri: https://deepsignal.ziny.us/deepsignal/deepsignal-cloud-config.git
           username: deepsignalai
           password: Deepsignal123!@#
-          default-label: main
+          default-label: master
           skip-ssl-validation: true
   rabbitmq:
     host: 192.168.10.12
