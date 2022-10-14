@@ -5,13 +5,16 @@ spring:
     config:
       server:
         git:
-          uri: /Users/thienha/Saltlux.INC/02.Development/DeepSignal/goover-cloud-config
-          cloneOnStart: true
+          uri: https://deepsignal.ziny.us/deepsignal/deepsignal-cloud-config.git
+          username: deepsignalai
+          password: Deepsignal123!@#
+          default-label: develop
+          skip-ssl-validation: true
   rabbitmq:
-    host: 13.21.34.201
+    host: 192.168.10.12
     port: 5672
-    username: guest
-    password: guest
+    username: deepsignal
+    password: deeppass22
 management:
   security:
     enabled: false
