@@ -13,7 +13,7 @@ const collectionsManagerStore = namespace('collectionsManagerStore');
 @Component({
   components: {},
 })
-export default class BuilderMap extends mixins(ShowMoreMixin) {
+export default class BuilderMap extends Vue {
   @collectionsManagerStore.Getter
   public isCollectionsChanged!: number;
 
@@ -69,7 +69,7 @@ export default class BuilderMap extends mixins(ShowMoreMixin) {
       if (!res.result) {
         return;
       }
-      this.currentCollectiontCardItems = new Array<documentCard>();
+      this.currentCollectiontCardItems = [];
 
       if (!res.result.documentIdList) {
         return;

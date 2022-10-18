@@ -235,8 +235,10 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
       }
 
       payload.docToAdd.forEach(docId => {
-        state.currentCollection.documentIdList.push(docId);
-        state.currentCollection.modifiedDate = new Date();
+        if (state.currentCollection.documentIdList.indexOf(docId) < 0) {
+          state.currentCollection.documentIdList.push(docId);
+          state.currentCollection.modifiedDate = new Date();
+        }
       });
 
       state.currentCollectionChanged++;
@@ -339,7 +341,7 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
         });
     },
     loadCollection: async (context, payload: { collectionId: string }) => {
-      if (!context.getters.getConnectomeId() || !context.getters.getLang()) {
+      if (!context.getters.getConnectomeId || !context.getters.getLang) {
         return;
       }
 
@@ -378,7 +380,7 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
         docIds: Array<string>;
       }
     ) => {
-      if (!context.getters.getConnectomeId() || !context.getters.getLang()) {
+      if (!context.getters.getConnectomeId || !context.getters.getLang) {
         return;
       }
 
@@ -386,8 +388,8 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
       axios.defaults.headers.common['lang'] = context.getters.getLang;
 
       const newCollection = new ContextualMemoryCollection(null);
-      newCollection.connectomeId = context.getters.getConnectomeId();
-      newCollection.lang = context.getters.getLang();
+      newCollection.connectomeId = context.getters.getConnectomeId;
+      newCollection.lang = context.getters.getLang;
       newCollection.documentIdList = payload.docIds.map(x => x);
 
       const apiCallConnectomeData = new Promise<any>((resolve, reject) => {

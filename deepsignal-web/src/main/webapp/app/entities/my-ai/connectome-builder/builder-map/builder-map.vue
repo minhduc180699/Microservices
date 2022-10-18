@@ -4,46 +4,42 @@
       <b-row>
         <b-col>
           <div class="list-scrollable">
-            <b-card-group>
-              <b-card
-                v-for="collection in collectionCardItems"
-                :key="collection.id"
-                v-on:click="onBtnAddCollectionToCurrentCollectionClick(collection)"
-              >
-                <template #header>
-                  <b-card-text>{{ collection.author }}</b-card-text>
-                </template>
-                <b-card-body>
-                  <b-card-sub-title class="mb-2">{{ collection.title }}</b-card-sub-title>
-                  <b-card-text>
-                    {{ collection.content }}
-                  </b-card-text>
-                </b-card-body>
-              </b-card>
-            </b-card-group>
-            <b-card-group>
-              <b-card
-                v-for="bookmark in bookmarkCardItems"
-                :key="bookmark.id"
-                :style="bookmark.style"
-                v-on:click="onBtnAddBookmarkToCurrentCollectionClick(bookmark)"
-              >
-                <template #header>
-                  <b-card-text>{{ bookmark.author }}</b-card-text>
-                </template>
-                <b-card-body>
-                  <b-card-sub-title class="mb-2">{{ bookmark.title }}</b-card-sub-title>
-                  <b-card-text>
-                    {{ bookmark.content }}
-                  </b-card-text>
-                </b-card-body>
-              </b-card>
-              <b-card>
-                <b-card-body>
-                  <b-button variant="primary" @click.prevent="onMoreBookmark"> More ... </b-button>
-                </b-card-body>
-              </b-card>
-            </b-card-group>
+            <b-card
+              v-for="collection in collectionCardItems"
+              :key="collection.id"
+              v-on:click="onBtnAddCollectionToCurrentCollectionClick(collection)"
+            >
+              <template #header>
+                <b-card-text>{{ collection.author }}</b-card-text>
+              </template>
+              <b-card-body>
+                <b-card-sub-title class="mb-2">{{ collection.title }}</b-card-sub-title>
+                <b-card-text>
+                  {{ collection.content }}
+                </b-card-text>
+              </b-card-body>
+            </b-card>
+            <b-card
+              v-for="bookmark in bookmarkCardItems"
+              :key="bookmark.id"
+              :style="bookmark.style"
+              v-on:click="onBtnAddBookmarkToCurrentCollectionClick(bookmark)"
+            >
+              <template #header>
+                <b-card-text>{{ bookmark.author }}</b-card-text>
+              </template>
+              <b-card-body>
+                <b-card-sub-title class="mb-2">{{ bookmark.title }}</b-card-sub-title>
+                <b-card-text>
+                  {{ bookmark.content }}
+                </b-card-text>
+              </b-card-body>
+            </b-card>
+            <b-card>
+              <b-card-body>
+                <b-button variant="primary" @click.prevent="onMoreBookmark"> More ... </b-button>
+              </b-card-body>
+            </b-card>
           </div>
         </b-col>
         <b-col>
