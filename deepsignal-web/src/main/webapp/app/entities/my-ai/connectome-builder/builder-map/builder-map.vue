@@ -3,10 +3,32 @@
     <b-container class="bv-example-row">
       <b-row>
         <b-col>
+          <b-badge variant="primary">Collections</b-badge>
+        </b-col>
+        <b-col>
+          <b-badge variant="primary">Bookmarks</b-badge>
+        </b-col>
+        <b-col>
+          <b-badge variant="success">Current Collection</b-badge>
+        </b-col>
+        <b-col>
+          <b-badge variant="info">Current Collection's Connectome</b-badge>
+        </b-col>
+        <b-col>
+          <b-badge variant="light">Current Collection's requests</b-badge>
+        </b-col>
+      </b-row>
+      <b-row>
+        <b-col>
           <div class="list-scrollable">
             <b-card v-for="collection in collectionCardItems" :key="collection.id">
               <template #header>
-                <b-card-text>{{ collection.author }}</b-card-text>
+                <b-input-group class="mb-2" variant="outline-primary">
+                  <b-input-group-prepend is-text>
+                    <b-icon icon="folder-fill"></b-icon>
+                  </b-input-group-prepend>
+                  <b-form-input type="text" :placeholder="collection.type" disabled></b-form-input>
+                </b-input-group>
               </template>
               <b-card-body>
                 <b-card-sub-title class="mb-2">{{ collection.title }}</b-card-sub-title>
@@ -29,7 +51,12 @@
               v-on:click="onBtnAddBookmarkToCurrentCollectionClick(bookmark)"
             >
               <template #header>
-                <b-card-text>{{ bookmark.author }}</b-card-text>
+                <b-input-group class="mb-2" variant="outline-primary">
+                  <b-input-group-prepend is-text>
+                    <b-icon icon="bookmark-check-fill"></b-icon>
+                  </b-input-group-prepend>
+                  <b-form-input type="text" :placeholder="bookmark.author" disabled></b-form-input>
+                </b-input-group>
               </template>
               <b-card-body>
                 <b-card-sub-title class="mb-2">{{ bookmark.title }}</b-card-sub-title>
@@ -46,7 +73,10 @@
           </div>
         </b-col>
         <b-col>
-          <b-button variant="primary" @click.prevent="onCommitCurrentCollection"> Commit ... </b-button>
+          <div>
+            <b-button variant="primary" @click.prevent="onCommitCurrentCollection" style="margin-right: 3px">{{ labelSave }}</b-button
+            ><b-button variant="secondary" @click.prevent="onResetCurrentCollection">Reset</b-button>
+          </div>
           <div class="list-scrollable">
             <b-card
               border-variant="primary"

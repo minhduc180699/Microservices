@@ -443,7 +443,7 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
       axios.defaults.headers.common['lang'] = context.getters.getLang;
 
       if (!payload.collection) return;
-
+      payload.collection.modifiedDate = null;
       const apiCallConnectomeData = new Promise<any>((resolve, reject) => {
         axios
           .post(postUpdateCollectionURL, payload.collection)
@@ -567,6 +567,8 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
       }
 
       const newCurrentCollection = new CmCollection(collectionItem);
+      newCurrentCollection.connectomeId = context.getters.getConnectomeId;
+      newCurrentCollection.lang = context.getters.getLang;
 
       context.commit('setCurrentCollection', { collection: newCurrentCollection });
 
@@ -623,7 +625,7 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
             if (!res) {
               return { status: 'NOK', message: 'cannot create the collection', result: null };
             }
-            context.commit('setCurrentCollection', { collection: new CmCollection(null) });
+            context.commit('setCurrentCollection', { collection: new CmCollection(res) });
             return { status: 'OK', message: 'draft saved', result: null };
           });
       } else {
@@ -635,7 +637,7 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
             if (!res) {
               return { status: 'NOK', message: 'cannot create the collection', result: null };
             }
-            context.commit('setCurrentCollection', { collection: new CmCollection(null) });
+            context.commit('setCurrentCollection', { collection: context.getters.getCurrentCollection });
             return { status: 'OK', message: 'collection updated', result: null };
           });
       }

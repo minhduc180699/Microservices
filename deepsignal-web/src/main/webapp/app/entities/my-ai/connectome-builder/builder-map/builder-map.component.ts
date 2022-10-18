@@ -42,6 +42,7 @@ export default class BuilderMap extends Vue {
 
   mounted() {
     this.getPDApi();
+    this.onCurrentCollectionDataChange(0);
   }
 
   //Observer Collections changed
@@ -50,6 +51,45 @@ export default class BuilderMap extends Vue {
     console.log('onCollectionsDataChange', newVal);
     this.getAllCollections().then(res => {
       console.log('getAllCollections', res);
+    });
+
+    const listDocIds = new Array<string>();
+    this.bookmarkCardItems.forEach(card => {
+      listDocIds.push(card.id);
+    });
+    this.collectionCardItems = new Array<documentCard>();
+    this.getCollectionsFromDocIds({ docIds: listDocIds }).then(res => {
+      console.log('getCollectionsFromDocIds', res);
+      if (!res) {
+        return;
+      }
+
+      if (res.status === 'NOK') {
+        return;
+      }
+
+      if (!res.result) {
+        return;
+      }
+
+      if (!this.collectionCardItems) {
+        this.collectionCardItems = new Array<documentCard>();
+      }
+
+      res.result.forEach(collection => {
+        const card = new documentCard();
+        card.id = collection.collectionId;
+        card.author = 'me';
+        card.type = 'COLLECTION';
+        card.title = collection.collectionId;
+        card.content = collection.documentIdList.length + ' documents included';
+        card.modifiedAt = collection.modifiedDate;
+
+        const indexcard = this.collectionCardItems.find(x => x.id == collection.collectionId);
+        if (!indexcard) {
+          this.collectionCardItems.push(card);
+        }
+      });
     });
   }
 
@@ -74,7 +114,11 @@ export default class BuilderMap extends Vue {
       if (!res.result.documentIdList) {
         return;
       }
-
+      if (!res.result.collectionId) {
+        this.labelSave = 'Save';
+      } else {
+        this.labelSave = 'Update';
+      }
       res.result.documentIdList.forEach(docId => {
         const card = new documentCard();
         card.id = docId;
@@ -293,6 +337,8 @@ export default class BuilderMap extends Vue {
   //bookmark inside current Collection
   currentCollectiontCardItems: Array<documentCard> = new Array<documentCard>();
 
+  labelSave = 'Save';
+
   @collectionsManagerStore.Action
   public removeBookmarksFromCurrentCollection: (payload: {
     docIds: Array<string>;
@@ -300,6 +346,9 @@ export default class BuilderMap extends Vue {
 
   @collectionsManagerStore.Action
   public saveCurrentDraftCollection: () => Promise<{ status: string; message: string; result: any }>;
+
+  @collectionsManagerStore.Action
+  public closeCurrentDraftCollection: () => Promise<{ status: string; message: string; result: any }>;
 
   onBtnRemoveBookmarkFromCurrentCollectionClick(card: documentCard) {
     console.log('onBtnRemoveBookmarkFromCurrentCollectionClick', card);
@@ -310,6 +359,23 @@ export default class BuilderMap extends Vue {
 
     this.removeBookmarksFromCurrentCollection({ docIds: [card.id] }).then(res => {
       console.log('removeBookmarksFromCurrentCollection', res);
+      if (!res) {
+        return;
+      }
+
+      if (res.status === 'NOK') {
+        return;
+      }
+
+      if (!res.result) {
+        return;
+      }
+    });
+  }
+
+  public onResetCurrentCollection(event) {
+    this.closeCurrentDraftCollection().then(res => {
+      console.log('closeCurrentDraftCollection', res);
       if (!res) {
         return;
       }
