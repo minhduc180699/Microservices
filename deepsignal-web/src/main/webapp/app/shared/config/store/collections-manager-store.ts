@@ -435,7 +435,7 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
         collection: CmCollection;
       }
     ) => {
-      if (!context.getters.getConnectomeId() || !context.getters.getLang()) {
+      if (!context.getters.getConnectomeId || !context.getters.getLang) {
         return;
       }
 
@@ -506,6 +506,37 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
         message: 'list collection containing the docIds',
         result: context.getters.getCollectionsFromDocuments(payload.docIds),
       };
+    },
+    getCollectionDetails: async (
+      context,
+      payload: {
+        collectionId: string;
+      }
+    ) => {
+      if (!payload) {
+        return { status: 'NOK', message: 'paramters undefined', result: null };
+      }
+
+      if (!payload.collectionId) {
+        return { status: 'NOK', message: 'collectionId is undefined', result: null };
+      }
+
+      const collectionItemIndex = context.getters.getCollections.findIndex(collection => collection.collectionId == payload.collectionId);
+      console.log('getCollectionDetails:collectionItemIndex', collectionItemIndex);
+      if (collectionItemIndex < 0) {
+        return { status: 'NOK', message: 'collectionId not include in collections', result: null };
+      }
+
+      const collectionItem = context.getters.getCollections[collectionItemIndex];
+      console.log('getCollectionDetails:collectionItem', collectionItem);
+
+      if (!collectionItem) {
+        return { status: 'NOK', message: 'collection is undefined', result: null };
+      }
+
+      const newCurrentCollection = new CmCollection(collectionItem);
+
+      return { status: 'OK', message: 'collection to be edited', result: newCurrentCollection };
     },
     //return the collection and set it as current collection
     editCollection: async (
@@ -598,7 +629,7 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
       } else {
         return context
           .dispatch('updateCollection', {
-            collection: context.getters.getCurrentCollection.documentIdList,
+            collection: context.getters.getCurrentCollection,
           })
           .then(res => {
             if (!res) {

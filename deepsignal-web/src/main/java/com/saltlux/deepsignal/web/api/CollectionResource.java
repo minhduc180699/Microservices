@@ -1,56 +1,20 @@
 package com.saltlux.deepsignal.web.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.saltlux.deepsignal.web.aop.userActivities.UserActivity;
-import com.saltlux.deepsignal.web.api.errors.BadRequestAlertException;
-import com.saltlux.deepsignal.web.api.vm.ConnectomeParams;
-import com.saltlux.deepsignal.web.api.vm.EntitiesDetailsParams;
 import com.saltlux.deepsignal.web.config.ApplicationProperties;
 import com.saltlux.deepsignal.web.config.Constants;
-import com.saltlux.deepsignal.web.domain.Connectome;
-import com.saltlux.deepsignal.web.repository.ConnectomeRepository;
-import com.saltlux.deepsignal.web.security.SecurityUtils;
-import com.saltlux.deepsignal.web.service.IConnectomeService;
 import com.saltlux.deepsignal.web.service.dto.ApiResponse;
 import com.saltlux.deepsignal.web.service.dto.CollectionCreateRequestBody;
 import com.saltlux.deepsignal.web.service.dto.CollectionResponseDTO;
 import com.saltlux.deepsignal.web.service.dto.CollectionsItemResponseDTO;
-import com.saltlux.deepsignal.web.service.dto.ConnectomeDTO;
-import com.saltlux.deepsignal.web.service.dto.ConnectomeNetworkDTO;
 import com.saltlux.deepsignal.web.service.dto.ConnectomeNodeDTO;
-import com.saltlux.deepsignal.web.service.dto.ConnectomeOnTextRequestBody;
-import com.saltlux.deepsignal.web.service.dto.ConnectomePersonalDocumentDTO;
-import com.saltlux.deepsignal.web.service.dto.ConnectomeStatusDTO;
-import com.saltlux.deepsignal.web.service.dto.CreateCollectionRequestBody;
 import com.saltlux.deepsignal.web.service.dto.DocumentMapRequestBody;
 import com.saltlux.deepsignal.web.service.dto.DocumentMapResponse;
-import com.saltlux.deepsignal.web.service.dto.EdgeDTO;
-import com.saltlux.deepsignal.web.service.dto.FeedRes;
-import com.saltlux.deepsignal.web.service.dto.VertexDocsRes;
-import com.saltlux.deepsignal.web.service.dto.VerticeDTO;
-import com.saltlux.deepsignal.web.service.dto.entityUpdateRequestBody;
-import com.saltlux.deepsignal.web.service.dto.miniConnectomeRequestBody;
-import com.saltlux.deepsignal.web.service.impl.ConnectomeService;
 import com.saltlux.deepsignal.web.util.ConnectAdapterApi;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import org.apache.commons.lang3.StringUtils;
-import org.hibernate.validator.internal.util.StringHelper;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,19 +25,14 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
-import tech.jhipster.web.util.HeaderUtil;
 
 /**
  * REST controller for managing the Connectome.
@@ -111,54 +70,63 @@ public class CollectionResource {
     }
 
     // @PostMapping("/document-map")
-    // @Operation(summary = "get node list by document id", tags = { "Connectome Management" })
+    // @Operation(summary = "get node list by document id", tags = { "Connectome
+    // Management" })
     // public ResponseEntity<?> postPDConnectomeMapByDocTitleAndContent(
-    //     @RequestBody DocumentMapRequestBody content
+    // @RequestBody DocumentMapRequestBody content
     // ) {
-    //     if (Objects.isNull(content)) {
-    //         return ResponseEntity.status(HttpStatus.OK).body(content);
-    //     }
-
-    //     StringBuilder url = new StringBuilder();
-    //     url.append(APIContextualMemory).append(Constants.POST_TEXT_CONNECTOME_URI).append("/").append(lang);
-    //     try {
-    //         Map<String, Object> requestBody = new HashMap<>();
-    //         requestBody.put("connectomeId", content.getDocumentId());
-    //         requestBody.put("documentId", content.getDocumentId());
-    //         System.out.println(requestBody);
-    //         HttpEntity<Object> request = new HttpEntity<>(requestBody);
-    //         HttpEntity<ConnectomeNodeDTO[]> response = restTemplate.postForEntity(url.toString(), request, ConnectomeNodeDTO[].class);
-    //         /*{sourceLang=en, personalDocumentObjectIds=[], feedObjectIds=[62b50aa7cea9a2500dd0a6e7], connectomeId=CID_92340659-a63c-4d72-b808-63461f40625f} */
-    //         ConnectomeNodeDTO[] connectome = response.getBody();
-
-    //         if (connectome == null) {
-    //             System.out.println("Doc map Request Body");
-    //             System.out.println(requestBody.get("connectomeId"));
-    //             System.out.println(requestBody.get("documentId"));
-    //             return new ResponseEntity(new ApiResponse(false, "Body response empty"), HttpStatus.OK);
-    //         }
-
-    //         if (connectome.length == 0) {
-    //             System.out.println("Doc map is empty");
-    //             System.out.println(requestBody.get("connectomeId"));
-    //             System.out.println(requestBody.get("documentId"));
-    //         }
-
-    //         ConnectomePersonalDocumentDTO responseToSend = new ConnectomePersonalDocumentDTO();
-    //         responseToSend.setDocumentIds(content.getDocumentIds());
-    //         responseToSend.setConnectome(connectome);
-
-    //         return ResponseEntity
-    //             .ok()
-    //             .body(new ResponseEntity<ConnectomePersonalDocumentDTO>(responseToSend, response.getHeaders(), HttpStatus.OK));
-    //     } catch (Exception e) {
-    //         System.out.println("Error");
-    //         System.out.println(e.getMessage());
-    //         return new ResponseEntity(new ApiResponse(false, "call of external api " + e.getMessage()), HttpStatus.BAD_REQUEST);
-    //     }
+    // if (Objects.isNull(content)) {
+    // return ResponseEntity.status(HttpStatus.OK).body(content);
     // }
 
-    //#region collection manager
+    // StringBuilder url = new StringBuilder();
+    // url.append(APIContextualMemory).append(Constants.POST_TEXT_CONNECTOME_URI).append("/").append(lang);
+    // try {
+    // Map<String, Object> requestBody = new HashMap<>();
+    // requestBody.put("connectomeId", content.getDocumentId());
+    // requestBody.put("documentId", content.getDocumentId());
+    // System.out.println(requestBody);
+    // HttpEntity<Object> request = new HttpEntity<>(requestBody);
+    // HttpEntity<ConnectomeNodeDTO[]> response =
+    // restTemplate.postForEntity(url.toString(), request,
+    // ConnectomeNodeDTO[].class);
+    // /*{sourceLang=en, personalDocumentObjectIds=[],
+    // feedObjectIds=[62b50aa7cea9a2500dd0a6e7],
+    // connectomeId=CID_92340659-a63c-4d72-b808-63461f40625f} */
+    // ConnectomeNodeDTO[] connectome = response.getBody();
+
+    // if (connectome == null) {
+    // System.out.println("Doc map Request Body");
+    // System.out.println(requestBody.get("connectomeId"));
+    // System.out.println(requestBody.get("documentId"));
+    // return new ResponseEntity(new ApiResponse(false, "Body response empty"),
+    // HttpStatus.OK);
+    // }
+
+    // if (connectome.length == 0) {
+    // System.out.println("Doc map is empty");
+    // System.out.println(requestBody.get("connectomeId"));
+    // System.out.println(requestBody.get("documentId"));
+    // }
+
+    // ConnectomePersonalDocumentDTO responseToSend = new
+    // ConnectomePersonalDocumentDTO();
+    // responseToSend.setDocumentIds(content.getDocumentIds());
+    // responseToSend.setConnectome(connectome);
+
+    // return ResponseEntity
+    // .ok()
+    // .body(new ResponseEntity<ConnectomePersonalDocumentDTO>(responseToSend,
+    // response.getHeaders(), HttpStatus.OK));
+    // } catch (Exception e) {
+    // System.out.println("Error");
+    // System.out.println(e.getMessage());
+    // return new ResponseEntity(new ApiResponse(false, "call of external api " +
+    // e.getMessage()), HttpStatus.BAD_REQUEST);
+    // }
+    // }
+
+    // #region collection manager
     @PostMapping("/document-map")
     @Operation(summary = "get document map from docId", tags = { "Document map manager" })
     public ResponseEntity<?> postDocumentMapByDocId(@RequestHeader HttpHeaders headers, @RequestBody DocumentMapRequestBody content) {
@@ -230,19 +198,21 @@ public class CollectionResource {
 
         StringBuilder url = new StringBuilder();
         url.append(APIContextualMemory).append(Constants.POST_CONTEXTUAL_MEMORY_CREATE_COLLECTION_URI);
-        try {
-            CollectionCreateRequestBody requestBody = new CollectionCreateRequestBody();
-            if (
-                !Objects.isNull(content) &&
-                !Objects.isNull(content.getDocumentIdList()) &&
-                !Objects.isNull(content.getDocumentIdList().size() > 0)
-            ) {
-                requestBody.setDocumentIdList(content.getDocumentIdList());
-            }
+        CollectionCreateRequestBody requestBody = new CollectionCreateRequestBody();
+        if (
+            !Objects.isNull(content) &&
+            !Objects.isNull(content.getDocumentIdList()) &&
+            !Objects.isNull(content.getDocumentIdList().size() > 0)
+        ) {
+            requestBody.setDocumentIdList(content.getDocumentIdList());
+        }
 
+        try {
             HttpEntity<CollectionCreateRequestBody> request = new HttpEntity<>(requestBody, headers);
-            //HttpEntity<CollectionResponseDTO[]> response = restTemplate.exchange(urlTemplate.toString(), HttpMethod.POST, entity,CollectionResponseDTO[].class);
-            //HttpEntity<Object> request = new HttpEntity<>(requestBody);
+            // HttpEntity<CollectionResponseDTO[]> response =
+            // restTemplate.exchange(urlTemplate.toString(), HttpMethod.POST,
+            // entity,CollectionResponseDTO[].class);
+            // HttpEntity<Object> request = new HttpEntity<>(requestBody);
             HttpEntity<CollectionResponseDTO> response = restTemplate.postForEntity(url.toString(), request, CollectionResponseDTO.class);
 
             CollectionResponseDTO collectionResponse = response.getBody();
@@ -259,6 +229,7 @@ public class CollectionResource {
         } catch (Exception e) {
             System.out.println("Error");
             System.out.println(e.getMessage());
+            System.out.println(requestBody.getDocumentIdList().toString());
             return new ResponseEntity<ApiResponse>(
                 new ApiResponse(
                     false,
@@ -406,17 +377,16 @@ public class CollectionResource {
         try {
             restTemplate.put(url.toString(), content);
 
-            HttpEntity<CollectionResponseDTO> request = new HttpEntity<>(content, headers);
-            HttpEntity<CollectionResponseDTO> response = restTemplate.postForEntity(url.toString(), request, CollectionResponseDTO.class);
-            CollectionResponseDTO collectionResponse = response.getBody();
+            // HttpEntity<CollectionResponseDTO> request = new HttpEntity<>(content, headers);
+            // HttpEntity<CollectionResponseDTO> response = restTemplate.postForEntity(url.toString(), request,
+            //         CollectionResponseDTO.class);
+            // CollectionResponseDTO collectionResponse = response.getBody();
 
-            if (collectionResponse == null) {
-                System.out.println("Doc connectome Request Body");
-                return new ResponseEntity<ApiResponse>(new ApiResponse(false, "Body response empty"), HttpStatus.OK);
-            }
-            return ResponseEntity
-                .ok()
-                .body(new ResponseEntity<CollectionResponseDTO>(collectionResponse, response.getHeaders(), HttpStatus.OK));
+            // if (collectionResponse == null) {
+            //     System.out.println("Doc connectome Request Body");
+            //     return new ResponseEntity<ApiResponse>(new ApiResponse(false, "Body response empty"), HttpStatus.OK);
+            // }
+            return ResponseEntity.ok().body(content);
         } catch (Exception e) {
             System.out.println("Error");
             System.out.println(e.getMessage());
@@ -459,7 +429,7 @@ public class CollectionResource {
             .build()
             .toUriString();
         try {
-            //restTemplate.put(url.toString(), content);
+            // restTemplate.put(url.toString(), content);
 
             HttpEntity<String> request = new HttpEntity<>(headers);
             HttpEntity<String> response = restTemplate.exchange(urlTemplate, HttpMethod.DELETE, request, String.class);
@@ -476,5 +446,5 @@ public class CollectionResource {
             );
         }
     }
-    //#endregion
+    // #endregion
 }

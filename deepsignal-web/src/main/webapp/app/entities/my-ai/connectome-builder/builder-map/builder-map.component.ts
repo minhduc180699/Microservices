@@ -93,8 +93,83 @@ export default class BuilderMap extends Vue {
   //collection list
   collectionCardItems: Array<documentCard> = new Array<documentCard>();
 
+  @collectionsManagerStore.Action
+  public getCollectionDetails: (payload: { collectionId: string }) => Promise<{ status: string; message: string; result: CmCollection }>;
+
+  @collectionsManagerStore.Action
+  public editCollection: (payload: { collectionId: string }) => Promise<{ status: string; message: string; result: CmCollection }>;
+
   onBtnAddCollectionToCurrentCollectionClick(card: documentCard) {
     console.log('onBtnAddCollectionToCurrentCollectionClick', card);
+    if (!card) return;
+
+    if (!card.id) return;
+    this.getCollectionDetails({ collectionId: card.id }).then(res => {
+      console.log('getCollectionDetails', res);
+      if (!res) {
+        return;
+      }
+
+      if (res.status === 'NOK') {
+        return;
+      }
+
+      if (!res.result) {
+        return;
+      }
+
+      if (!res.result.documentIdList) {
+        return;
+      }
+
+      if (res.result.documentIdList.length == 0) {
+        return;
+      }
+
+      this.addBookmarksToCurrentCollection({ docIds: res.result.documentIdList }).then(res => {
+        console.log('addBookmarksToCurrentCollection', res);
+        if (!res) {
+          return;
+        }
+
+        if (res.status === 'NOK') {
+          return;
+        }
+
+        if (!res.result) {
+          return;
+        }
+      });
+    });
+  }
+
+  onBtnEditCollectionToCurrentCollectionClick(card: documentCard) {
+    console.log('onBtnAddCollectionToCurrentCollectionClick', card);
+    if (!card) return;
+
+    if (!card.id) return;
+    this.editCollection({ collectionId: card.id }).then(res => {
+      console.log('editCollection', res);
+      if (!res) {
+        return;
+      }
+
+      if (res.status === 'NOK') {
+        return;
+      }
+
+      if (!res.result) {
+        return;
+      }
+
+      if (!res.result.documentIdList) {
+        return;
+      }
+
+      if (res.result.documentIdList.length == 0) {
+        return;
+      }
+    });
   }
 
   //bookmark list
@@ -174,8 +249,8 @@ export default class BuilderMap extends Vue {
               card.content = collection.documentIdList.length + ' documents included';
               card.modifiedAt = collection.modifiedDate;
 
-              const indexcard = this.collectionCardItems.indexOf(card);
-              if (indexcard < 0) {
+              const indexcard = this.collectionCardItems.find(x => x.id == collection.collectionId);
+              if (!indexcard) {
                 this.collectionCardItems.push(card);
               }
             });

@@ -4,11 +4,7 @@
       <b-row>
         <b-col>
           <div class="list-scrollable">
-            <b-card
-              v-for="collection in collectionCardItems"
-              :key="collection.id"
-              v-on:click="onBtnAddCollectionToCurrentCollectionClick(collection)"
-            >
+            <b-card v-for="collection in collectionCardItems" :key="collection.id">
               <template #header>
                 <b-card-text>{{ collection.author }}</b-card-text>
               </template>
@@ -17,8 +13,15 @@
                 <b-card-text>
                   {{ collection.content }}
                 </b-card-text>
+                <b-card-sub-title>modified: {{ collection.modifiedAt }}</b-card-sub-title>
+                <b-button v-on:click="onBtnAddCollectionToCurrentCollectionClick(collection)" variant="primary">Add</b-button>
+                <b-button v-on:click="onBtnEditCollectionToCurrentCollectionClick(collection)" variant="primary">Edit</b-button>
               </b-card-body>
             </b-card>
+          </div>
+        </b-col>
+        <b-col>
+          <div class="list-scrollable">
             <b-card
               v-for="bookmark in bookmarkCardItems"
               :key="bookmark.id"
@@ -69,7 +72,7 @@
         <b-col> </b-col>
         <b-col>
           <div class="list-scrollable">
-            <!-- <b-card
+            <b-card
               border-variant="primary"
               header="Primary"
               header-bg-variant="primary"
@@ -86,7 +89,7 @@
                   {{ discovery.content }}
                 </b-card-text>
               </b-card-body>
-            </b-card> -->
+            </b-card>
           </div>
         </b-col>
       </b-row>
