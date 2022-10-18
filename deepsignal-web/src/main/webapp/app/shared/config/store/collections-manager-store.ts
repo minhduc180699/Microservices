@@ -1,14 +1,11 @@
 import { ConnectomeNetwork } from '@/shared/model/connectome-network.model';
 
-import { ConnectomeLink } from '@/shared/model/connectome-link.model';
 import { ConnectomeNode } from '@/shared/model/connectome-node.model';
 import axios from 'axios';
 import { Module } from 'vuex';
 import { ContextualMemoryCollection } from '@/shared/model/contextual-memory-collection.model';
 import { CmCollectionsItem } from '@/shared/model/cm-collections-item.model';
 import { CmCollection } from '@/shared/model/cm-collection.model';
-import { State } from 'vuex-class';
-import { async } from 'rxjs';
 
 const baseConnectomeApiUrl = '/api/collections';
 const getCollectionsURL = baseConnectomeApiUrl + '/get/all';
@@ -306,8 +303,7 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
         .catch(reason => {
           console.log('Reason', reason);
           return { status: 'NOK', message: 'error load User Context', result: null };
-        })
-        .finally(() => {});
+        });
     },
     loadUserCollections: async context => {
       if (!context.getters.getConnectomeId || !context.getters.getLang) {
@@ -340,8 +336,7 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
         })
         .catch(reason => {
           console.log('Reason', reason);
-        })
-        .finally(() => {});
+        });
     },
     loadCollection: async (context, payload: { collectionId: string }) => {
       if (!context.getters.getConnectomeId() || !context.getters.getLang()) {
@@ -375,8 +370,7 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
         })
         .catch(reason => {
           console.log('Reason', reason);
-        })
-        .finally(() => {});
+        });
     },
     createCollection: async (
       context,
@@ -431,8 +425,7 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
         .catch(reason => {
           console.log('Reason', reason);
           console.log('Reason mini getMiniConnectomeData', payload);
-        })
-        .finally(() => {});
+        });
     },
     updateCollection: async (
       context,
@@ -482,8 +475,7 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
         .catch(reason => {
           console.log('Reason', reason);
           console.log('Reason mini getMiniConnectomeData', payload);
-        })
-        .finally(() => {});
+        });
     },
     logout(context) {},
 
@@ -547,12 +539,7 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
 
       return { status: 'OK', message: 'collection to be edited', result: newCurrentCollection };
     },
-    getCurrentDraftCollection: async (
-      context,
-      payload: {
-        collectionId: string;
-      }
-    ) => {
+    getCurrentDraftCollection: async context => {
       if (!context.getters.getCurrentCollection) {
         return { status: 'NOK', message: 'no current Colleciton defined', result: null };
       }

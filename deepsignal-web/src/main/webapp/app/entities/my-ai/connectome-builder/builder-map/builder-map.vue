@@ -1,51 +1,100 @@
 <template>
-  <div>
-    <div class="connectome-control">
-      <div class="control-screen">
-        <div class="control-screen">
-          <div class="btn-group-vertical">
-            <button type="button" class="btn btn-dark" v-on:click="fitScreen">
-              <b-icon icon="aspect-ratio"></b-icon>
-              <span><span v-text="$t('connectome-map.fit-to-screen')" /></span>
-            </button>
+  <div class="asset-panel">
+    <b-container class="bv-example-row">
+      <b-row>
+        <b-col>
+          <div class="list-scrollable">
+            <b-card-group>
+              <b-card
+                v-for="collection in collectionCardItems"
+                :key="collection.id"
+                v-on:click="onBtnAddCollectionToCurrentCollectionClick(collection)"
+              >
+                <template #header>
+                  <b-card-text>{{ collection.author }}</b-card-text>
+                </template>
+                <b-card-body>
+                  <b-card-sub-title class="mb-2">{{ collection.title }}</b-card-sub-title>
+                  <b-card-text>
+                    {{ collection.content }}
+                  </b-card-text>
+                </b-card-body>
+              </b-card>
+            </b-card-group>
+            <b-card-group>
+              <b-card
+                v-for="bookmark in bookmarkCardItems"
+                :key="bookmark.id"
+                :style="bookmark.style"
+                v-on:click="onBtnAddBookmarkToCurrentCollectionClick(bookmark)"
+              >
+                <template #header>
+                  <b-card-text>{{ bookmark.author }}</b-card-text>
+                </template>
+                <b-card-body>
+                  <b-card-sub-title class="mb-2">{{ bookmark.title }}</b-card-sub-title>
+                  <b-card-text>
+                    {{ bookmark.content }}
+                  </b-card-text>
+                </b-card-body>
+              </b-card>
+              <b-card>
+                <b-card-body>
+                  <b-button variant="primary" @click.prevent="onMoreBookmark"> More ... </b-button>
+                </b-card-body>
+              </b-card>
+            </b-card-group>
           </div>
-          <!-- <div style="margin: 5px">
-            <b-form-input v-model="cmpMinNodeWeight" placeholder="title"></b-form-input>
-            <b-form-input v-model="cmpMinRelatedDocuments" style="margin-top: 2px" placeholder="content"></b-form-input>
-            <b-form-input v-model="cmpMinLinkedNodes" style="margin-top: 2px" placeholder="content"></b-form-input>
-            <b-button variant="outline-primary" style="margin-top: 2px" @click="networkFiltersOnChange">Apply</b-button>
-          </div> -->
-        </div>
-      </div>
-      <div class="control-topick">
-        <b-button v-b-toggle.sidebar-footer><b-icon icon="layout-sidebar" aria-hidden="true" variant="outline-primary"></b-icon></b-button>
-      </div>
-      <b-sidebar id="sidebar-footer" aria-label="Sidebar with custom footer">
-        <template #footer="{}">
-          <div class="d-flex bg-dark text-light align-items-center px-3 py-2">
-            <b-button size="sm" @click="createEmptyContext" style="margin-right: 5px"
-              ><b-icon icon="folder-plus" aria-hidden="true" variant="outline-primary"></b-icon> Create collection</b-button
+        </b-col>
+        <b-col>
+          <b-button variant="primary" @click.prevent="onCommitCurrentCollection"> Commit ... </b-button>
+          <div class="list-scrollable">
+            <b-card
+              border-variant="primary"
+              header="Primary"
+              header-bg-variant="primary"
+              v-for="currentBookmark in currentCollectiontCardItems"
+              :key="currentBookmark.id"
+              :style="currentBookmark.style"
+              v-on:click="onBtnRemoveBookmarkFromCurrentCollectionClick(currentBookmark)"
             >
-            <b-button size="sm" v-b-modal.add-document-tool style="margin-right: 5px"
-              ><b-icon icon="plus-circle" aria-hidden="true" variant="outline-primary"></b-icon> Add document</b-button
-            >
-            <b-button size="sm" @click="saveContext"
-              ><b-icon icon="save2" aria-hidden="true" variant="outline-primary"></b-icon> Update collection</b-button
-            >
+              <template #header>
+                <b-card-text>{{ currentBookmark.author }}</b-card-text>
+              </template>
+              <b-card-body>
+                <b-card-sub-title class="mb-2">{{ currentBookmark.title }}</b-card-sub-title>
+                <b-card-text>
+                  {{ currentBookmark.content }}
+                </b-card-text>
+              </b-card-body>
+            </b-card>
           </div>
-        </template>
-        <map-side-bar></map-side-bar>
-        <b-modal id="add-document-tool" hide-header hide-footer title="Add document to collection">
-          <map-add-document-tool></map-add-document-tool>
-        </b-modal>
-      </b-sidebar>
-    </div>
-    <div class="connectome-area"></div>
+        </b-col>
+        <b-col> </b-col>
+        <b-col>
+          <div class="list-scrollable">
+            <!-- <b-card
+              border-variant="primary"
+              header="Primary"
+              header-bg-variant="primary"
+              v-for="discovery in discoveryCardItems"
+              :key="discovery.id"
+              :style="discovery.style"
+            >
+              <template #header>
+                <b-card-text>{{ discovery.author }}</b-card-text>
+              </template>
+              <b-card-body>
+                <b-card-sub-title class="mb-2">{{ discovery.title }}</b-card-sub-title>
+                <b-card-text>
+                  {{ discovery.content }}
+                </b-card-text>
+              </b-card-body>
+            </b-card> -->
+          </div>
+        </b-col>
+      </b-row>
+    </b-container>
   </div>
 </template>
 <script lang="ts" src="./builder-map.component.ts"></script>
-<style scoped>
-#connectome-network {
-  background-color: black;
-}
-</style>

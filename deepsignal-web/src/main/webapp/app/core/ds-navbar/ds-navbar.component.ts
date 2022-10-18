@@ -135,10 +135,6 @@ export default class DsNavbar extends Vue {
         this.getAllCollections().then(res => {
           console.log('getAllCollections', res);
         });
-
-        this.getCollectionsFromDocIds({ docIds: ['ds-web_data-eng-N4518173107571863632-0-0'] }).then(res => {
-          console.log('getCollectionsFromDocIds', res);
-        });
       });
       this.initWebsocket();
     }
