@@ -14,7 +14,7 @@ import groupCard from '@/entities/new-learning-center/aside/group-card/group-car
     groupCard: groupCard,
   },
 })
-export default class LearningCenterAsideComponent extends Vue {
+export default class LearningCenterAside extends Vue {
   private collections = [];
 
   private scrollSettings = {

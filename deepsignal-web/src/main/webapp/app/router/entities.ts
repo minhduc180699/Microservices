@@ -25,7 +25,7 @@ const ConnectomeBuilder = () => import('@/entities/my-ai/connectome-builder/buil
 const MiniConnectomeMap = () => import('@/entities/my-ai/mini-connectome/mini-connectome-map.vue');
 const MiniMap2dNetwork = () => import('@/entities/my-ai/mini-connectome/mini-map-2d-network/mini-map-2d-network.vue');
 const AddCollection = () => import('@/entities/new-learning-center/add-collection/add-collection.vue');
-const NewLearningCenterHome = () => import('@/entities/new-learning-center/new-learning-center-home.vue');
+const NewLearningCenter = () => import('@/entities/new-learning-center/new-learning-center.vue');
 export default [
   {
     path: '/upload',
@@ -105,20 +105,21 @@ export default [
   {
     path: '/new-learning-center',
     name: 'New-Learning-Center',
-    component: NewLearningCenterHome,
+    component: NewLearningCenter,
     meta: { authorities: [Authority.USER] },
-    children: [
-      {
-        path: '/new-learning-center/list-collection',
-        name: 'List-Collection',
-        component: ListCollection,
-      },
-      {
-        path: '/new-learning-center/add-collection',
-        name: 'Add-Collection',
-        component: AddCollection,
-      },
-    ],
+    // children: [
+    // { path: '/', redirect: 'list-collection' },
+    //   {
+    //     path: '/new-learning-center/list-collection',
+    //     name: 'List-Collection',
+    //     component: ListCollection,
+    //   },
+    //   {
+    //     path: '/new-learning-center/add-collection',
+    //     name: 'Add-Collection',
+    //     component: AddCollection,
+    //   },
+    // ],
   },
   {
     path: '/my-ai',
