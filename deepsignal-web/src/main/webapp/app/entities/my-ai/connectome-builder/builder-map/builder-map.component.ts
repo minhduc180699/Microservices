@@ -7,6 +7,7 @@ import { documentCard } from '@/shared/model/document-card.model';
 import axios from 'axios';
 import { ShowMoreMixin } from '@/mixins/show-more';
 import { mixins } from 'vue-class-component';
+import { ConnectomeNode } from '@/shared/model/connectome-node.model';
 
 const collectionsManagerStore = namespace('collectionsManagerStore');
 
@@ -119,17 +120,40 @@ export default class BuilderMap extends Vue {
       } else {
         this.labelSave = 'Update';
       }
-      res.result.documentIdList.forEach(docId => {
-        const card = new documentCard();
-        card.id = docId;
-        card.author = docId;
-        card.type = 'Bookmark';
-        card.title = docId;
-        card.content = docId;
-        card.keyword = docId;
-        card.modifiedAt = new Date();
+      this.loadDocumentsFromCollection({ docIds: res.result.documentIdList }).then(res => {
+        console.log('loadDocumentsFromCollection', res);
 
-        this.currentCollectiontCardItems.push(card);
+        if (!res) return;
+        res.forEach(item => {
+          const idx = this.currentCollectiontCardItems.find(x => x.id === item.docId);
+          if (idx) {
+            return;
+          }
+          const card = new documentCard();
+          card.id = item.docId;
+          card.author = item.author;
+          card.type = item.type;
+          card.title = item.title;
+          card.content = item.contentSummary;
+          card.keyword = item.keyword;
+          card.addedAt = new Date(item.publishedAt);
+          card.modifiedAt = new Date(item.publishedAt);
+          console.log(' inside getDocumentsSelected');
+          card.isAdded = true;
+          card.style = 'background-color:' + this.getDocumentColors.get(card.id);
+          this.currentCollectiontCardItems.push(card);
+        });
+
+        // const card = new documentCard();
+        // card.id = docId;
+        // card.author = docId;
+        // card.type = 'Bookmark';
+        // card.title = docId;
+        // card.content = docId;
+        // card.keyword = docId;
+        // card.modifiedAt = new Date();
+
+        // this.currentCollectiontCardItems.push(card);
       });
     });
   }
@@ -345,6 +369,9 @@ export default class BuilderMap extends Vue {
   }) => Promise<{ status: string; message: string; result: CmCollection }>;
 
   @collectionsManagerStore.Action
+  public loadDocumentsFromCollection: (payload: { docIds: Array<string> }) => Promise<any>;
+
+  @collectionsManagerStore.Action
   public saveCurrentDraftCollection: () => Promise<{ status: string; message: string; result: any }>;
 
   @collectionsManagerStore.Action
@@ -407,5 +434,45 @@ export default class BuilderMap extends Vue {
     });
   }
 
+  //current connectome
+  @collectionsManagerStore.Getter
+  public getNodes!: Array<ConnectomeNode>;
+
+  @collectionsManagerStore.Getter
+  public isCurrentConnectomeChanged!: number;
+
+  @collectionsManagerStore.Getter
+  public getDocumentColors!: Map<string, string>;
+
+  localNodes: Array<ConnectomeNode> = [];
+
+  @Watch('isCurrentConnectomeChanged')
+  onCurrentConnectomeChanged(newval: number) {
+    console.log('connectomeUpdated');
+    this.localNodes = this.getNodes.map(x => x);
+  }
+
+  //requestlist
+  @collectionsManagerStore.Getter
+  getCurrentCollection!: CmCollection;
+
+  @collectionsManagerStore.Action
+  loadCollectionRequest!: (payload: { collectionId: string }) => Promise<any>;
+
+  onSearchRequestList() {
+    if (!this.getCurrentCollection.collectionId || !this.getCurrentCollection.collectionId) {
+      console.log('this.getCurrentCollection not defined', this.getCurrentCollection);
+      return;
+    }
+    this.requestList = new Array<string>();
+    this.loadCollectionRequest({ collectionId: this.getCurrentCollection.collectionId }).then(res => {
+      this.requestList = new Array<string>();
+      if (!res) return;
+      res.forEach(query => {
+        this.requestList.push('  [' + query.keywordPattern + ']  ');
+      });
+    });
+  }
+  requestList = new Array<string>();
   discoveryCardItems: Array<documentCard> = new Array<documentCard>();
 }

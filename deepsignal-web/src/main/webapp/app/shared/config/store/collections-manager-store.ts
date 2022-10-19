@@ -7,16 +7,18 @@ import { ContextualMemoryCollection } from '@/shared/model/contextual-memory-col
 import { CmCollectionsItem } from '@/shared/model/cm-collections-item.model';
 import { CmCollection } from '@/shared/model/cm-collection.model';
 
-const baseConnectomeApiUrl = '/api/collections';
-const getCollectionsURL = baseConnectomeApiUrl + '/get/all';
-const getCollectionURL = baseConnectomeApiUrl + '/get';
-const postCreateCollectionURL = baseConnectomeApiUrl + '/create';
-const postUpdateCollectionURL = baseConnectomeApiUrl + '/update';
+const baseCollectionsApiUrl = '/api/collections';
+const getCollectionsURL = baseCollectionsApiUrl + '/get/all';
+const getCollectionURL = baseCollectionsApiUrl + '/get';
+const getCollectionRequestListURL = baseCollectionsApiUrl + '/getRequestList';
+const postCreateCollectionURL = baseCollectionsApiUrl + '/create';
+const postUpdateCollectionURL = baseCollectionsApiUrl + '/update';
+const getDocGraphUrl = baseCollectionsApiUrl + '/document-map';
 
 const basePersonalDocumentsApiUrl = '/api/personal-documents';
 const getPersonalDocumentsByDocIdsUrl = basePersonalDocumentsApiUrl + '/getByDocIds';
 
-const getTextDataUrl = baseConnectomeApiUrl + '/text-map/';
+const getTextDataUrl = baseCollectionsApiUrl + '/text-map/';
 
 const keyStorePdList = 'ConnectomeBuilderPdIds';
 const keyStoreStorageList = 'ConnectomeBuilderStorageList';
@@ -56,7 +58,7 @@ const circleColors = [
 ];
 
 const defaultLangKey = 'en';
-const defaultNoColor = '#DEDEDE';
+const defaultNoColor = '#dedede';
 
 export interface CollectionsManagerStorable {
   indexSessionStorage: Map<string, string>;
@@ -64,9 +66,16 @@ export interface CollectionsManagerStorable {
   lang: string;
   collections: Array<CmCollectionsItem>;
   currentCollection: CmCollection;
+  documentColors: Map<string, string>;
+  currentConnectome: Array<ConnectomeNode>;
   nodesListByDocument: Map<string, Array<ConnectomeNode>>;
+  minNodeWeight: number;
+  minLinkedNodes: number;
+  minRelatedDocuments: number;
   collectionsChanged: number;
   currentCollectionChanged: number;
+  currentConnectomeChanged: number;
+  colorSequence: number;
 }
 
 export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = {
@@ -77,9 +86,16 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
     lang: null,
     collections: new Array<CmCollectionsItem>(),
     currentCollection: new CmCollection(null),
+    documentColors: new Map<string, string>(),
+    currentConnectome: new Array<ConnectomeNode>(),
     nodesListByDocument: new Map<string, Array<ConnectomeNode>>(),
+    minNodeWeight: 0,
+    minLinkedNodes: 0,
+    minRelatedDocuments: 0,
     collectionsChanged: 0,
     currentCollectionChanged: 0,
+    currentConnectomeChanged: 0,
+    colorSequence: 0,
   },
   getters: {
     getIndexSessionStorage: state => state.indexSessionStorage,
@@ -87,6 +103,19 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
     getLang: State => State.lang,
     getCollections: state => state.collections,
     getCurrentCollection: state => state.currentCollection,
+    getCurrentConnectome: state => state.currentConnectome,
+    getNodesListByDocument: state => state.nodesListByDocument,
+    getDocumentColors: state => state.documentColors,
+    getNodes: state =>
+      state.currentConnectome
+        .filter(
+          node =>
+            node.weight >= state.minNodeWeight &&
+            node.linkedNodes.length >= state.minLinkedNodes &&
+            node.relatedDocuments.length >= state.minRelatedDocuments &&
+            !node.disable
+        )
+        .sort((a, b) => (a.weight > b.weight ? -1 : 1)),
     getCollectionsFromDocument: state => (docId: string) => {
       if (!state.collections) {
         return [];
@@ -133,6 +162,7 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
     },
     isCollectionsChanged: state => state.collectionsChanged,
     isCurrentCollectionChanged: state => state.currentCollectionChanged,
+    isCurrentConnectomeChanged: state => state.currentConnectomeChanged,
   },
   mutations: {
     setConnectomeId(state, connectomeId: string) {
@@ -172,6 +202,82 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
       }
       state.collections = payload.collections.map(x => x);
       state.collectionsChanged++;
+    },
+    addPd(
+      state,
+      payload: {
+        docId: string;
+        connectome: Array<ConnectomeNode>;
+      }
+    ) {
+      if (!payload) {
+        return;
+      }
+
+      if (!payload.docId) {
+        return;
+      }
+
+      payload.connectome.forEach(element => {
+        const node = state.currentConnectome.find(elem => elem.id === element.id);
+        if (node) {
+          if (node.relatedDocuments && node.relatedDocuments.length > 0) {
+            node.weight = node.weight / (node.relatedDocuments.length * node.relatedDocuments.length) + element.weight;
+          } else {
+            node.weight = element.weight;
+          }
+          node.relatedDocuments.push(payload.docId);
+          node.keywordList.push(...element.keywordList);
+          node.weight = node.weight * (node.relatedDocuments.length * node.relatedDocuments.length);
+          node.linkedNodes.push(...element.linkedNodes);
+        } else {
+          state.currentConnectome.push(new ConnectomeNode(element));
+        }
+      });
+
+      state.nodesListByDocument.set(
+        payload.docId,
+        payload.connectome.map(x => new ConnectomeNode(x))
+      );
+      console.log('added doc', payload.connectome);
+      state.currentConnectomeChanged++;
+    },
+    disableOrphans(state) {
+      console.log('disableOrphans');
+      state.currentConnectome.forEach(node => {
+        if (!node.linkedNodes) {
+          return;
+        }
+        const linkedNodeSet = new Set<string>();
+        node.linkedNodes.forEach(docId => {
+          linkedNodeSet.add(docId);
+        });
+
+        if (linkedNodeSet.size < 1) {
+          console.log('node is disabled:' + node.label);
+          node.disable = true;
+        } else if (linkedNodeSet.size == 1) {
+          console.log('candidate to disable:' + node.label + ':' + linkedNodeSet.values().next().value);
+          const regOption = new RegExp(node.label.toLowerCase(), 'ig');
+          const targetNodes = state.currentConnectome.filter(target => target.id === linkedNodeSet.values().next().value);
+          console.log('target node:', targetNodes);
+          if (targetNodes && targetNodes.length == 1) {
+            if (targetNodes[0].label.toLowerCase().match(regOption)) {
+              console.log('node is disabled1:' + node.label);
+              node.disable = true;
+            } else if (targetNodes[0].label.toLowerCase().includes(node.label.toLowerCase())) {
+              console.log('node is disabled2:' + node.label);
+              node.disable = true;
+            } else {
+              node.disable = false;
+            }
+          } else {
+            node.disable = false;
+          }
+        } else {
+          node.disable = false;
+        }
+      });
     },
     addToCollections(state, payload: { collections: Array<CmCollectionsItem> }) {
       if (!payload.collections) {
@@ -261,6 +367,29 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
       });
       state.currentCollectionChanged++;
     },
+    addPdColor(
+      state,
+      PdData: {
+        docId: string;
+      }
+    ) {
+      if (!PdData) {
+        return;
+      }
+
+      if (!PdData.docId) {
+        return;
+      }
+
+      if (state.documentColors.has(PdData.docId)) {
+        return;
+      }
+
+      const colorIndex = state.colorSequence % circleColors.length;
+      state.colorSequence++;
+      const newColor = circleColors[colorIndex];
+      state.documentColors.set(PdData.docId, newColor);
+    },
     AddNodesList(state, payload: { documentId: string; nodesList: Array<ConnectomeNode> }) {
       if (!payload.documentId) {
         return;
@@ -273,8 +402,20 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
       if (!state.nodesListByDocument) {
         state.nodesListByDocument = new Map<string, Array<ConnectomeNode>>();
       }
-
       state.nodesListByDocument.set(payload.documentId, payload.nodesList);
+    },
+    resetCurrentConnectome(state) {
+      state.currentConnectome = new Array<ConnectomeNode>();
+    },
+    resetConnectomeBuilderData(state) {
+      state.nodesListByDocument = new Map<string, Array<ConnectomeNode>>();
+      state.documentColors = new Map<string, string>();
+      state.currentConnectome = new Array<ConnectomeNode>();
+      state.minNodeWeight = 0;
+      state.minLinkedNodes = 0;
+      state.minRelatedDocuments = 0;
+      state.colorSequence = 0;
+      console.log('connectome builder reset');
     },
     ProcessCurrentDocumentList(state) {},
     resetData(state) {},
@@ -347,6 +488,7 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
 
       axios.defaults.headers.common['connectomeId'] = context.getters.getConnectomeId;
       axios.defaults.headers.common['lang'] = context.getters.getLang;
+      axios.defaults.headers.common['collectionId'] = payload.collectionId;
 
       if (!payload.collectionId) {
         return;
@@ -373,6 +515,103 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
         .catch(reason => {
           console.log('Reason', reason);
         });
+    },
+    loadCollectionRequest: async (context, payload: { collectionId: string }) => {
+      if (!context.getters.getConnectomeId || !context.getters.getLang) {
+        return;
+      }
+
+      axios.defaults.headers.common['connectomeId'] = context.getters.getConnectomeId;
+      axios.defaults.headers.common['lang'] = context.getters.getLang;
+      axios.defaults.headers.common['collectionId'] = payload.collectionId;
+
+      if (!payload.collectionId) {
+        return;
+      }
+
+      const apiCallConnectomeData = new Promise<any>((resolve, reject) => {
+        axios
+          .get(getCollectionRequestListURL, { params: { collectionId: payload.collectionId } })
+          .then(res => resolve(res))
+          .catch(err => reject(err));
+      });
+
+      return apiCallConnectomeData
+        .then(res => {
+          if (!res.data.body) {
+            return;
+          }
+
+          const response = res.data.body;
+          //context.commit('setCurrentCollection', { collection: response });
+          console.log('collection requests', res);
+          return response;
+        })
+        .catch(reason => {
+          console.log('Reason', reason);
+        });
+    },
+    GenerateCurrentConnectome: async context => {
+      if (!context.getters.getConnectomeId || !context.getters.getLang) {
+        return;
+      }
+      context.commit('resetCurrentConnectome');
+
+      if (!context.getters.getNodesListByDocument) {
+        console.log('nodesListByDocument undefined');
+        return;
+      }
+      if (!context.getters.getCurrentCollection) {
+        console.log('currentCollection undefined');
+        return;
+      }
+
+      if (!context.getters.getCurrentCollection.documentIdList) {
+        console.log('currentCollection.documentIdList undefined');
+        return;
+      }
+
+      context.getters.getCurrentCollection.documentIdList.forEach(docId => {
+        const docConnectome = context.getters.getNodesListByDocument.get(docId);
+        if (docConnectome) {
+          context.commit('addPd', { docId: docId, connectome: docConnectome });
+          context.commit('addPdColor', { docId: docId });
+          return;
+        }
+
+        axios.defaults.headers.common['connectomeId'] = context.getters.getConnectomeId;
+        axios.defaults.headers.common['lang'] = context.getters.getLang;
+
+        const apiCallConnectomeData = new Promise<any>((resolve, reject) => {
+          axios
+            .post(getDocGraphUrl, {
+              documentId: docId,
+            })
+            .then(res => resolve(res))
+            .catch(err => reject(err));
+        });
+
+        apiCallConnectomeData
+          .then(res => {
+            if (!res.data.body) {
+              return;
+            }
+
+            const response = res.data.body;
+            console.log('getELData', response);
+            context.commit('addPd', { docId: docId, connectome: response.nodeList });
+            context.commit('addPdColor', { docId: docId });
+            return response;
+          })
+          .catch(reason => {
+            console.log('Reason', reason);
+            console.log('Reason  getELData', getDocGraphUrl, {
+              documentIds: [docId],
+            });
+          })
+          .finally(() => {});
+      });
+      context.commit('disableOrphans');
     },
     createCollection: async (
       context,
@@ -479,6 +718,47 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
           console.log('Reason mini getMiniConnectomeData', payload);
         });
     },
+    loadDocumentsFromCollection: async (
+      context,
+      payload: {
+        docIds: Array<string>;
+      }
+    ) => {
+      if (!payload.docIds) {
+        return;
+      }
+
+      if (payload.docIds.length == 0) {
+        return;
+      }
+
+      const apiCallConnectomeData = new Promise<any>((resolve, reject) => {
+        axios
+          .post(getPersonalDocumentsByDocIdsUrl, payload.docIds)
+          .then(res => resolve(res))
+          .catch(err => reject(err));
+      });
+
+      return apiCallConnectomeData
+        .then(res => {
+          console.log('loadDocumentsFromCollection', res);
+          if (!res) {
+            return;
+          }
+
+          if (!res.data) {
+            return;
+          }
+          const response = res.data.connectomePersonalDocuments;
+          console.log('loadDocumentsFromCollection', response);
+
+          return response;
+        })
+        .catch(reason => {
+          console.log('Reason', reason);
+        })
+        .finally(() => {});
+    },
     logout(context) {},
 
     //#region Interface with SLT
@@ -571,7 +851,7 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
       newCurrentCollection.lang = context.getters.getLang;
 
       context.commit('setCurrentCollection', { collection: newCurrentCollection });
-
+      context.dispatch('GenerateCurrentConnectome');
       return { status: 'OK', message: 'collection to be edited', result: newCurrentCollection };
     },
     getCurrentDraftCollection: async context => {
@@ -594,7 +874,7 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
       }
 
       context.commit('AddDocumentsToCurrentCollection', { docToAdd: payload.docIds });
-
+      context.dispatch('GenerateCurrentConnectome');
       return { status: 'OK', message: 'documents added', result: context.getters.getCurrentCollection };
     },
     //from the current draft collection container, remove the bookmark
@@ -609,7 +889,7 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
       }
 
       context.commit('RemoveFromCurrentCollection', { docToRemove: payload.docIds });
-
+      context.dispatch('GenerateCurrentConnectome');
       return { status: 'OK', message: 'documents removed', result: context.getters.getCurrentCollection };
     },
     saveCurrentDraftCollection: async context => {

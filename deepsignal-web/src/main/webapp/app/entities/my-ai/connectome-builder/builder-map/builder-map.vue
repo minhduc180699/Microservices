@@ -99,27 +99,34 @@
             </b-card>
           </div>
         </b-col>
-        <b-col> </b-col>
         <b-col>
           <div class="list-scrollable">
-            <b-card
-              border-variant="primary"
-              header="Primary"
-              header-bg-variant="primary"
-              v-for="discovery in discoveryCardItems"
-              :key="discovery.id"
-              :style="discovery.style"
-            >
-              <template #header>
-                <b-card-text>{{ discovery.author }}</b-card-text>
-              </template>
-              <b-card-body>
-                <b-card-sub-title class="mb-2">{{ discovery.title }}</b-card-sub-title>
-                <b-card-text>
-                  {{ discovery.content }}
-                </b-card-text>
-              </b-card-body>
-            </b-card>
+            <ul id="listNodes">
+              <li v-for="node in getNodes" :key="node.id">
+                <b-icon
+                  v-for="(docId, index) in node.relatedDocuments"
+                  :key="index"
+                  :style="'color:' + getDocumentColors.get(docId)"
+                  icon="circle-fill"
+                />
+                <label>|</label>
+                <label>{{ localNodes.indexOf(node) + 1 }}</label>
+                <label>|</label>
+                <label>{{ node.label }}</label>
+                <label>|</label>
+                <label>{{ Math.round(node.weight * 1000) / 1000 }}</label>
+              </li>
+            </ul>
+          </div>
+        </b-col>
+        <b-col>
+          <div><b-button v-on:click="onSearchRequestList()" variant="primary">load</b-button></div>
+          <div class="list-scrollable">
+            <ul id="listNodes">
+              <li v-for="request in requestList" :key="request">
+                <label>{{ request }}</label>
+              </li>
+            </ul>
           </div>
         </b-col>
       </b-row>

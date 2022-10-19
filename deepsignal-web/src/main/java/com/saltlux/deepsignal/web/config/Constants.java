@@ -34,6 +34,7 @@ public final class Constants {
     public static final String PUT_CONTEXTUAL_MEMORY_UPSERT_URI = "/contextualMemory/upsert";
     public static final String DELETE_CONTEXTUAL_MEMORY_DELETE_URI = "/contextualMemory/delete";
     public static final String GET_CONTEXTUAL_MEMORY_GET_COLLECTION_URI = "/contextualMemory/getCollection";
+    public static final String GET_RECOMMENDATION_GET_REQUESTLIST_URI = "/rc/v2/start/feed/recommendation_tmp";
     public static final String PATCH_DISABLE_ENTITY_URI = "/vertex/toggle/disable";
     public static final String PATCH_FAVORITE_ENTITY_URI = "/vertex/toggle/favorite";
     public static final String GET_CONNECTOMES_STATUS_URI = "/status";
