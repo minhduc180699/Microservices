@@ -74,6 +74,9 @@
         </b-col>
         <b-col>
           <div>
+            <label>{{ lblCurrentCollectionId }}</label>
+          </div>
+          <div>
             <b-button variant="primary" @click.prevent="onCommitCurrentCollection" style="margin-right: 3px">{{ labelSave }}</b-button
             ><b-button variant="secondary" @click.prevent="onResetCurrentCollection">Reset</b-button>
           </div>
@@ -100,6 +103,9 @@
           </div>
         </b-col>
         <b-col>
+          <div>
+            <label>{{ lblCurrentCollectionId }}</label>
+          </div>
           <div class="list-scrollable">
             <ul id="listNodes">
               <li v-for="node in getNodes" :key="node.id">

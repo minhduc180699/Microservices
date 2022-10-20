@@ -117,12 +117,14 @@ export default class BuilderMap extends Vue {
       }
       if (!res.result.collectionId) {
         this.labelSave = 'Save';
+        this.lblCurrentCollectionId = 'New Collection';
       } else {
         this.labelSave = 'Update';
+        this.lblCurrentCollectionId = res.result.collectionId;
       }
+
       this.loadDocumentsFromCollection({ docIds: res.result.documentIdList }).then(res => {
         console.log('loadDocumentsFromCollection', res);
-
         if (!res) return;
         res.forEach(item => {
           const idx = this.currentCollectiontCardItems.find(x => x.id === item.docId);
@@ -134,7 +136,7 @@ export default class BuilderMap extends Vue {
           card.author = item.author;
           card.type = item.type;
           card.title = item.title;
-          card.content = item.contentSummary;
+          card.content = item.content;
           card.keyword = item.keyword;
           card.addedAt = new Date(item.publishedAt);
           card.modifiedAt = new Date(item.publishedAt);
@@ -362,7 +364,7 @@ export default class BuilderMap extends Vue {
   currentCollectiontCardItems: Array<documentCard> = new Array<documentCard>();
 
   labelSave = 'Save';
-
+  lblCurrentCollectionId = '';
   @collectionsManagerStore.Action
   public removeBookmarksFromCurrentCollection: (payload: {
     docIds: Array<string>;
@@ -454,10 +456,10 @@ export default class BuilderMap extends Vue {
 
   //requestlist
   @collectionsManagerStore.Getter
-  getCurrentCollection!: CmCollection;
+  public getCurrentCollection!: CmCollection;
 
   @collectionsManagerStore.Action
-  loadCollectionRequest!: (payload: { collectionId: string }) => Promise<any>;
+  public loadCollectionRequest!: (payload: { collectionId: string }) => Promise<any>;
 
   onSearchRequestList() {
     if (!this.getCurrentCollection.collectionId || !this.getCurrentCollection.collectionId) {
