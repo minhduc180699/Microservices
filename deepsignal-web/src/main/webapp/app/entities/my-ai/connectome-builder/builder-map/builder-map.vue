@@ -49,12 +49,7 @@
               v-on:click="onBtnAddBookmarkToCurrentCollectionClick(bookmark)"
             >
               <b-card-body>
-                <b-input-group class="mb-2" variant="outline-primary">
-                  <b-input-group-prepend is-text>
-                    <b-icon icon="bookmark-check-fill"></b-icon>
-                  </b-input-group-prepend>
-                  <b-form-input type="text" :placeholder="bookmark.title" disabled></b-form-input>
-                </b-input-group>
+                <b-card-subtitle> <b-icon icon="bookmark-check-fill"></b-icon>{{ bookmark.title }} </b-card-subtitle>
                 <b-card-text>
                   {{ bookmark.content }}
                 </b-card-text>
