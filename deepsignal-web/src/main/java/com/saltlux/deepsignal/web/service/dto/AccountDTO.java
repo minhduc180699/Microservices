@@ -22,5 +22,6 @@ public class AccountDTO extends PhoneCodeDTO {
     private Set<Authority> authorities;
     private String langKey;
     private String timeZone;
+    private String deviceId;
     //    private MultipartFile file;
 }

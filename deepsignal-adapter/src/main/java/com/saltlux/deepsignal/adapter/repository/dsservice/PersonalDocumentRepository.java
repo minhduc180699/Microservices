@@ -37,5 +37,7 @@ public interface PersonalDocumentRepository extends MongoRepository<PersonalDocu
     void deleteByIdIn(List<String> docIds);
 
     List<PersonalDocument> findPersonalDocumentByIdInAndDeletedNot(List<ObjectId> ids, Boolean isDeleted);
+    List<PersonalDocument> findPersonalDocumentByDocIdInAndDeletedNot(List<String> docIds, Boolean isDeleted);
     List<PersonalDocument> findAllByIdIn(List<ObjectId> ids);
+    List<PersonalDocument> findAllByDocIdIn(List<String> docIds);
 }

@@ -201,6 +201,22 @@ public class PersonalDocumentResource {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @PostMapping("/getByDocIds")
+    @Operation(summary = "Get connectome personal docs by feed ids", tags = { "Connectome Feed Management" })
+    public ResponseEntity<?> getByDocIds(
+        @RequestBody List<String> docIds,
+        @RequestParam(value = "isDeleted", required = false) Boolean isDeleted
+    ) {
+        try {
+            List<PersonalDocument> docs = iPersonalDocumentService.findPersonalDocumentsByDocIds(docIds, isDeleted);
+            Map<String, Object> response = new HashMap<>();
+            response.put("connectomePersonalDocuments", docs);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     //
     //    @GetMapping("/handleActivity")
     //    @Operation(summary = "Handle activity: like, bookmark, delete", tags = { "Personal Document Management" })

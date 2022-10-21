@@ -24,7 +24,7 @@ public class KafkaResource {
 
     private final ApplicationProperties properties;
 
-    @Value("${application.kafka-cfg.messages-per-request}")
+    @Value("${application.kafka-cfg.messages-per-request:dev}")
     private String msgPerRequest;
 
     public KafkaResource(KafkaService kafkaService, ApplicationProperties properties) {

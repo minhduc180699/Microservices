@@ -11,5 +11,7 @@ export class documentCard {
   tags: Array<string> = new Array<string>();
   addedAt: Date = null;
   modifiedAt: Date = null;
+  url: string = null;
   isAdded = false;
+  style = null;
 }

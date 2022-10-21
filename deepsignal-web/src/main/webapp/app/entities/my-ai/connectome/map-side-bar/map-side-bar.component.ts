@@ -597,7 +597,7 @@ export default class MapSideBar extends Vue {
   }
 
   onSearchInput(event) {
-    console.log('filterTerms', this.filterTerms);
+    //console.log('filterTerms', this.filterTerms);
     let entitiesMatched: Array<ConnectomeNetworkVertex> = [];
     if (event.target.value) {
       const regOption = new RegExp(event.target.value, 'ig');

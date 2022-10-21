@@ -20,6 +20,8 @@ public class PersonalDocument {
 
     private String idHash;
 
+    private String docId;
+
     private String filePath;
 
     private String createdDate;
@@ -27,6 +29,10 @@ public class PersonalDocument {
     private String author;
 
     private String content;
+
+    private String contentSummary;
+
+    private String keyword;
 
     private String connectomeId;
 

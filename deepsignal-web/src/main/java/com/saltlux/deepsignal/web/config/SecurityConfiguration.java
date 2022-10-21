@@ -90,6 +90,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             .antMatchers("/api/purpose/**").permitAll()
             .antMatchers("/api/connectome/**").permitAll()
             .antMatchers("/api/user-activity-log/getTrainingDocuments/**").permitAll()
+            .antMatchers("/api/external-url/**").permitAll()
 //            .antMatchers("/api/connectome-feed/**").permitAll()
             .antMatchers("/api/account/reset-password/init").permitAll()
             .antMatchers("/api/account/reset-password/finish").permitAll()

@@ -120,7 +120,7 @@ export default class LoginForm extends Vue {
 
   public doLogin(loginName, code) {
     const language = this.$i18n.locale;
-    const data = { username: loginName, password: code, rememberMe: this.rememberMe, language };
+    const data = { username: loginName, password: code, rememberMe: this.rememberMe, language, deviceId: '' };
 
     axios
       .post('api/authenticate', data)

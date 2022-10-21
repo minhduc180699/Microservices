@@ -359,15 +359,18 @@ export default class DsFeedDetail extends Vue {
     const userId = connectome?.user?.id;
 
     const externalUrl = {
-      userId: userId ? userId : '',
-      connectomeId: this.$route.params?.connectomeId ? this.$route.params?.connectomeId : '',
       url: this.$route.path,
       originalUrl: this.connectomeFeed.sourceId ? this.connectomeFeed.sourceId : '',
       title: this.connectomeFeed.title ? this.connectomeFeed.title : '',
     };
 
-    axios.post('/api/url-tracking', externalUrl).then();
-    window.open(link, '_blank');
+    if (userId) {
+      axios.post('/api/external-url/' + userId, externalUrl).then(res => {
+        if (res.data && res.data?.shortUrl) {
+          window.open('deepsignal/' + res.data.shortUrl, '_blank');
+        }
+      });
+    }
   }
 
   fixSideDetail() {

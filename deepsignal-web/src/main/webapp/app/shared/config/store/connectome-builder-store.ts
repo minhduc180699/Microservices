@@ -63,6 +63,7 @@ export interface ConnectomeBuilderStorable {
   documentColors: Map<string, string>;
   connectome: Array<ConnectomeNode>;
   dataUpdated: number;
+  minNodeWeight: number;
   minLinkedNodes: number;
   minRelatedDocuments: number;
   noteSequence: number;
@@ -76,6 +77,7 @@ export const connectomeBuilderStore: Module<ConnectomeBuilderStorable, any> = {
     documentColors: new Map<string, string>(),
     connectome: new Array<ConnectomeNode>(),
     dataUpdated: 0,
+    minNodeWeight: 0,
     minLinkedNodes: 0,
     minRelatedDocuments: 0,
     noteSequence: 0,
@@ -84,7 +86,15 @@ export const connectomeBuilderStore: Module<ConnectomeBuilderStorable, any> = {
   getters: {
     getDocumentsSelected: state => state.documentsSelected,
     getConnectome: state => state.connectome,
-    getNodes: state => state.connectome,
+    getNodes: state =>
+      state.connectome
+        .filter(
+          node =>
+            node.weight >= state.minNodeWeight &&
+            node.linkedNodes.length >= state.minLinkedNodes &&
+            node.relatedDocuments.length >= state.minRelatedDocuments
+        )
+        .sort((a, b) => (a.weight > b.weight ? -1 : 1)),
     getLinks: (state, getters) => {
       if (!getters.getNodes) {
         return new Array<ConnectomeLink>();
@@ -99,7 +109,15 @@ export const connectomeBuilderStore: Module<ConnectomeBuilderStorable, any> = {
 
       getters.getNodes.forEach(node => {
         if (node.linkedNodes) {
+          let nodesMatched: Array<ConnectomeNode> = [];
+          const regOption = new RegExp(node.label, 'ig');
+          nodesMatched = getters.getNodes.filter(vertex => vertex.label.match(regOption));
+
           node.linkedNodes.forEach(linkedNode => {
+            const child = getters.getNodes.findIndex(x => x.id === linkedNode);
+            if (child == -1) {
+              return;
+            }
             if (alreadyInserted.indexOf(node.id + '=>' + linkedNode) == -1) {
               alreadyInserted.push(node.id + '=>' + linkedNode);
               alreadyInserted.push(linkedNode + '=>' + node.id);
@@ -111,12 +129,16 @@ export const connectomeBuilderStore: Module<ConnectomeBuilderStorable, any> = {
           });
         }
       });
+
       return links;
     },
     getDocumentColors: state => state.documentColors,
     getDataUpdated: state => state.dataUpdated,
     getSequenceNote: state => state.noteSequence,
     getColorNote: state => state.colorSequence,
+    getMinNodeWeight: state => state.minNodeWeight,
+    getMinLinkedNodes: state => state.minLinkedNodes,
+    getMinRelatedDocuments: state => state.minRelatedDocuments,
   },
   mutations: {
     addPd(
@@ -141,6 +163,7 @@ export const connectomeBuilderStore: Module<ConnectomeBuilderStorable, any> = {
         const node = state.connectome.find(elem => elem.id === element.id);
         if (node) {
           node.relatedDocuments.push(PdData.docId);
+          node.weight = node.weight + element.weight;
           node.linkedNodes.push(...element.linkedNodes);
         } else {
           state.connectome.push(new ConnectomeNode(element));
@@ -191,6 +214,7 @@ export const connectomeBuilderStore: Module<ConnectomeBuilderStorable, any> = {
               }
             });
           }
+          node.weight = node.weight - element.weight;
         }
       });
 
@@ -244,6 +268,18 @@ export const connectomeBuilderStore: Module<ConnectomeBuilderStorable, any> = {
     },
     incrementSequenceNote(state) {
       state.noteSequence++;
+    },
+    setMinNodeWeight(state, payload: { value: number }) {
+      state.minNodeWeight = payload.value;
+    },
+    setMinLinkedNodes(state, payload: { value: number }) {
+      state.minLinkedNodes = payload.value;
+    },
+    setMinRelatedDocuments(state, payload: { value: number }) {
+      state.minRelatedDocuments = payload.value;
+    },
+    setDataUpdate(state) {
+      state.dataUpdated++;
     },
     resetData(state) {},
   },
@@ -392,7 +428,7 @@ export const connectomeBuilderStore: Module<ConnectomeBuilderStorable, any> = {
         console.log('remove Pd' + docId);
         context.commit('removePd', { docId: docId });
         context.commit('removePdColor', { docId: docId });
-        return;
+        return { documentIds: [docId], connectome: [] };
       }
 
       const apiCallConnectomeData = new Promise<any>((resolve, reject) => {
@@ -424,7 +460,8 @@ export const connectomeBuilderStore: Module<ConnectomeBuilderStorable, any> = {
         .catch(reason => {
           console.log('Reason', reason);
           console.log('Reason  getELData', getTextDataUrl + language, {
-            documentId: docId,
+            connectomeId: payload.connectomeId,
+            documentIds: [docId],
             title: payload.title,
             content: payload.content,
           });
@@ -450,6 +487,18 @@ export const connectomeBuilderStore: Module<ConnectomeBuilderStorable, any> = {
     },
     logout(context) {
       context.commit('resetData');
+    },
+    updateMinNodeWeight(context, value: number) {
+      context.commit('setMinNodeWeight', { value: value });
+      return context.getters.getMinNodeWeight;
+    },
+    updateMinLinkedNodes(context, value: number) {
+      context.commit('setMinLinkedNodes', { value: value });
+      return context.getters.getMinLinkedNodes;
+    },
+    updateMinRelatedDocuments(context, value: number) {
+      context.commit('setMinRelatedDocuments', { value: value });
+      return context.getters.getMinRelatedDocuments;
     },
   },
 };

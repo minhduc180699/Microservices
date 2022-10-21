@@ -29,6 +29,9 @@ public class PersonalDocument implements Serializable {
     @Field("url")
     private String url;
 
+    @Field("docId")
+    private String docId;
+
     @Field("idHash")
     private String idHash;
 
@@ -44,8 +47,14 @@ public class PersonalDocument implements Serializable {
     @Field("content")
     private String content;
 
+    @Field("content_summary")
+    private String contentSummary;
+
     @Field("connectomeId")
     private String connectomeId;
+
+    @Field("keyword")
+    private String keyword;
 
     @Field("language")
     private String language;
