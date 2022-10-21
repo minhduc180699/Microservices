@@ -22,16 +22,14 @@
         <b-col>
           <div class="list-scrollable">
             <b-card v-for="collection in collectionCardItems" :key="collection.id">
-              <template #header>
+              <b-card-body>
                 <b-input-group class="mb-2" variant="outline-primary">
                   <b-input-group-prepend is-text>
                     <b-icon icon="folder-fill"></b-icon>
                   </b-input-group-prepend>
                   <b-form-input type="text" :placeholder="collection.type" disabled></b-form-input>
                 </b-input-group>
-              </template>
-              <b-card-body>
-                <b-card-sub-title class="mb-2">{{ collection.title }}</b-card-sub-title>
+                <b-card-sub-title>{{ collection.title }}</b-card-sub-title>
                 <b-card-text>
                   {{ collection.content }}
                 </b-card-text>
@@ -50,16 +48,13 @@
               :style="bookmark.style"
               v-on:click="onBtnAddBookmarkToCurrentCollectionClick(bookmark)"
             >
-              <template #header>
+              <b-card-body>
                 <b-input-group class="mb-2" variant="outline-primary">
                   <b-input-group-prepend is-text>
                     <b-icon icon="bookmark-check-fill"></b-icon>
                   </b-input-group-prepend>
-                  <b-form-input type="text" :placeholder="bookmark.author" disabled></b-form-input>
+                  <b-form-input type="text" :placeholder="bookmark.title" disabled></b-form-input>
                 </b-input-group>
-              </template>
-              <b-card-body>
-                <b-card-sub-title class="mb-2">{{ bookmark.title }}</b-card-sub-title>
                 <b-card-text>
                   {{ bookmark.content }}
                 </b-card-text>
@@ -83,18 +78,13 @@
           <div class="list-scrollable">
             <b-card
               border-variant="primary"
-              header="Primary"
-              header-bg-variant="primary"
               v-for="currentBookmark in currentCollectiontCardItems"
               :key="currentBookmark.id"
               :style="currentBookmark.style"
               v-on:click="onBtnRemoveBookmarkFromCurrentCollectionClick(currentBookmark)"
             >
-              <template #header>
-                <b-card-text>{{ currentBookmark.author }}</b-card-text>
-              </template>
               <b-card-body>
-                <b-card-sub-title class="mb-2">{{ currentBookmark.title }}</b-card-sub-title>
+                <b-card-sub-title>{{ currentBookmark.title }}</b-card-sub-title>
                 <b-card-text>
                   {{ currentBookmark.content }}
                 </b-card-text>
