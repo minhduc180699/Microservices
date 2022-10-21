@@ -12,21 +12,13 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Builder
 @AllArgsConstructor
 @Entity
-@Table(name = "external_url_tracking")
+@Table(name = "external_url")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-public class ExternalUrlTracking implements Serializable {
+public class ExternalUrl implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "connectome_id")
-    private Connectome connectome;
 
     @Column(name = "url")
     private String url;
@@ -34,11 +26,14 @@ public class ExternalUrlTracking implements Serializable {
     @Column(name = "original_url", nullable = false)
     private String originalUrl;
 
+    @Column(name = "short_url")
+    private String shortUrl;
+
     @Column(name = "title")
     private String title;
 
     @Column(name = "created_date")
     private Instant createdDate = Instant.now();
 
-    public ExternalUrlTracking() {}
+    public ExternalUrl() {}
 }

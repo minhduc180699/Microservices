@@ -1046,9 +1046,9 @@ public class ConnectomeResource {
             //System.out.println(requestBody);
             Map<String, Object> requestBody = new HashMap<>();
             requestBody.put("connectomeId", content.getConnectomeId());
-            requestBody.put("documentIds", content.getDocumentIds());
-            requestBody.put("title", content.getTitle());
-            requestBody.put("contents", content.getContent());
+            requestBody.put("documentId", content.getDocumentIds().get(0));
+            // requestBody.put("title", content.getTitle());
+            // requestBody.put("contents", content.getContent());
             System.out.println(requestBody);
             HttpEntity<Object> request = new HttpEntity<>(requestBody);
             HttpEntity<ConnectomeNodeDTO[]> response = restTemplate.postForEntity(url.toString(), request, ConnectomeNodeDTO[].class);
@@ -1062,51 +1062,15 @@ public class ConnectomeResource {
                 System.out.println(requestBody);
                 return new ResponseEntity(new ApiResponse(false, "Body response empty"), HttpStatus.OK);
             }
-            // ArrayList<ConnectomeNodeDTO> verticesFiltered = new ArrayList<>();
-            // ConnectomeNodeDTO tmpVertice = new ConnectomeNodeDTO();
-            // ArrayList<String> tmpEntities = new ArrayList<>();
-            // //connectome node
-            // HashSet<String> hs = new HashSet<>();
 
-            // //add links to connectome node
-            // Set<String> uniqueEdge = new HashSet<String>();
-            // String labelFromTo = null, labelToFrom = null;
-            // for (EdgeDTO edge : connectome.getEdges()) {
-            //     labelFromTo = edge.getFrom() + "=>" + edge.getTo();
-            //     labelToFrom = edge.getTo() + "=>" + edge.getFrom();
+            if (connectome.length == 0) {
+                System.out.println("Connectome is empty");
+                System.out.println(requestBody.get("connectomeId"));
+                System.out.println(requestBody.get("documentId"));
+                // System.out.println(requestBody.get("title"));
+                // System.out.println(requestBody.get("contents"));
+            }
 
-            //     if (!uniqueEdge.contains(labelFromTo) && !uniqueEdge.contains(labelToFrom)) {
-            //         uniqueEdge.add(edge.getLabel());
-            //         edgesFiltered.add(edge);
-            //     }
-            // }
-
-            // ArrayList<String> documentIds = new ArrayList<>();
-            // if (!Objects.isNull(content.getDocumentId()) || !content.getDocumentId().isEmpty()) {
-            //     documentIds.add(content.getDocumentId());
-            // }
-            // for (VerticeDTO vertice : connectome.getVertices()) {
-            //     tmpVertice = new ConnectomeNodeDTO();
-            //     tmpEntities = new ArrayList<>();
-            //     tmpVertice.setWeight(vertice.getWeight());
-            //     tmpVertice.setRelatedDocuments(documentIds);
-            //     tmpVertice.setLabel(vertice.getLabel());
-            //     tmpVertice.setFavorite(vertice.getFavorite());
-            //     tmpVertice.setDisable(vertice.getDisable());
-            //     for (EdgeDTO edge : edgesFiltered) {
-            //         if (edge.getFrom().equals(vertice.getLabel())) {
-            //             tmpEntities.add(edge.getTo());
-            //         } else if (edge.getTo().equals(vertice.getLabel())) {
-            //             tmpEntities.add(edge.getFrom());
-            //         }
-            //     }
-            //     hs = new HashSet<>();
-            //     hs.addAll(tmpEntities);
-            //     tmpEntities.clear();
-            //     tmpEntities.addAll(hs);
-            //     tmpVertice.setLinkedNodes(tmpEntities);
-            //     verticesFiltered.add(tmpVertice);
-            // }
             ConnectomePersonalDocumentDTO responseToSend = new ConnectomePersonalDocumentDTO();
             responseToSend.setDocumentIds(content.getDocumentIds());
             responseToSend.setConnectome(connectome);

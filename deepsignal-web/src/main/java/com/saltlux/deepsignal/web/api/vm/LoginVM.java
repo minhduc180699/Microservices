@@ -20,6 +20,8 @@ public class LoginVM {
 
     private String language;
 
+    private String deviceId;
+
     public String getUsername() {
         return username;
     }
@@ -50,6 +52,14 @@ public class LoginVM {
 
     public String getLanguage() {
         return language;
+    }
+
+    public String getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
     }
 
     // prettier-ignore

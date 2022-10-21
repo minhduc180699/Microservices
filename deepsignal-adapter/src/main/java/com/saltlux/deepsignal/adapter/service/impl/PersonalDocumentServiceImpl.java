@@ -301,4 +301,12 @@ public class PersonalDocumentServiceImpl implements IPersonalDocumentService {
         }
         return personalDocumentRepository.findAllByIdIn(objectIds);
     }
+
+    @Override
+    public List<PersonalDocument> findPersonalDocumentsByDocIds(List<String> docIds, Boolean... isDeleted) {
+        if ((isDeleted != null && isDeleted.length > 0) && isDeleted[0] != null) {
+            return personalDocumentRepository.findPersonalDocumentByDocIdInAndDeletedNot(docIds, isDeleted[0]);
+        }
+        return personalDocumentRepository.findAllByDocIdIn(docIds);
+    }
 }

@@ -9,23 +9,6 @@ import com.saltlux.deepsignal.web.service.dto.AccountDTO;
 import com.saltlux.deepsignal.web.service.dto.MailParamsDTO;
 import com.saltlux.deepsignal.web.service.template.MailContentBuilder;
 import io.netty.util.internal.StringUtil;
-import java.io.*;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
-import javax.activation.DataHandler;
-import javax.mail.*;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
-import javax.mail.util.ByteArrayDataSource;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.hibernate.validator.internal.util.StringHelper;
 import org.redisson.api.RMapCache;
 import org.slf4j.Logger;
@@ -33,20 +16,33 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import tech.jhipster.config.JHipsterProperties;
+
+import javax.activation.DataHandler;
+import javax.mail.*;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+import javax.mail.util.ByteArrayDataSource;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Service for sending emails.
@@ -364,5 +360,14 @@ public class MailService {
         } else {
             return false;
         }
+    }
+
+    public String codeConfirm() {
+        StringBuilder codeConfirm = new StringBuilder();
+        for (int i = 0; i < properties.getTwilio().getLengthCode(); i++) {
+            int random = ThreadLocalRandom.current().nextInt(0, 10);
+            codeConfirm.append(random);
+        }
+        return codeConfirm.toString();
     }
 }

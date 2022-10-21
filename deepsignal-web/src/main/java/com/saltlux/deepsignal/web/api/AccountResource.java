@@ -280,7 +280,7 @@ public class AccountResource {
     //send email code
     @PostMapping("/email/send")
     public ResponseEntity<?> sendEmail(@RequestBody AccountDTO accountDTO) {
-        String codeConfirm = codeConfirm();
+        String codeConfirm = mailService.codeConfirm();
 
         if (!mailService.mapEmailCode(accountDTO.getEmail(), codeConfirm)) {
             return new ResponseEntity(new ApiResponse(false, "Can't create code"), HttpStatus.BAD_REQUEST);
@@ -525,14 +525,5 @@ public class AccountResource {
         } else {
             return ResponseEntity.ok().body(user);
         }
-    }
-
-    private String codeConfirm() {
-        StringBuilder codeConfirm = new StringBuilder();
-        for (int i = 0; i < applicationProperties.getTwilio().getLengthCode(); i++) {
-            int random = ThreadLocalRandom.current().nextInt(0, 10);
-            codeConfirm.append(random);
-        }
-        return codeConfirm.toString();
     }
 }
