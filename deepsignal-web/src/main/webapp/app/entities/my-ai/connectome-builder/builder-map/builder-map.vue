@@ -1,6 +1,6 @@
 <template>
   <div class="asset-panel">
-    <b-container class="bv-example-row">
+    <b-container fluid>
       <b-row>
         <b-col>
           <b-badge variant="primary">Collections</b-badge>
@@ -21,9 +21,9 @@
       <b-row>
         <b-col>
           <div class="list-scrollable">
-            <b-card v-for="collection in collectionCardItems" :key="collection.id">
+            <b-card v-for="collection in collectionCardItems" :key="collection.id" :style="collection.style">
               <b-card-body>
-                <b-input-group class="mb-2" variant="outline-primary">
+                <b-input-group class="mb-2">
                   <b-input-group-prepend is-text>
                     <b-icon icon="folder-fill"></b-icon>
                   </b-input-group-prepend>
@@ -34,22 +34,24 @@
                   {{ collection.content }}
                 </b-card-text>
                 <b-card-sub-title>modified: {{ collection.modifiedAt }}</b-card-sub-title>
-                <b-button v-on:click="onBtnAddCollectionToCurrentCollectionClick(collection)" variant="primary">Add</b-button>
-                <b-button v-on:click="onBtnEditCollectionToCurrentCollectionClick(collection)" variant="primary">Edit</b-button>
+                <b-button v-on:click="onBtnEditCollectionToCurrentCollectionClick(collection)" variant="primary"
+                  ><b-icon icon="pencil-square"></b-icon
+                ></b-button>
+                <b-button v-on:click="onBtnAddCollectionToCurrentCollectionClick(collection)" variant="primary"
+                  ><b-icon icon="arrow-right"></b-icon
+                ></b-button>
               </b-card-body>
             </b-card>
           </div>
         </b-col>
         <b-col>
           <div class="list-scrollable">
-            <b-card
-              v-for="bookmark in bookmarkCardItems"
-              :key="bookmark.id"
-              :style="bookmark.style"
-              v-on:click="onBtnAddBookmarkToCurrentCollectionClick(bookmark)"
-            >
+            <b-card v-for="bookmark in bookmarkCardItems" :key="bookmark.id" :style="bookmark.style">
               <b-card-body>
-                <b-card-subtitle> <b-icon icon="bookmark-check-fill"></b-icon>{{ bookmark.title }} </b-card-subtitle>
+                <b-card-subtitle> <b-icon icon="bookmark-check-fill"></b-icon>{{ bookmark.title }} </b-card-subtitle
+                ><b-button v-on:click="onBtnAddBookmarkToCurrentCollectionClick(bookmark)" variant="primary"
+                  ><b-icon icon="arrow-right"></b-icon
+                ></b-button>
                 <b-card-text>
                   {{ bookmark.content }}
                 </b-card-text>
@@ -71,15 +73,13 @@
             ><b-button variant="secondary" @click.prevent="onResetCurrentCollection">Reset</b-button>
           </div>
           <div class="list-scrollable">
-            <b-card
-              border-variant="primary"
-              v-for="currentBookmark in currentCollectiontCardItems"
-              :key="currentBookmark.id"
-              :style="currentBookmark.style"
-              v-on:click="onBtnRemoveBookmarkFromCurrentCollectionClick(currentBookmark)"
-            >
+            <b-card v-for="currentBookmark in currentCollectiontCardItems" :key="currentBookmark.id" :style="currentBookmark.style">
               <b-card-body>
-                <b-card-sub-title>{{ currentBookmark.title }}</b-card-sub-title>
+                <b-card-sub-title
+                  ><b-button v-on:click="onBtnRemoveBookmarkFromCurrentCollectionClick(currentBookmark)" variant="primary"
+                    ><b-icon icon="arrow-left"></b-icon></b-button
+                  >{{ currentBookmark.title }}</b-card-sub-title
+                >
                 <b-card-text>
                   {{ currentBookmark.content }}
                 </b-card-text>

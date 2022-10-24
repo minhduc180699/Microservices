@@ -91,6 +91,16 @@ export default class BuilderMap extends Vue {
           this.collectionCardItems.push(card);
         }
       });
+
+      if (this.getCurrentCollection && this.getCurrentCollection.collectionId) {
+        this.collectionCardItems.forEach(collection => {
+          if (collection.id === this.getCurrentCollection.collectionId) {
+            collection.style = 'border-color:red; border-width:thick';
+          } else {
+            collection.style = '';
+          }
+        });
+      }
     });
   }
 
@@ -142,21 +152,30 @@ export default class BuilderMap extends Vue {
           card.modifiedAt = new Date(item.publishedAt);
           console.log(' inside getDocumentsSelected');
           card.isAdded = true;
-          card.style = 'background-color:' + this.getDocumentColors.get(card.id);
+          card.style = 'border-color:' + this.getDocumentColors.get(card.id) + '; border-width:thick';
           this.currentCollectiontCardItems.push(card);
         });
-
-        // const card = new documentCard();
-        // card.id = docId;
-        // card.author = docId;
-        // card.type = 'Bookmark';
-        // card.title = docId;
-        // card.content = docId;
-        // card.keyword = docId;
-        // card.modifiedAt = new Date();
-
-        // this.currentCollectiontCardItems.push(card);
       });
+
+      if (this.bookmarkCardItems && this.bookmarkCardItems.length > 0) {
+        this.bookmarkCardItems.forEach(bookmark => {
+          if (res.result.documentIdList.includes(bookmark.id)) {
+            bookmark.style = 'border-color:lime; border-width:thick';
+          } else {
+            bookmark.style = '';
+          }
+        });
+      }
+
+      if (this.collectionCardItems && this.collectionCardItems.length > 0) {
+        this.collectionCardItems.forEach(collection => {
+          if (res.result.collectionId && collection.id === res.result.collectionId) {
+            collection.style = 'border-color:red; border-width:thick';
+          } else {
+            collection.style = '';
+          }
+        });
+      }
     });
   }
 
@@ -284,7 +303,7 @@ export default class BuilderMap extends Vue {
           card.author = item.author;
           card.type = item.type;
           card.title = item.title;
-          card.content = item.contentSummary;
+          card.content = item.contentSummary ? '[Summary]' + item.contentSummary : '[Content]' + this.getShortContent(item.content);
           card.keyword = item.keyword;
           card.group.push(item.keyword);
           card.addedAt = new Date(item.publishedAt);
@@ -462,7 +481,7 @@ export default class BuilderMap extends Vue {
   public loadCollectionRequest!: (payload: { collectionId: string }) => Promise<any>;
 
   onSearchRequestList() {
-    if (!this.getCurrentCollection.collectionId || !this.getCurrentCollection.collectionId) {
+    if (!this.getCurrentCollection || !this.getCurrentCollection.collectionId) {
       console.log('this.getCurrentCollection not defined', this.getCurrentCollection);
       return;
     }
@@ -477,4 +496,26 @@ export default class BuilderMap extends Vue {
   }
   requestList = new Array<string>();
   discoveryCardItems: Array<documentCard> = new Array<documentCard>();
+
+  convertGMTToLocalTime(dateToConvert: string) {
+    if (!dateToConvert) {
+      return '';
+    }
+
+    const date = new Date(dateToConvert);
+
+    return date.toLocaleString();
+  }
+
+  getShortContent(content: string) {
+    if (!content) {
+      return ' ';
+    }
+
+    if (content.length < 256) {
+      return content;
+    }
+
+    return content.substring(0, 255) + '...';
+  }
 }

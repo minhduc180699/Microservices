@@ -258,20 +258,26 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
           node.disable = true;
         } else if (linkedNodeSet.size == 1) {
           console.log('candidate to disable:' + node.label + ':' + linkedNodeSet.values().next().value);
-          const regOption = new RegExp(node.label.toLowerCase(), 'ig');
-          const targetNodes = state.currentConnectome.filter(target => target.id === linkedNodeSet.values().next().value);
-          console.log('target node:', targetNodes);
-          if (targetNodes && targetNodes.length == 1) {
-            if (targetNodes[0].label.toLowerCase().match(regOption)) {
-              console.log('node is disabled1:' + node.label);
-              node.disable = true;
-            } else if (targetNodes[0].label.toLowerCase().includes(node.label.toLowerCase())) {
-              console.log('node is disabled2:' + node.label);
-              node.disable = true;
+          try {
+            const regOption = new RegExp(node.label.toLowerCase(), 'ig');
+            const targetNodes = state.currentConnectome.filter(target => target.id === linkedNodeSet.values().next().value);
+            console.log('target node:', targetNodes);
+            if (targetNodes && targetNodes.length == 1) {
+              if (targetNodes[0].label.toLowerCase().match(regOption)) {
+                console.log('node is disabled1:' + node.label);
+                node.disable = true;
+              } else if (targetNodes[0].label.toLowerCase().includes(node.label.toLowerCase())) {
+                console.log('node is disabled2:' + node.label);
+                node.disable = true;
+              } else {
+                node.disable = false;
+              }
             } else {
               node.disable = false;
             }
-          } else {
+          } catch (e) {
+            console.log('error' + e);
+          } finally {
             node.disable = false;
           }
         } else {
@@ -570,12 +576,22 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
         console.log('currentCollection.documentIdList undefined');
         return;
       }
+      context.getters.getCurrentCollection.documentIdList.forEach(docId => {
+        if (!docId) {
+          return;
+        }
+
+        context.commit('addPdColor', { docId: docId });
+      });
 
       context.getters.getCurrentCollection.documentIdList.forEach(docId => {
+        if (!docId) {
+          return;
+        }
+
         const docConnectome = context.getters.getNodesListByDocument.get(docId);
         if (docConnectome) {
           context.commit('addPd', { docId: docId, connectome: docConnectome });
-          context.commit('addPdColor', { docId: docId });
           return;
         }
 
@@ -600,7 +616,6 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
             const response = res.data.body;
             console.log('getELData', response);
             context.commit('addPd', { docId: docId, connectome: response.nodeList });
-            context.commit('addPdColor', { docId: docId });
             return response;
           })
           .catch(reason => {
@@ -611,6 +626,7 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
           })
           .finally(() => {});
       });
+
       context.commit('disableOrphans');
     },
     createCollection: async (
@@ -654,14 +670,14 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
               if (!res) {
                 return { status: 'NOK', message: 'error load User Context', result: null };
               }
-              return { status: 'OK', message: 'user context loaded', result: res };
+              return { status: 'OK', message: 'user context loaded', result: new CmCollection(response) };
             })
             .catch(reason => {
               console.log('Reason', reason);
               return { status: 'NOK', message: 'error load User Context', result: null };
             })
             .finally(() => {});
-          return res;
+          return response;
         })
         .catch(reason => {
           console.log('Reason', reason);
@@ -905,8 +921,9 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
             if (!res) {
               return { status: 'NOK', message: 'cannot create the collection', result: null };
             }
+            console.log('createCollection', res);
             context.commit('setCurrentCollection', { collection: new CmCollection(res) });
-            return { status: 'OK', message: 'draft saved', result: null };
+            return { status: 'OK', message: 'draft saved', result: new CmCollection(res) };
           });
       } else {
         return context
