@@ -3,6 +3,7 @@ package com.saltlux.deepsignal.feedcache.api.client;
 import com.saltlux.deepsignal.feedcache.dto.DataListResponse;
 import com.saltlux.deepsignal.feedcache.dto.DataResponse;
 import com.saltlux.deepsignal.feedcache.dto.FeedDto;
+import com.saltlux.deepsignal.feedcache.dto.FeedIdsDto;
 import com.saltlux.deepsignal.feedcache.model.FeedContentModel;
 import com.saltlux.deepsignal.feedcache.model.FeedModel;
 import org.springframework.stereotype.Component;
@@ -18,7 +19,7 @@ public class SearcherClientFallback implements SearcherClient{
     }
 
     @Override
-    public DataListResponse<FeedModel> getListDocumentByIds(FeedDto feedDto) {
+    public DataListResponse<FeedModel> getListDocumentByIds(FeedIdsDto dto) {
         return null;
     }
 

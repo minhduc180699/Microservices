@@ -4,10 +4,7 @@ import com.google.gson.JsonObject;
 import com.saltlux.deepsignal.feedcache.api.client.RealtimeCrawlerClient;
 import com.saltlux.deepsignal.feedcache.api.client.SearcherClient;
 import com.saltlux.deepsignal.feedcache.constant.KafkaConstant;
-import com.saltlux.deepsignal.feedcache.dto.DataListResponse;
-import com.saltlux.deepsignal.feedcache.dto.DataResponse;
-import com.saltlux.deepsignal.feedcache.dto.FeedDto;
-import com.saltlux.deepsignal.feedcache.dto.ResultResponse;
+import com.saltlux.deepsignal.feedcache.dto.*;
 import com.saltlux.deepsignal.feedcache.kafka.Producer;
 import com.saltlux.deepsignal.feedcache.model.FeedContentModel;
 import com.saltlux.deepsignal.feedcache.model.FeedDataModel;
@@ -66,15 +63,15 @@ public class FeedService implements IFeedService {
     }
 
     @Override
-    public DataListResponse<FeedModel> getListDocumentByIds(FeedDto feedDto) {
-        DataListResponse<FeedModel> response = new DataListResponse<>(0, "success", feedDto.getRequest_id());
+    public DataListResponse<FeedModel> getListDocumentByIds(FeedIdsDto dto) {
+        DataListResponse<FeedModel> response = new DataListResponse<>(0, "success", dto.getRequest_id());
         try {
             List<FeedModel> feedModelList;
-            feedModelList = searcherClient.getListDocumentByIds(feedDto).getData();
+            feedModelList = searcherClient.getListDocumentByIds(dto).getData();
             response.setData(feedModelList);
         }catch (Exception e){
             response.setStatus(-1, "failed");
-            logger.error(String.format("[getListDocumentByIds] requestId: %s error unknown" + e.getMessage(), feedDto.getRequest_id()), e);
+            logger.error(String.format("[getListDocumentByIds] requestId: %s error unknown" + e.getMessage(), dto.getRequest_id()), e);
         }
         return response;
     }
@@ -82,17 +79,15 @@ public class FeedService implements IFeedService {
     @Override
     public DataListResponse<FeedModel> searchFeed(String connectomeId, String request_id, String keyword, String from, String until, Integer page, Integer size, String searchType, String channels, String lang, String type) {
         DataListResponse<FeedModel> response = new DataListResponse<>(0, "success", request_id);
-        List<FeedModel> feedDataModelList = null;
 
         try{
             // Search fee data from Elasticsearch
-            feedDataModelList = searcherClient.searchFeed(connectomeId, keyword, from, until, page, size, searchType, channels, lang, type).getData();
+            response = searcherClient.searchFeed(connectomeId, keyword, from, until, page, size, searchType, channels, lang, type);
             logger.info(String.format("[searchFeedData] requestId: %s DONE success", request_id));
         }catch (Exception e){
             response.setStatus(-1, "failed");
             logger.error(String.format("[searchFeedData] requestId: %s error unknown" + e.getMessage(), request_id), e);
         }
-        response.setData(feedDataModelList);
         return response;
     }
 
@@ -152,7 +147,7 @@ public class FeedService implements IFeedService {
             keyField.add("source_id");
             Long uniqueKey = Utils.getHashCode(saveRecord, keyField);
             data.set__unique__key(uniqueKey);
-//            producer.send(KafkaConstant.FEED_CREATE_TOPIC, GUtil.gson.toJson(data));
+            producer.send(KafkaConstant.FEED_CREATE_TOPIC, GUtil.gson.toJson(data));
             if (data.getContent() == null || data.getContent().isEmpty()){
                 realtimeCrawlerClient.postRealtimeCrawler(Collections.singletonList(data.toFeedRealtimeCrawlerModel()));
             }

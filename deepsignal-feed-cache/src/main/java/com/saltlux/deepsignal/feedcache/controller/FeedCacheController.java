@@ -2,6 +2,7 @@ package com.saltlux.deepsignal.feedcache.controller;
 
 import com.saltlux.deepsignal.feedcache.config.Appconfig;
 import com.saltlux.deepsignal.feedcache.dto.FeedDto;
+import com.saltlux.deepsignal.feedcache.dto.FeedIdsDto;
 import com.saltlux.deepsignal.feedcache.model.FeedDataModel;
 import com.saltlux.deepsignal.feedcache.model.FeedModel;
 import com.saltlux.deepsignal.feedcache.service.IFeedService;
@@ -27,8 +28,8 @@ public class FeedCacheController {
         return ResponseEntity.ok(iFeedService.getListFeed(connectomeId, request_id, page, size));
     }
     @PostMapping("/getListDocumentByIds")
-    private ResponseEntity<?> getListDocumentByIds(@RequestBody FeedDto feedDto){
-        return ResponseEntity.ok(iFeedService.getListDocumentByIds(feedDto));
+    private ResponseEntity<?> getListDocumentByIds(@RequestBody FeedIdsDto dto){
+        return ResponseEntity.ok(iFeedService.getListDocumentByIds(dto));
     }
     @GetMapping("/searchFeed")
     private ResponseEntity<?> searchFeed(@RequestParam(value = "connectomeId", required = true) String connectomeId,
@@ -62,7 +63,7 @@ public class FeedCacheController {
     private ResponseEntity<?> likeFeed(@RequestBody FeedModel feedModel){
         return ResponseEntity.ok(iFeedService.likeFeed(feedModel));
     }
-    @PutMapping("/hideFeed")
+    @PutMapping("/deleteFeed")
     private ResponseEntity<?> hideFeed(@RequestBody FeedModel feedModel){
         return ResponseEntity.ok(iFeedService.hideFeed(feedModel));
     }
