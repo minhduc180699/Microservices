@@ -38,7 +38,7 @@ public interface SearcherClient {
                                @RequestParam("until") String until,
                                @RequestParam("page") Integer page,
                                @RequestParam("size") Integer size,
-                               @RequestParam("searchType") String searchType,
+                               @RequestParam("search_type") String searchType,
                                @RequestParam("channels") String channels,
                                @RequestParam("lang") String lang,
                                @RequestParam("type") String type);

@@ -38,10 +38,10 @@ public class FeedCacheController {
                                           @RequestParam(value = "until", required = false) String until,
                                           @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
                                           @RequestParam(value = "size", required = false, defaultValue = "10") Integer size,
-                                          @RequestParam(value = "searchType", required = false) String searchType,
+                                          @RequestParam(value = "search_type", required = false) String searchType,
                                           @RequestParam(value = "channels", required = false) String channels,
                                           @RequestParam(value = "type", required = false) String type,
-                                          @RequestParam(value = "lang", required = true, defaultValue = "all") String lang){
+                                          @RequestParam(value = "lang", required = true) String lang){
         return ResponseEntity.ok(iFeedService.searchFeed(connectomeId, request_id, keyword, from, until, page, size, searchType, channels, lang, type));
     }
     @GetMapping("/getFeed")
