@@ -204,342 +204,82 @@
           </div>
           <div class="lc-list-wrap">
             <div class="list-inner overflow-y-scroll">
-              <ul class="lc-card-list">
-                <li class="lc-card-group" aria-selected="false">
-                  <div class="group-wrap">
-                    <div class="content-top">
-                      <div class="lc-check">
-                        <button type="button" class="btn btn-check" data-toggle="button" aria-pressed="false"></button>
-                      </div>
-                      <div class="media-info">
-                        <a class="info-item info-title" @click.prevent="isGroupCollectionActive = true">Group<small>(4)</small> </a>
-                        <div class="info-item">3일전</div>
-                      </div>
-                      <div class="lc-btn">
-                        <div class="more-area">
-                          <a class="btn-more" href="#" role="button" data-toggle="dropdown" aria-expanded="false"
-                            ><i class="icon-common icon-more"></i
-                          ></a>
-                          <div class="dropdown-menu dropdown-menu-right">
-                            <a class="dropdown-item" href="#"><i class="icon-common icon-pin"></i>Top fixed</a>
-                            <a class="dropdown-item" href="#"><i class="icon-common icon-folder-edit"></i>Edit</a>
-                            <a class="dropdown-item" href="#"><i class="icon-common icon-trash"></i>Delete</a>
-                          </div>
+              <vue-custom-scrollbar class="overflow-yx-scroll csScrollPositon h-100" :settings="scrollSettings">
+                <ul class="lc-card-list">
+                  <li
+                    :class="item.totalDocuments > 1 ? 'lc-card-group' : 'lc-card-item'"
+                    v-for="item in collectionCardItems"
+                    :aria-selected="currentCollection.documentIdList.indexOf(item.id) > -1 ? 'true' : 'false'"
+                    :key="item.id"
+                  >
+                    <group-card
+                      v-if="item.totalDocuments > 1"
+                      :collection="item"
+                      @toggleGroupCollection="handleGroupCollectionActive"
+                    ></group-card>
+                    <single-card :document="item.docDetail[0]" v-else></single-card>
+                  </li>
+                </ul>
+              </vue-custom-scrollbar>
+              <li class="lc-card-item" aria-selected="false">
+                <div class="item-wrap">
+                  <div class="content-top">
+                    <div class="lc-check">
+                      <button type="button" class="btn btn-check" data-toggle="button" aria-pressed="false"></button>
+                    </div>
+                    <div class="media-info">
+                      <div class="info-item">
+                        <div class="source">
+                          <div class="source-img" src="content/images/sample/media-aju.png"></div>
+                          아시아경제
                         </div>
                       </div>
+                      <div class="info-item">3일전</div>
                     </div>
-                    <div class="content-box">
-                      <div class="lc-media">
-                        <a class="media-gird" href="#">
-                          <div><img src="content/images/sample/@445x290.png" /></div>
-                          <div><img src="content/images/sample/@434x290.png" /></div>
-                          <div><img src="content/images/sample/@435x290.png" /></div>
-                          <div><img src="content/images/sample/@362x290.png" /></div>
-                        </a>
-                        <div class="media-body"></div>
-                      </div>
-                    </div>
-                    <div class="tag-box" :class="isShowAllTag ? 'show' : ''">
-                      <div class="scroll-area">
-                        <div class="tag-list">
-                          <a class="tag-item" href="#">keyword 1</a>
-                          <a class="tag-item" href="#">keyword 2</a>
-                          <a class="tag-item" href="#">web</a>
-                          <a class="tag-item" href="#">web</a>
-                          <a class="tag-item" href="#">responsive mobile</a>
-                          <a class="tag-item" href="#">keyword 1</a>
-                          <a class="tag-item" href="#">keyword 2</a>
-                          <a class="tag-item" href="#">web</a>
-                          <a class="tag-item" href="#">web</a>
-                          <a class="tag-item" href="#">responsive mobile</a>
-                        </div>
-                      </div>
-                      <div class="btn-wrap">
-                        <button type="button" class="btn btn-list-more" @click="isShowAllTag = !isShowAllTag"></button>
-                      </div>
-                    </div>
-                  </div>
-                </li>
-                <li class="lc-card-group" aria-selected="false">
-                  <div class="group-wrap">
-                    <div class="content-top">
-                      <div class="lc-check">
-                        <button type="button" class="btn btn-check" data-toggle="button" aria-pressed="false"></button>
-                      </div>
-                      <div class="media-info">
-                        <a class="info-item info-title" @click.prevent="isGroupCollectionActive = true"> Group<small>(4)</small> </a>
-                        <div class="info-item">3일전</div>
-                      </div>
-                      <div class="lc-btn">
-                        <button type="button" class="btn btn-icon btn-more"><i class="icon-common icon-pin-on"></i></button>
-                        <div class="more-area">
-                          <a class="btn-more" href="#" role="button" data-toggle="dropdown" aria-expanded="false"
-                            ><i class="icon-common icon-more"></i
-                          ></a>
-                          <div class="dropdown-menu dropdown-menu-right">
-                            <a class="dropdown-item" href="#"><i class="icon-common icon-pin-off"></i>Unpin the top</a>
-                            <a class="dropdown-item" href="#"><i class="icon-common icon-folder-edit"></i>Edit</a>
-                            <a class="dropdown-item" href="#"><i class="icon-common icon-trash"></i>Delete</a>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="content-box">
-                      <div class="lc-media">
-                        <a class="media-gird" href="#">
-                          <div><img src="content/images/sample/@445x290.png" /></div>
-                          <div><img src="content/images/sample/@434x290.png" /></div>
-                          <div><img src="content/images/sample/@445x290.png" /></div>
-                          <div><img src="content/images/sample/@434x290.png" /></div>
-                        </a>
-                        <div class="media-body"></div>
-                      </div>
-                    </div>
-                    <div class="tag-box" :class="isShowAllTag ? 'show' : ''">
-                      <div class="scroll-area">
-                        <div class="tag-list">
-                          <a class="tag-item" href="#">keyword 1</a>
-                          <a class="tag-item" href="#">keyword 2</a>
-                          <a class="tag-item" href="#">web</a>
-                          <a class="tag-item" href="#">web</a>
-                          <a class="tag-item" href="#">responsive mobile</a>
-                          <a class="tag-item" href="#">keyword 1</a>
-                          <a class="tag-item" href="#">keyword 2</a>
-                          <a class="tag-item" href="#">web</a>
-                          <a class="tag-item" href="#">web</a>
-                          <a class="tag-item" href="#">responsive mobile</a>
-                        </div>
-                      </div>
-                      <div class="btn-wrap">
-                        <button type="button" class="btn btn-list-more" @click="isShowAllTag = !isShowAllTag"></button>
-                      </div>
-                    </div>
-                  </div>
-                </li>
-                <li class="lc-card-item" aria-selected="false">
-                  <div class="item-wrap">
-                    <div class="content-top">
-                      <div class="lc-check">
-                        <button type="button" class="btn btn-check" data-toggle="button" aria-pressed="false"></button>
-                      </div>
-                      <div class="media-info">
-                        <div class="info-item">
-                          <div class="source">내 컴퓨터</div>
-                        </div>
-                        <div class="info-item">100MB</div>
-                        <div class="info-item">3일전</div>
-                      </div>
-                      <div class="lc-btn">
-                        <a class="btn-close" href="#"><i class="icon-common icon-close"></i></a>
-                      </div>
-                    </div>
-                    <div class="content-box">
-                      <div class="lc-media">
-                        <div class="media-body">
-                          <a class="media-title" href="#">행복스럽고 구하기 광야에서 목숨이 피어나기 고행을 돋고.pdf</a>
-                        </div>
-                        <a class="media-file" href="#">
-                          <img src="content/images/common/file/file-pdf-fill.svg" />
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </li>
-                <li class="lc-card-item" aria-selected="false">
-                  <div class="item-wrap">
-                    <div class="content-top">
-                      <div class="lc-check">
-                        <button type="button" class="btn btn-check" data-toggle="button" aria-pressed="false"></button>
-                      </div>
-                      <div class="media-info">
-                        <div class="media-info">
-                          <div class="info-item">
-                            <div class="source">
-                              <div class="source-img">
-                                <img src="content/images/icon-google-drive.png" />
-                              </div>
-                              Google Drive
-                            </div>
-                          </div>
-                          <div class="info-item">100MB</div>
-                          <div class="info-item">3일전</div>
-                        </div>
-                      </div>
-                      <div class="lc-btn">
-                        <a class="btn-close" href="#"><i class="icon-common icon-close"></i></a>
-                      </div>
-                    </div>
-                    <div class="content-box">
-                      <div class="lc-media">
-                        <div class="media-body">
-                          <a class="media-title" href="#">행복스럽고 구하기 광야에서 목숨이 피어나기 고행을 돋고.pdf</a>
-                        </div>
-                        <a class="media-file" href="#">
-                          <img src="content/file-excel-fill.svg" />
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </li>
-                <li class="lc-card-item" aria-selected="false">
-                  <div class="item-wrap">
-                    <div class="content-top">
-                      <div class="lc-check">
-                        <button type="button" class="btn btn-check" data-toggle="button" aria-pressed="false"></button>
-                      </div>
-                      <div class="media-info">
-                        <div class="info-item">
-                          <div class="badge">Text</div>
-                        </div>
-                        <div class="info-item">3일전</div>
-                      </div>
-                      <div class="lc-btn">
-                        <div class="more-area">
-                          <a class="btn-more" href="#" role="button" data-toggle="dropdown" aria-expanded="false"
-                            ><i class="icon-common icon-more"></i
-                          ></a>
-                          <div class="dropdown-menu dropdown-menu-right">
-                            <a class="dropdown-item" href="#"><i class="icon-common icon-pin"></i>Top fixed</a>
-                            <a class="dropdown-item" href="#"><i class="icon-common icon-trash"></i>Delete</a>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="content-box">
-                      <div class="lc-media">
-                        <div class="media-body">
-                          <a class="media-title" href="#">아니한 안고, 이상의 우리의 청춘의 석가는 커다란 온갖 청춘은 있다.</a>
-                          <p class="media-desc">
-                            행복스럽고 구하기 광야에서 목숨이 피어나기 고행을 돋고, 만물은 뿐이다. 하여도 심장은 용감하고 교향악이다. 곳이
-                            있는 사랑의 쓸쓸한 꽃이 위하여, 그러므로 가치를 곧 칼이다.
-                          </p>
+                    <div class="lc-btn">
+                      <div class="more-area">
+                        <a class="btn-more" href="#" role="button" data-toggle="dropdown" aria-expanded="false"
+                          ><i class="icon-common icon-more"></i
+                        ></a>
+                        <div class="dropdown-menu dropdown-menu-right">
+                          <a class="dropdown-item" href="#"><i class="icon-common icon-pin"></i>Top fixed</a>
+                          <a class="dropdown-item" href="#"><i class="icon-common icon-trash"></i>Delete</a>
                         </div>
                       </div>
                     </div>
                   </div>
-                </li>
-                <li class="lc-card-item" aria-selected="false">
-                  <div class="item-wrap">
-                    <div class="content-top">
-                      <div class="lc-check">
-                        <button type="button" class="btn btn-check" data-toggle="button" aria-pressed="false"></button>
-                      </div>
-                      <div class="media-info">
-                        <div class="info-item">
-                          <div class="source">
-                            <div class="source-img"><img src="content/images/sample/media-aju.png" /></div>
-                            아시아경제
-                          </div>
-                        </div>
-                        <div class="info-item">3일전</div>
-                      </div>
-                      <div class="lc-btn">
-                        <div class="more-area">
-                          <a class="btn-more" href="#" role="button" data-toggle="dropdown" aria-expanded="false"
-                            ><i class="icon-common icon-more"></i
-                          ></a>
-                          <div class="dropdown-menu dropdown-menu-right">
-                            <a class="dropdown-item" href="#"><i class="icon-common icon-pin"></i>Top fixed</a>
-                            <a class="dropdown-item" href="#"><i class="icon-common icon-trash"></i>Delete</a>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="content-box">
-                      <div class="lc-media">
-                        <div class="media-body">
-                          <a class="media-title" href="#">아니한 안고, 이상의 우리의 청춘의 석가는 커다란 온갖 청춘은 있다.</a>
-                          <p class="media-desc">
-                            행복스럽고 구하기 광야에서 목숨이 피어나기 고행을 돋고, 만물은 뿐이다. 하여도 심장은 용감하고 교향악이다. 곳이
-                            있는 사랑의 쓸쓸한 꽃이 위하여, 그러므로 가치를 곧 칼이다.
-                          </p>
-                        </div>
-                        <a class="media-img" href="#">
-                          <img src="content/images/sample/@445x290.png" />
-                        </a>
-                      </div>
-                    </div>
-                    <div class="tag-box">
-                      <div class="scroll-area">
-                        <div class="tag-list">
-                          <a class="tag-item" href="#">keyword 1</a>
-                          <a class="tag-item" href="#">keyword 2</a>
-                          <a class="tag-item" href="#">web</a>
-                          <a class="tag-item" href="#">web</a>
-                          <a class="tag-item" href="#">responsive mobile</a>
-                          <a class="tag-item" href="#">keyword 1</a>
-                          <a class="tag-item" href="#">keyword 2</a>
-                          <a class="tag-item" href="#">web</a>
-                          <a class="tag-item" href="#">web</a>
-                          <a class="tag-item" href="#">responsive mobile</a>
-                        </div>
-                      </div>
-                      <div class="btn-wrap">
-                        <button type="button" class="btn btn-list-more"></button>
+                  <div class="content-box">
+                    <div class="lc-media">
+                      <div class="media-body">
+                        <a class="media-title" href="#">아니한 안고, 이상의 우리의 청춘의 석가는 커다란 온갖 청춘은 있다.</a>
+                        <p class="media-desc">
+                          행복스럽고 구하기 광야에서 목숨이 피어나기 고행을 돋고, 만물은 뿐이다. 하여도 심장은 용감하고 교향악이다. 곳이
+                          있는 사랑의 쓸쓸한 꽃이 위하여, 그러므로 가치를 곧 칼이다.
+                        </p>
                       </div>
                     </div>
                   </div>
-                </li>
-                <li class="lc-card-item" aria-selected="false">
-                  <div class="item-wrap">
-                    <div class="content-top">
-                      <div class="lc-check">
-                        <button type="button" class="btn btn-check" data-toggle="button" aria-pressed="false"></button>
-                      </div>
-                      <div class="media-info">
-                        <div class="info-item">
-                          <div class="source">
-                            <div class="source-img" src="content/images/sample/media-aju.png"></div>
-                            아시아경제
-                          </div>
-                        </div>
-                        <div class="info-item">3일전</div>
-                      </div>
-                      <div class="lc-btn">
-                        <div class="more-area">
-                          <a class="btn-more" href="#" role="button" data-toggle="dropdown" aria-expanded="false"
-                            ><i class="icon-common icon-more"></i
-                          ></a>
-                          <div class="dropdown-menu dropdown-menu-right">
-                            <a class="dropdown-item" href="#"><i class="icon-common icon-pin"></i>Top fixed</a>
-                            <a class="dropdown-item" href="#"><i class="icon-common icon-trash"></i>Delete</a>
-                          </div>
-                        </div>
+                  <div class="tag-box">
+                    <div class="scroll-area">
+                      <div class="tag-list">
+                        <a class="tag-item" href="#">keyword 1</a>
+                        <a class="tag-item" href="#">keyword 2</a>
+                        <a class="tag-item" href="#">web</a>
+                        <a class="tag-item" href="#">web</a>
+                        <a class="tag-item" href="#">responsive mobile</a>
+                        <a class="tag-item" href="#">keyword 1</a>
+                        <a class="tag-item" href="#">keyword 2</a>
+                        <a class="tag-item" href="#">web</a>
+                        <a class="tag-item" href="#">web</a>
+                        <a class="tag-item" href="#">responsive mobile</a>
                       </div>
                     </div>
-                    <div class="content-box">
-                      <div class="lc-media">
-                        <div class="media-body">
-                          <a class="media-title" href="#">아니한 안고, 이상의 우리의 청춘의 석가는 커다란 온갖 청춘은 있다.</a>
-                          <p class="media-desc">
-                            행복스럽고 구하기 광야에서 목숨이 피어나기 고행을 돋고, 만물은 뿐이다. 하여도 심장은 용감하고 교향악이다. 곳이
-                            있는 사랑의 쓸쓸한 꽃이 위하여, 그러므로 가치를 곧 칼이다.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="tag-box">
-                      <div class="scroll-area">
-                        <div class="tag-list">
-                          <a class="tag-item" href="#">keyword 1</a>
-                          <a class="tag-item" href="#">keyword 2</a>
-                          <a class="tag-item" href="#">web</a>
-                          <a class="tag-item" href="#">web</a>
-                          <a class="tag-item" href="#">responsive mobile</a>
-                          <a class="tag-item" href="#">keyword 1</a>
-                          <a class="tag-item" href="#">keyword 2</a>
-                          <a class="tag-item" href="#">web</a>
-                          <a class="tag-item" href="#">web</a>
-                          <a class="tag-item" href="#">responsive mobile</a>
-                        </div>
-                      </div>
-                      <div class="btn-wrap">
-                        <button type="button" class="btn btn-list-more"></button>
-                      </div>
+                    <div class="btn-wrap">
+                      <button type="button" class="btn btn-list-more"></button>
                     </div>
                   </div>
-                </li>
-              </ul>
+                </div>
+              </li>
             </div>
           </div>
         </div>
@@ -587,70 +327,13 @@
           </div>
           <div class="lc-list-wrap">
             <div class="list-inner overflow-y-scroll">
-              <ul class="lc-card-list">
-                <li class="lc-card-item" aria-selected="false">
-                  <div class="item-wrap">
-                    <div class="content-top">
-                      <div class="lc-check">
-                        <button type="button" class="btn btn-check" data-toggle="button" aria-pressed="false"></button>
-                      </div>
-                      <div class="media-info">
-                        <div class="info-item">
-                          <div class="source">
-                            <div class="source-img"><img src="content/images/sample/media-aju.png" /></div>
-                            아시아경제
-                          </div>
-                        </div>
-                        <div class="info-item">3일전</div>
-                      </div>
-                      <div class="lc-btn">
-                        <div class="more-area">
-                          <a class="btn-more" href="#" role="button" data-toggle="dropdown" aria-expanded="false"
-                            ><i class="icon-common icon-more"></i
-                          ></a>
-                          <div class="dropdown-menu dropdown-menu-right">
-                            <a class="dropdown-item" href="#"><i class="icon-common icon-pin"></i>Top fixed</a>
-                            <a class="dropdown-item" href="#"><i class="icon-common icon-trash"></i>Delete</a>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="content-box">
-                      <div class="lc-media">
-                        <div class="media-body">
-                          <a class="media-title" href="#">아니한 안고, 이상의 우리의 청춘의 석가는 커다란 온갖 청춘은 있다.</a>
-                          <p class="media-desc">
-                            행복스럽고 구하기 광야에서 목숨이 피어나기 고행을 돋고, 만물은 뿐이다. 하여도 심장은 용감하고 교향악이다. 곳이
-                            있는 사랑의 쓸쓸한 꽃이 위하여, 그러므로 가치를 곧 칼이다.
-                          </p>
-                        </div>
-                        <a class="media-img" href="#">
-                          <img src="content/images/sample/@445x290.png" />
-                        </a>
-                      </div>
-                    </div>
-                    <div class="tag-box">
-                      <div class="scroll-area">
-                        <div class="tag-list">
-                          <a class="tag-item" href="#">keyword 1</a>
-                          <a class="tag-item" href="#">keyword 2</a>
-                          <a class="tag-item" href="#">web</a>
-                          <a class="tag-item" href="#">web</a>
-                          <a class="tag-item" href="#">responsive mobile</a>
-                          <a class="tag-item" href="#">keyword 1</a>
-                          <a class="tag-item" href="#">keyword 2</a>
-                          <a class="tag-item" href="#">web</a>
-                          <a class="tag-item" href="#">web</a>
-                          <a class="tag-item" href="#">responsive mobile</a>
-                        </div>
-                      </div>
-                      <div class="btn-wrap">
-                        <button type="button" class="btn btn-list-more"></button>
-                      </div>
-                    </div>
-                  </div>
-                </li>
-              </ul>
+              <vue-custom-scrollbar class="overflow-yx-scroll csScrollPositon h-100" :settings="scrollSettings">
+                <ul class="lc-card-list">
+                  <li v-for="item in chosenCollection.docDetail" :key="item.id" class="lc-card-item" aria-selected="false">
+                    <single-card :document="item"></single-card>
+                  </li>
+                </ul>
+              </vue-custom-scrollbar>
             </div>
           </div>
         </div>

@@ -6,7 +6,6 @@ import NoticeList from '@/entities/help/notice/noticeList/noticeList.vue';
 import NoticeDetail from '@/entities/help/notice/noticeDetail/noticeDetail.vue';
 import LearningSocial from '@/entities/connectome/learning-management/learningSocial/leaningSocial.vue';
 import LearningWeb from '@/entities/connectome/learning-management/learningWeb/learningWeb.vue';
-import ListCollection from '@/entities/new-learning-center/list-collection.vue';
 
 /* tslint:disable */
 // prettier-ignore
