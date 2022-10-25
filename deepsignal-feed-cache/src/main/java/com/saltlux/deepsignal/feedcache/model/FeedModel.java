@@ -32,6 +32,7 @@ public class FeedModel {
     private String collector;
     private String title;
     private String writer;
+    private String writer_search;
     private String og_image_url;
     private String og_image_base64;
     private String favicon_url;

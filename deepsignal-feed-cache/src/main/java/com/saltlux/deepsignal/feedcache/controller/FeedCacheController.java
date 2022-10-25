@@ -27,6 +27,15 @@ public class FeedCacheController {
                                           @RequestParam(value = "size", required = false, defaultValue = "10") Integer size){
         return ResponseEntity.ok(iFeedService.getListFeed(connectomeId, request_id, page, size));
     }
+
+    @GetMapping("/getListFilterFeed")
+    private ResponseEntity<?> getListFilterFeed(@RequestParam(value = "connectomeId", required = true) String connectomeId,
+                                          @RequestParam(value = "requestId", required = false) String request_id,
+                                          @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
+                                          @RequestParam(value = "size", required = false, defaultValue = "10") Integer size,
+                                                @RequestParam(value = "type", required = false) String type){
+        return ResponseEntity.ok(iFeedService.getListFilterFeed(connectomeId, request_id, page, size, type));
+    }
     @PostMapping("/getListDocumentByIds")
     private ResponseEntity<?> getListDocumentByIds(@RequestBody FeedIdsDto dto){
         return ResponseEntity.ok(iFeedService.getListDocumentByIds(dto));

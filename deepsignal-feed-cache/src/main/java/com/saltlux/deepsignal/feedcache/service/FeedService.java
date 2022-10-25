@@ -43,7 +43,9 @@ public class FeedService implements IFeedService {
         List<FeedModel> feedModelList = null;
         try{
 
-            feedModelList = searcherClient.getListFeed(connectomeId, page, size).getData();
+            DataListResponse<FeedModel> response1 = searcherClient.getListFeed(connectomeId, page, size);
+
+            feedModelList = response1.getData();
             if (feedModelList != null && !feedModelList.isEmpty()){
                 for (FeedModel feedModel : feedModelList){
 
@@ -53,6 +55,7 @@ public class FeedService implements IFeedService {
                 }
                 logger.info(String.format("[getListFeedData] requestId: %s DONE success", request_id));
             }
+            return response1;
 
         }catch (Exception e){
             response.setStatus(-1, "failed");
@@ -66,9 +69,7 @@ public class FeedService implements IFeedService {
     public DataListResponse<FeedModel> getListDocumentByIds(FeedIdsDto dto) {
         DataListResponse<FeedModel> response = new DataListResponse<>(0, "success", dto.getRequest_id());
         try {
-            List<FeedModel> feedModelList;
-            feedModelList = searcherClient.getListDocumentByIds(dto).getData();
-            response.setData(feedModelList);
+            return searcherClient.getListDocumentByIds(dto);
         }catch (Exception e){
             response.setStatus(-1, "failed");
             logger.error(String.format("[getListDocumentByIds] requestId: %s error unknown" + e.getMessage(), dto.getRequest_id()), e);
@@ -137,6 +138,34 @@ public class FeedService implements IFeedService {
             logger.error(String.format("[getFeed] requestId: %s error unknown" + e.getMessage(), request_id), e);
         }
         response.setData(feedDataModel);
+        return response;
+    }
+
+    @Override
+    public DataListResponse<FeedModel> getListFilterFeed(String connectomeId, String request_id, Integer page, Integer size, String type) {
+        DataListResponse<FeedModel> response = new DataListResponse<>(0, "success", request_id);
+        List<FeedModel> feedModelList = null;
+        try{
+
+            DataListResponse<FeedModel> response1 = searcherClient.getListFilterFeed(connectomeId, page, size, type);
+
+            feedModelList = response1.getData();
+            if (feedModelList != null && !feedModelList.isEmpty()){
+                for (FeedModel feedModel : feedModelList){
+
+                    // Save in Redis
+                    redisConnection.saveValueToFeedAsSync(feedModel.get_id(), GUtil.gson.toJson(feedModel));
+
+                }
+                logger.info(String.format("[getListFilterFeed] requestId: %s DONE success", request_id));
+            }
+            return response1;
+
+        }catch (Exception e){
+            response.setStatus(-1, "failed");
+            logger.error(String.format("[getListFilterFeed] requestId: %s error unknown" + e.getMessage(), request_id), e);
+        }
+        response.setData(feedModelList);
         return response;
     }
 
