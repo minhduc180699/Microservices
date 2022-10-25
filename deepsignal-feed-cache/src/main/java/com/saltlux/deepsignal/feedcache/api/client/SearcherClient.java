@@ -31,7 +31,8 @@ public interface SearcherClient {
     @GetMapping(API_SEARCHER + "/getFeedContent")
     DataResponse<FeedContentModel> getFeedContent(@RequestParam String docId);
     @GetMapping(API_SEARCHER + "/getFeed")
-    DataResponse<FeedModel> getFeed(@RequestParam("_id") String _id);
+    DataResponse<FeedModel> getFeed(@RequestParam("connectomeId") String connectomeId,
+            @RequestParam("docId") String docId);
     @GetMapping(API_SEARCHER + "/searchFeedData")
     DataListResponse<FeedModel> searchFeed(@RequestParam("connectomeId") String connectomeId,
                                @RequestParam("keyword") String keyword,

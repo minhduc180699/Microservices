@@ -1,11 +1,8 @@
 package com.saltlux.deepsignal.feedcache.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-
-import java.util.List;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -14,7 +11,7 @@ public class FeedModel {
     private String _id;
     private String connectomeId;
     private String requestId = "NULL";
-    private String docId_content;
+    private String docId;
     private String type;
     private String feed_content_id;
     private Integer liked;

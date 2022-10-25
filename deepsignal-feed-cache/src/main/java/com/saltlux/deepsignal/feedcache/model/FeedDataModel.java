@@ -15,7 +15,7 @@ public class FeedDataModel {
     private String _id;
     private String connectomeId;
     private String requestId = "NULL";
-    private String docId_content;
+    private String docId;
     private String type;
     @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     private String feed_content_id;
@@ -86,7 +86,7 @@ public class FeedDataModel {
         this._id = feedModel.get_id();
         this.connectomeId = feedModel.getConnectomeId();
         this.requestId = feedModel.getRequestId();
-        this.docId_content = feedModel.getDocId_content();
+        this.docId = feedModel.getDocId();
         this.type = feedModel.getType();
         this.feed_content_id = feedModel.getFeed_content_id();
         this.liked = feedModel.getLiked();

@@ -57,8 +57,8 @@ public class FeedCacheController {
     @GetMapping("/getFeed")
     private ResponseEntity<?> getFeed(@RequestParam(value = "connectomeId") String connectomeId,
                                       @RequestParam(value = "requestId",required = false) String request_id,
-                                      @RequestParam(value = "_id") String _id){
-        return ResponseEntity.ok(iFeedService.getFeed(connectomeId, request_id, _id));
+                                      @RequestParam(value = "docId") String docId){
+        return ResponseEntity.ok(iFeedService.getFeed(connectomeId, request_id, docId));
     }
     @PutMapping("/updateFeed")
     private ResponseEntity<?> updateFeed(@RequestBody FeedModel data){

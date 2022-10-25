@@ -34,7 +34,7 @@ public class SearcherClientFallback implements SearcherClient{
     }
 
     @Override
-    public DataResponse<FeedModel> getFeed(String _id) {
+    public DataResponse<FeedModel> getFeed(String connectomeId, String docId) {
         return null;
     }
 
