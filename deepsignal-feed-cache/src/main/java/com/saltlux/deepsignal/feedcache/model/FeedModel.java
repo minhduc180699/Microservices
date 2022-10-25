@@ -38,4 +38,9 @@ public class FeedModel {
     private String favicon_url;
     private String favicon_base64;
     private String description;
+    private String feed_partition;
+    private String content_partition;
+    private String tags;
+    private String feed_id;
+    private String writer_id;
 }

@@ -42,4 +42,9 @@ public class SearcherClientFallback implements SearcherClient{
     public DataListResponse<FeedModel> searchFeed(String connectomeId, String keyword, String from, String until, Integer page, Integer size, String searchType, String channels, String lang, String type) {
         return null;
     }
+
+    @Override
+    public DataListResponse<FeedModel> getListFilterFeed(String connectomeId, Integer page, Integer size, String type) {
+        return null;
+    }
 }
