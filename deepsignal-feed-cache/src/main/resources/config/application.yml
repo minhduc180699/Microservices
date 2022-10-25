@@ -66,21 +66,23 @@ management:
 spring:
   application:
     name: deepsignal-feed-cache
-#  config:
-#    import: "optional:configserver:http://192.168.10.16:8088"
-#
-#  rabbitmq:
-#    host: 192.168.10.12
-#    port: 5672
-#    username: deepsignal
-#    password: deeppass22
   config:
-    import: "optional:configserver:http://13.21.34.201:8088"
+    import: "optional:configserver:http://192.168.10.16:8088"
+
   rabbitmq:
-    host: 13.21.34.201
+    host: 192.168.10.12
     port: 5672
-    username: guest
-    password: guest
+    username: deepsignal
+    password: deeppass22
+
+#  config:
+#    import: "optional:configserver:http://13.21.34.201:8088"
+#  rabbitmq:
+#    host: 13.21.34.201
+#    port: 5672
+#    username: guest
+#    password: guest
+
   profiles:
     # The commented value for `active` can be replaced with valid Spring profiles to load.
     # Otherwise, it will be filled in by maven when building the JAR file

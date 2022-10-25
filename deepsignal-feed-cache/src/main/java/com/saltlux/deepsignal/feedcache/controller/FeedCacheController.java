@@ -23,7 +23,7 @@ public class FeedCacheController {
     @GetMapping("/getListFeed")
     private ResponseEntity<?> getListFeed(@RequestParam(value = "connectomeId", required = true) String connectomeId,
                                           @RequestParam(value = "requestId", required = false) String request_id,
-                                          @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
+                                          @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
                                           @RequestParam(value = "size", required = false, defaultValue = "10") Integer size){
         return ResponseEntity.ok(iFeedService.getListFeed(connectomeId, request_id, page, size));
     }
@@ -31,7 +31,7 @@ public class FeedCacheController {
     @GetMapping("/getListFilterFeed")
     private ResponseEntity<?> getListFilterFeed(@RequestParam(value = "connectomeId", required = true) String connectomeId,
                                           @RequestParam(value = "requestId", required = false) String request_id,
-                                          @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
+                                          @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
                                           @RequestParam(value = "size", required = false, defaultValue = "10") Integer size,
                                                 @RequestParam(value = "type", required = false) String type){
         return ResponseEntity.ok(iFeedService.getListFilterFeed(connectomeId, request_id, page, size, type));
@@ -46,7 +46,7 @@ public class FeedCacheController {
                                           @RequestParam(value = "keyword", required = false) String keyword,
                                           @RequestParam(value = "from", required = false) String from,
                                           @RequestParam(value = "until", required = false) String until,
-                                          @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
+                                          @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
                                           @RequestParam(value = "size", required = false, defaultValue = "10") Integer size,
                                           @RequestParam(value = "search_type", required = false) String searchType,
                                           @RequestParam(value = "channels", required = false) String channels,
