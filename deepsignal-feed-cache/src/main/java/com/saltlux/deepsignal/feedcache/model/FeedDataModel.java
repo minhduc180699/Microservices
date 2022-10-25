@@ -135,9 +135,15 @@ public class FeedDataModel {
 
         if (this.search_type.contains("searchFileType:")) {
             String[] searchTypeArray = this.search_type.split(":");
-            feedRealtimeCrawlerModel.setType("FILE");
+            feedRealtimeCrawlerModel.setType("DOWNLOAD");
             feedRealtimeCrawlerModel.setFileType(searchTypeArray[1]);
         }else {
+            if (this.search_type.contains("VIDEO")) {
+                feedRealtimeCrawlerModel.setSearchType("searchVideo");
+            }
+            if (this.search_type.contains("NEWS")) {
+                feedRealtimeCrawlerModel.setSearchType("searchNews");
+            }
             feedRealtimeCrawlerModel.setType("URL");
         }
         feedRealtimeCrawlerModel.setConnectomeId(this.connectomeId);
@@ -147,7 +153,6 @@ public class FeedDataModel {
         feedRealtimeCrawlerModel.setDescription(this.description);
         feedRealtimeCrawlerModel.setCreatedDate(this.published_at);
         feedRealtimeCrawlerModel.setAuthor(this.writer);
-        feedRealtimeCrawlerModel.setSearchType(this.search_type);
         feedRealtimeCrawlerModel.setFavicon(this.favicon_url);
         feedRealtimeCrawlerModel.setLang(this.service_language);
         feedRealtimeCrawlerModel.setKeyword(this.keyword);

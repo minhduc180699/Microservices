@@ -181,7 +181,7 @@ public class FeedService implements IFeedService {
             Long uniqueKey = Utils.getHashCode(saveRecord, keyField);
             data.set__unique__key(uniqueKey);
             producer.send(KafkaConstant.FEED_CREATE_TOPIC, GUtil.gson.toJson(data));
-            if (data.getContent() == null || data.getContent().isEmpty()){
+            if (data.getContent() == null || data.getContent().isEmpty() && !data.getSource_uri().contains("youtube")){
                 realtimeCrawlerClient.postRealtimeCrawler(Collections.singletonList(data.toFeedRealtimeCrawlerModel()));
             }
             logger.info(String.format("[createFeed] requestId: %s DONE success", data.getRequestId()));
