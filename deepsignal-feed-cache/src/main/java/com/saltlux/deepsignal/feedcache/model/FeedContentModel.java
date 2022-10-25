@@ -48,5 +48,5 @@ public class FeedContentModel {
     private String writer;
     private String category;
     private String writer_search;
-    private String lang;
+    private String lang = "en";
 }
