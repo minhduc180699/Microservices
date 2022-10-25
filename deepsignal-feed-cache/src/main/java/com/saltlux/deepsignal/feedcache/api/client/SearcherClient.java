@@ -43,4 +43,11 @@ public interface SearcherClient {
                                @RequestParam("channels") String channels,
                                @RequestParam("lang") String lang,
                                @RequestParam("type") String type);
+
+
+    @GetMapping(API_SEARCHER + "/getListFilterFeed")
+    DataListResponse<FeedModel> getListFilterFeed(@RequestParam("connectomeId") String connectomeId,
+                                                  @RequestParam("page") Integer page,
+                                                  @RequestParam("size") Integer size,
+                                                  @RequestParam("type") String type);
 }
