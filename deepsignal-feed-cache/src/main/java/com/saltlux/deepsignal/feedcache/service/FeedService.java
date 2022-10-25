@@ -83,6 +83,10 @@ public class FeedService implements IFeedService {
         try{
             // Search fee data from Elasticsearch
             response = searcherClient.searchFeed(connectomeId, keyword, from, until, page, size, searchType, channels, lang, type);
+            List<FeedModel> feedModelList = response.getData();
+            for (FeedModel feedModel : feedModelList){
+                redisConnection.saveValueToFeedAsSync(feedModel.get_id(), GUtil.gson.toJson(feedModel));
+            }
             logger.info(String.format("[searchFeedData] requestId: %s DONE success", request_id));
         }catch (Exception e){
             response.setStatus(-1, "failed");
@@ -99,7 +103,7 @@ public class FeedService implements IFeedService {
         try {
             // Get feed from redis
             FeedModel feedModel = redisConnection.getValueOfFeed(_id);
-            FeedContentModel feedContentModel;
+            FeedContentModel feedContentModel = null;
             // Has feed
             if (feedModel != null) {
                 // Check feed content in redis
