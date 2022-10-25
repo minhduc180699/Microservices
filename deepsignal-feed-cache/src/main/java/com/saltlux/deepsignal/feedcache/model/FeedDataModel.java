@@ -75,6 +75,12 @@ public class FeedDataModel {
     private Long __unique__key__summary;
     @JsonIgnore
     private Long __unique__key;
+
+
+    private String feed_partition;
+    private String content_partition;
+
+
     private String lang = "en";
     public void buildFeedDataModel(FeedModel feedModel, FeedContentModel feedContentModel){
         this._id = feedModel.get_id();
@@ -129,6 +135,8 @@ public class FeedDataModel {
         this.source_id = feedContentModel.getSource_id();
         this.category = feedContentModel.getCategory();
         this.writer_search = feedContentModel.getWriter_search();
+        this.feed_partition = feedModel.getFeed_partition();
+        this.content_partition = feedModel.getContent_partition();
     }
     public FeedRealtimeCrawlerModel toFeedRealtimeCrawlerModel(){
         FeedRealtimeCrawlerModel feedRealtimeCrawlerModel = new FeedRealtimeCrawlerModel();

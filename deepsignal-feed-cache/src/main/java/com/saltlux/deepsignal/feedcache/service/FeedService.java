@@ -205,7 +205,10 @@ public class FeedService implements IFeedService {
                     feedFromRedis.add(key, data.get(key));
                 }
                 redisConnection.saveValueToFeedAsSync(data.get("_id").getAsString(), GUtil.gson.toJson(feedFromRedis));
+
+                data.add("feed_partition", feedFromRedis.get("feed_partition"));
             }
+
             producer.send(KafkaConstant.FEED_UPDATE_TOPIC, GUtil.gson.toJson(data));
             logger.info(String.format("[updateFeed] requestId: %s DONE success", feedModel.getRequestId()));
         }catch (Exception e){
@@ -226,7 +229,15 @@ public class FeedService implements IFeedService {
                 feedJsonObject.add("liked", data.get("liked"));
 
                 redisConnection.saveValueToFeedAsSync(data.get("_id").getAsString(), GUtil.gson.toJson(feedJsonObject));
+            } else {
+                feedJsonObject = GUtil.gson.toJsonTree(searcherClient.getFeed(data.get("_id").getAsString()).getData()).getAsJsonObject();
+                feedJsonObject.remove("liked");
+                feedJsonObject.add("liked", data.get("liked"));
+
+                redisConnection.saveValueToFeedAsSync(data.get("_id").getAsString(), GUtil.gson.toJson(feedJsonObject));
             }
+
+            data.add("feed_partition", feedJsonObject.get("feed_partition"));
             producer.send(KafkaConstant.FEED_UPDATE_TOPIC, GUtil.gson.toJson(data));
             logger.error(String.format("[likeFeed] requestId: %s DONE success", feedModel.getRequestId()));
         }catch (Exception e){
@@ -246,7 +257,15 @@ public class FeedService implements IFeedService {
                 feedJsonObject.remove("isDeleted");
                 feedJsonObject.add("isDeleted", data.get("isDeleted"));
                 redisConnection.saveValueToFeedAsSync(data.get("_id").getAsString(), GUtil.gson.toJson(feedJsonObject));
+            } else {
+                feedJsonObject = GUtil.gson.toJsonTree(searcherClient.getFeed(data.get("_id").getAsString()).getData()).getAsJsonObject();
+                feedJsonObject.remove("isDeleted");
+                feedJsonObject.add("isDeleted", data.get("isDeleted"));
+
+                redisConnection.saveValueToFeedAsSync(data.get("_id").getAsString(), GUtil.gson.toJson(feedJsonObject));
             }
+
+            data.add("feed_partition", feedJsonObject.get("feed_partition"));
             producer.send(KafkaConstant.FEED_UPDATE_TOPIC, GUtil.gson.toJson(data));
             logger.info(String.format("[hideFeed] requestId: %s DONE success", feedModel.getRequestId()));
         }catch (Exception e){
@@ -266,7 +285,15 @@ public class FeedService implements IFeedService {
                 feedJsonObject.remove("isBookmarked");
                 feedJsonObject.add("isBookmarked", data.get("isBookmarked"));
                 redisConnection.saveValueToFeedAsSync(data.get("_id").getAsString(), GUtil.gson.toJson(feedJsonObject));
+            } else {
+                feedJsonObject = GUtil.gson.toJsonTree(searcherClient.getFeed(data.get("_id").getAsString()).getData()).getAsJsonObject();
+                feedJsonObject.remove("isBookmarked");
+                feedJsonObject.add("isBookmarked", data.get("isBookmarked"));
+
+                redisConnection.saveValueToFeedAsSync(data.get("_id").getAsString(), GUtil.gson.toJson(feedJsonObject));
             }
+
+            data.add("feed_partition", feedJsonObject.get("feed_partition"));
             producer.send(KafkaConstant.FEED_UPDATE_TOPIC, GUtil.gson.toJson(data));
             logger.info(String.format("[bookmarkFeed] requestId: %s DONE success", feedModel.getRequestId()));
         }catch (Exception e){
