@@ -1,6 +1,7 @@
 import { ConnectomeNode } from './connectome-node.model';
 
 export class documentCard {
+  [x: string]: any;
   id: string = null;
   author: string = null;
   title: string = null;

@@ -14,6 +14,8 @@ const collectionsManagerStore = namespace('collectionsManagerStore');
 })
 export default class singleCard extends Vue {
   @Prop(Object) readonly document: any;
+  @Prop() readonly selectedItems: any;
+  @Prop() readonly isHideCheck: any;
 
   @collectionsManagerStore.Action
   public addBookmarksToCurrentCollection: (payload: {
@@ -71,5 +73,24 @@ export default class singleCard extends Vue {
         return;
       }
     });
+  }
+
+  showTag(e) {
+    e.preventDefault();
+    $('.tag-box').toggleClass('show');
+  }
+
+  dataTmp = [];
+  dataTmpItemsChage() {
+    this.$emit('setSelectedItems', this.dataTmp);
+  }
+
+  @Watch('selectedItems')
+  selectedItemsChage() {
+    this.dataTmp = this.selectedItems;
+  }
+
+  mounted() {
+    this.dataTmp = this.selectedItems;
   }
 }

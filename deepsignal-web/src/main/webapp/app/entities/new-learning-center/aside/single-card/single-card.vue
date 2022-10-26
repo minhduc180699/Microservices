@@ -1,18 +1,59 @@
 <template>
-  <!--    <b-card v-if="loading">-->
-  <!--      <b-skeleton animation="fade" width="85%"></b-skeleton>-->
-  <!--      <b-skeleton animation="fade" width="55%"></b-skeleton>-->
-  <!--      <b-skeleton animation="fade" width="70%"></b-skeleton>-->
-  <!--    </b-card>-->
   <div class="item-wrap">
+    <div class="content-top">
+      <div class="lc-check" id="customInput" v-show="!isHideCheck">
+        <input type="checkbox" name="selected-items" v-model="dataTmp" @change="dataTmpItemsChage" :value="document" />
+      </div>
+      <div class="media-info">
+        <div class="info-item">
+          <div class="source">
+            <div class="source-img">
+              <img :src="document.favicon" alt="" />
+            </div>
+            {{ document.author }}
+          </div>
+        </div>
+        <div class="info-item">{{ document.org_date }}</div>
+      </div>
+      <div class="lc-btn" v-show="isHideCheck">
+        <a class="btn-close" href="#"><i class="icon-common icon-close"></i></a>
+      </div>
+    </div>
+    <div class="content-box">
+      <div class="lc-media">
+        <div class="media-body">
+          <a class="media-title" href="#">{{ document.title }}</a>
+          <p class="media-desc" v-html="document.description"></p>
+        </div>
+        <a class="media-img" href="#" id="image">
+          <div v-if="document.searchType === 'searchVideo'" class="icon-play"></div>
+          <img :src="document.img" alt="" style="width: 100%" @error="document.img = ['content/images/empty-image.png']" />
+        </a>
+      </div>
+    </div>
+    <div class="tag-box">
+      <div class="scroll-area">
+        <div class="tag-list">
+          <a class="tag-item" v-for="(element, index) in document.keyword.split(',')" :key="index" href="#">{{ element }}</a>
+        </div>
+      </div>
+      <div class="btn-wrap">
+        <button type="button" class="btn btn-list-more" @click="showTag($event)"></button>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script src="./single-card.component.ts" lang="ts"></script>
+
+<!-- <div class="item-wrap">
     <div class="content-top">
       <div class="lc-check">
         <button
           type="button"
-          class="btn btn-check"
-          :class="currentCollectionDocIds.indexOf(document.id) > -1 ? 'active' : 'focus'"
+          class="btn btn-check active focus"
           data-toggle="button"
-          :aria-pressed="currentCollectionDocIds.indexOf(document.id) > -1 ? 'true' : 'false'"
+          aria-pressed='true' 
           @click="handleClickSingleCard"
         ></button>
       </div>
@@ -49,7 +90,8 @@
           </p>
         </div>
         <a class="media-img" href="#">
-          <img v-if="document.images.length > 0" :src="document.images" />
+          <img v-if="document.images&&document.images.length > 0" :src="document.images" />
+          <img v-else-if="document.img&&document.img.length > 0" :src="document.img" />
         </a>
       </div>
     </div>
@@ -63,7 +105,4 @@
         <button type="button" class="btn btn-list-more"></button>
       </div>
     </div>
-  </div>
-</template>
-
-<script src="./single-card.component.ts" lang="ts"></script>
+  </div> -->
