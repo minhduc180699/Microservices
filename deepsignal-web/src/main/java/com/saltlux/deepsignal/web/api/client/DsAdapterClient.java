@@ -4,20 +4,20 @@ import com.saltlux.deepsignal.web.service.dto.ConnectomeFeed;
 import com.saltlux.deepsignal.web.service.dto.FilterFeedDTO;
 import com.saltlux.deepsignal.web.service.dto.MetaSearchDTO;
 import io.swagger.v3.oas.annotations.Operation;
+import java.time.Instant;
+import java.util.List;
+import java.util.Map;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.Instant;
-import java.util.List;
-import java.util.Map;
-
+@Qualifier
 @FeignClient(name = "deepsignal-adapter", fallback = DsAdapterClientFallback.class)
 public interface DsAdapterClient {
-
     String API_CONNECTOME_FEED = "/api/connectome-feed/";
 
-   /************************************************ Connecto Feed ************************************************************/
+    /************************************************ Connecto Feed ************************************************************/
     @GetMapping(API_CONNECTOME_FEED + "getAll")
     ResponseEntity<Map<String, Object>> getAllConnectomeFeed(
         @RequestParam(value = "page", defaultValue = "0") int page,
