@@ -584,50 +584,50 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
         context.commit('addPdColor', { docId: docId });
       });
 
-      context.getters.getCurrentCollection.documentIdList.forEach(docId => {
-        if (!docId) {
-          return;
-        }
+      // context.getters.getCurrentCollection.documentIdList.forEach(docId => {
+      //   if (!docId) {
+      //     return;
+      //   }
 
-        const docConnectome = context.getters.getNodesListByDocument.get(docId);
-        if (docConnectome) {
-          context.commit('addPd', { docId: docId, connectome: docConnectome });
-          return;
-        }
+      //   const docConnectome = context.getters.getNodesListByDocument.get(docId);
+      //   if (docConnectome) {
+      //     context.commit('addPd', { docId: docId, connectome: docConnectome });
+      //     return;
+      //   }
 
-        axios.defaults.headers.common['connectomeId'] = context.getters.getConnectomeId;
-        axios.defaults.headers.common['lang'] = context.getters.getLang;
+      //   axios.defaults.headers.common['connectomeId'] = context.getters.getConnectomeId;
+      //   axios.defaults.headers.common['lang'] = context.getters.getLang;
 
-        const apiCallConnectomeData = new Promise<any>((resolve, reject) => {
-          axios
-            .post(getDocGraphUrl, {
-              documentId: docId,
-            })
-            .then(res => resolve(res))
-            .catch(err => reject(err));
-        });
+      //   const apiCallConnectomeData = new Promise<any>((resolve, reject) => {
+      //     axios
+      //       .post(getDocGraphUrl, {
+      //         documentId: docId,
+      //       })
+      //       .then(res => resolve(res))
+      //       .catch(err => reject(err));
+      //   });
 
-        apiCallConnectomeData
-          .then(res => {
-            if (!res.data.body) {
-              return;
-            }
+      //   apiCallConnectomeData
+      //     .then(res => {
+      //       if (!res.data.body) {
+      //         return;
+      //       }
 
-            const response = res.data.body;
-            console.log('getELData', response);
-            context.commit('addPd', { docId: docId, connectome: response.nodeList });
-            return response;
-          })
-          .catch(reason => {
-            console.log('Reason', reason);
-            console.log('Reason  getELData', getDocGraphUrl, {
-              documentIds: [docId],
-            });
-          })
-          .finally(() => {});
-      });
+      //       const response = res.data.body;
+      //       console.log('getELData', response);
+      //       context.commit('addPd', { docId: docId, connectome: response.nodeList });
+      //       return response;
+      //     })
+      //     .catch(reason => {
+      //       console.log('Reason', reason);
+      //       console.log('Reason  getELData', getDocGraphUrl, {
+      //         documentIds: [docId],
+      //       });
+      //     })
+      //     .finally(() => {});
+      // });
 
-      context.commit('disableOrphans');
+      //context.commit('disableOrphans');
     },
     createCollection: async (
       context,
