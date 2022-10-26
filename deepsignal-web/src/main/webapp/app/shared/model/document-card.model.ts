@@ -14,4 +14,7 @@ export class documentCard {
   url: string = null;
   isAdded = false;
   style = null;
+  totalDocuments: number = null;
+  images: Array<string> = new Array<string>();
+  favicon: string;
 }

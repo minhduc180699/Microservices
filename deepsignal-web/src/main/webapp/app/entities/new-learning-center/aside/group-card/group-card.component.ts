@@ -1,49 +1,91 @@
 import { Component, Inject, Prop, Vue } from 'vue-property-decorator';
 import { asideService } from '@/entities/new-learning-center/aside/aside-service/aside.service';
 import listCardGroup from '@/entities/new-learning-center/aside/list-card-group/list-card-group.vue';
+import { CmCollection } from '@/shared/model/cm-collection.model';
+import { namespace } from 'vuex-class';
+import { documentCard } from '@/shared/model/document-card.model';
+
+const collectionsManagerStore = namespace('collectionsManagerStore');
 
 @Component({
   components: {
     listCardGroup: listCardGroup,
   },
+  computed: {
+    currentCollectionDocIds() {
+      return this.$store.getters['collectionsManagerStore/getCurrentCollection']?.documentIdList;
+    },
+  },
 })
 export default class groupCard extends Vue {
-  @Prop(Object) readonly item: any;
-  @Inject('asideService')
-  private asideService: () => asideService;
+  @Prop(Object) readonly collection: any;
   private dataDocuments = [];
   private images = [];
   private loading = true;
 
-  created() {
-    this.asideService()
-      .getByDocId(this.item.documentIdList)
-      .then(res => {
-        this.dataDocuments = res.data.connectomePersonalDocuments;
-        this.dataDocuments.forEach((item, index) => {
-          if (item.imageUrl && item.imageUrl.length > 0) {
-            this.images.push(item.imageUrl[0]);
-          } else if (item.imageBase64 && item.imageBase64.length > 0) {
-            this.images.push(item.imageBase64[0]);
-          } else if (item.ogImageUrl && item.ogImageUrl != '') {
-            this.images.push(item.ogImageUrl);
-          } else if (item.ogImageBase64 && item.ogImageBase64 != '') {
-            this.images.push(item.ogImageBase64);
-          }
-        });
-        let i = 0;
-        while (this.images.length < 4) {
-          this.images.push(this.images[i]);
-          i++;
-        }
-        this.loading = false;
-      })
-      .catch(error => {
-        this.loading = false;
-      });
+  private currentCollectionDocIds: any[];
+
+  @collectionsManagerStore.Action
+  public addBookmarksToCurrentCollection: (payload: {
+    docIds: Array<string>;
+  }) => Promise<{ status: string; message: string; result: CmCollection }>;
+
+  @collectionsManagerStore.Action
+  public removeBookmarksFromCurrentCollection: (payload: {
+    docIds: Array<string>;
+  }) => Promise<{ status: string; message: string; result: CmCollection }>;
+
+  // created() {
+  //   console.log(this.currentCollectionDocIds,1111111);
+  // }
+
+  toggleGroupCollection(data: any) {
+    this.$emit('toggleGroupCollection', this.collection);
   }
 
-  showListCard() {
-    this.$emit('showListGroupCard', this.dataDocuments);
+  handleClickGroupCard(collection: documentCard) {
+    if (collection['docDetail']) {
+      collection['docDetail'].forEach(item => {
+        console.log(item, 111100);
+        const doc = this.currentCollectionDocIds.find(docId => docId == item.id);
+        if (doc) {
+          this.removeFromCurrentCollection(item);
+        } else {
+          this.addToCurrentCollection(item);
+        }
+      });
+    }
+  }
+
+  addToCurrentCollection(item) {
+    this.addBookmarksToCurrentCollection({ docIds: [item.id] }).then(res => {
+      if (!res) {
+        return;
+      }
+
+      if (res.status === 'NOK') {
+        return;
+      }
+
+      if (!res.result) {
+        return;
+      }
+    });
+  }
+
+  removeFromCurrentCollection(item) {
+    this.removeBookmarksFromCurrentCollection({ docIds: [item.id] }).then(res => {
+      if (!res) {
+        return;
+      }
+
+      if (res.status === 'NOK') {
+        return;
+      }
+
+      if (!res.result) {
+        return;
+      }
+    });
   }
 }

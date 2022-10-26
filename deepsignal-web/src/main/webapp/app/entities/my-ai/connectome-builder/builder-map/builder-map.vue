@@ -1,65 +1,42 @@
 <template>
   <div class="asset-panel">
-    <b-container class="bv-example-row">
+    <b-container fluid>
       <b-row>
         <b-col>
-          <b-badge variant="primary">Collections</b-badge>
-        </b-col>
-        <b-col>
-          <b-badge variant="primary">Bookmarks</b-badge>
-        </b-col>
-        <b-col>
-          <b-badge variant="success">Current Collection</b-badge>
-        </b-col>
-        <b-col>
-          <b-badge variant="info">Current Collection's Connectome</b-badge>
-        </b-col>
-        <b-col>
-          <b-badge variant="light">Current Collection's requests</b-badge>
-        </b-col>
-      </b-row>
-      <b-row>
-        <b-col>
+          <div><b-badge variant="primary">Collections</b-badge></div>
           <div class="list-scrollable">
-            <b-card v-for="collection in collectionCardItems" :key="collection.id">
-              <template #header>
-                <b-input-group class="mb-2" variant="outline-primary">
+            <b-card v-for="collection in collectionCardItems" :key="collection.id" :style="collection.style">
+              <b-card-body>
+                <b-input-group class="mb-2">
                   <b-input-group-prepend is-text>
                     <b-icon icon="folder-fill"></b-icon>
                   </b-input-group-prepend>
                   <b-form-input type="text" :placeholder="collection.type" disabled></b-form-input>
                 </b-input-group>
-              </template>
-              <b-card-body>
-                <b-card-sub-title class="mb-2">{{ collection.title }}</b-card-sub-title>
+                <b-card-sub-title>{{ collection.title }}</b-card-sub-title>
                 <b-card-text>
                   {{ collection.content }}
                 </b-card-text>
                 <b-card-sub-title>modified: {{ collection.modifiedAt }}</b-card-sub-title>
-                <b-button v-on:click="onBtnAddCollectionToCurrentCollectionClick(collection)" variant="primary">Add</b-button>
-                <b-button v-on:click="onBtnEditCollectionToCurrentCollectionClick(collection)" variant="primary">Edit</b-button>
+                <b-button v-on:click="onBtnEditCollectionToCurrentCollectionClick(collection)" variant="primary"
+                  ><b-icon icon="pencil-square"></b-icon
+                ></b-button>
+                <b-button v-on:click="onBtnAddCollectionToCurrentCollectionClick(collection)" variant="primary"
+                  ><b-icon icon="arrow-right"></b-icon
+                ></b-button>
               </b-card-body>
             </b-card>
           </div>
         </b-col>
         <b-col>
+          <div><b-badge variant="primary">Bookmarks</b-badge></div>
           <div class="list-scrollable">
-            <b-card
-              v-for="bookmark in bookmarkCardItems"
-              :key="bookmark.id"
-              :style="bookmark.style"
-              v-on:click="onBtnAddBookmarkToCurrentCollectionClick(bookmark)"
-            >
-              <template #header>
-                <b-input-group class="mb-2" variant="outline-primary">
-                  <b-input-group-prepend is-text>
-                    <b-icon icon="bookmark-check-fill"></b-icon>
-                  </b-input-group-prepend>
-                  <b-form-input type="text" :placeholder="bookmark.author" disabled></b-form-input>
-                </b-input-group>
-              </template>
+            <b-card v-for="bookmark in bookmarkCardItems" :key="bookmark.id" :style="bookmark.style">
               <b-card-body>
-                <b-card-sub-title class="mb-2">{{ bookmark.title }}</b-card-sub-title>
+                <b-card-subtitle> <b-icon icon="bookmark-check-fill"></b-icon>{{ bookmark.title }} </b-card-subtitle
+                ><b-button v-on:click="onBtnAddBookmarkToCurrentCollectionClick(bookmark)" variant="primary"
+                  ><b-icon icon="arrow-right"></b-icon
+                ></b-button>
                 <b-card-text>
                   {{ bookmark.content }}
                 </b-card-text>
@@ -73,25 +50,22 @@
           </div>
         </b-col>
         <b-col>
+          <div><b-badge variant="success">Current Collection</b-badge></div>
+          <div>
+            <label>{{ lblCurrentCollectionId }}</label>
+          </div>
           <div>
             <b-button variant="primary" @click.prevent="onCommitCurrentCollection" style="margin-right: 3px">{{ labelSave }}</b-button
             ><b-button variant="secondary" @click.prevent="onResetCurrentCollection">Reset</b-button>
           </div>
           <div class="list-scrollable">
-            <b-card
-              border-variant="primary"
-              header="Primary"
-              header-bg-variant="primary"
-              v-for="currentBookmark in currentCollectiontCardItems"
-              :key="currentBookmark.id"
-              :style="currentBookmark.style"
-              v-on:click="onBtnRemoveBookmarkFromCurrentCollectionClick(currentBookmark)"
-            >
-              <template #header>
-                <b-card-text>{{ currentBookmark.author }}</b-card-text>
-              </template>
+            <b-card v-for="currentBookmark in currentCollectiontCardItems" :key="currentBookmark.id" :style="currentBookmark.style">
               <b-card-body>
-                <b-card-sub-title class="mb-2">{{ currentBookmark.title }}</b-card-sub-title>
+                <b-card-sub-title
+                  ><b-button v-on:click="onBtnRemoveBookmarkFromCurrentCollectionClick(currentBookmark)" variant="primary"
+                    ><b-icon icon="arrow-left"></b-icon></b-button
+                  >{{ currentBookmark.title }}</b-card-sub-title
+                >
                 <b-card-text>
                   {{ currentBookmark.content }}
                 </b-card-text>
@@ -100,6 +74,10 @@
           </div>
         </b-col>
         <b-col>
+          <div><b-badge variant="info">Current Collection's connectome</b-badge></div>
+          <div>
+            <label>{{ lblCurrentCollectionId }}</label>
+          </div>
           <div class="list-scrollable">
             <ul id="listNodes">
               <li v-for="node in getNodes" :key="node.id">
@@ -120,13 +98,13 @@
           </div>
         </b-col>
         <b-col>
+          <div><b-badge variant="light">Current Collection's requests</b-badge><b-spinner :label="requestLabelSpinner"></b-spinner></div>
           <div><b-button v-on:click="onSearchRequestList()" variant="primary">load</b-button></div>
+          <div>
+            <label>{{ requestListCollectionId }}</label>
+          </div>
           <div class="list-scrollable">
-            <ul id="listNodes">
-              <li v-for="request in requestList" :key="request">
-                <label>{{ request }}</label>
-              </li>
-            </ul>
+            <pre>{{ requests }}</pre>
           </div>
         </b-col>
       </b-row>
