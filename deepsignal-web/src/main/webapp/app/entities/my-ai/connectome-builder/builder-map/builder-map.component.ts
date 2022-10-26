@@ -481,20 +481,31 @@ export default class BuilderMap extends Vue {
   public loadCollectionRequest!: (payload: { collectionId: string }) => Promise<any>;
 
   onSearchRequestList() {
+    this.requestListCollectionId = '';
     if (!this.getCurrentCollection || !this.getCurrentCollection.collectionId) {
       console.log('this.getCurrentCollection not defined', this.getCurrentCollection);
+
       return;
     }
-    this.requestList = new Array<string>();
-    this.loadCollectionRequest({ collectionId: this.getCurrentCollection.collectionId }).then(res => {
-      this.requestList = new Array<string>();
-      if (!res) return;
-      res.forEach(query => {
-        this.requestList.push('  [' + query.keywordPattern + ']  ');
+    this.requests = '';
+    this.requestListCollectionId = this.getCurrentCollection.collectionId;
+    this.requestLabelSpinner = 'Loading...';
+    this.loadCollectionRequest({ collectionId: this.getCurrentCollection.collectionId })
+      .then(res => {
+        this.requests = '';
+
+        if (!res) return;
+        this.requests = JSON.stringify(res, null, 1);
+        this.requestLabelSpinner = '';
+      })
+      .finally(() => {
+        this.requestLabelSpinner = '';
       });
-    });
   }
-  requestList = new Array<string>();
+  requestListCollectionId = '';
+  requests = '';
+  requestLabelSpinner = '';
+
   discoveryCardItems: Array<documentCard> = new Array<documentCard>();
 
   convertGMTToLocalTime(dateToConvert: string) {

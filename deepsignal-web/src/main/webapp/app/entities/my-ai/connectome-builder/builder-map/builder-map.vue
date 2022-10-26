@@ -3,23 +3,7 @@
     <b-container fluid>
       <b-row>
         <b-col>
-          <b-badge variant="primary">Collections</b-badge>
-        </b-col>
-        <b-col>
-          <b-badge variant="primary">Bookmarks</b-badge>
-        </b-col>
-        <b-col>
-          <b-badge variant="success">Current Collection</b-badge>
-        </b-col>
-        <b-col>
-          <b-badge variant="info">Current Collection's Connectome</b-badge>
-        </b-col>
-        <b-col>
-          <b-badge variant="light">Current Collection's requests</b-badge>
-        </b-col>
-      </b-row>
-      <b-row>
-        <b-col>
+          <div><b-badge variant="primary">Collections</b-badge></div>
           <div class="list-scrollable">
             <b-card v-for="collection in collectionCardItems" :key="collection.id" :style="collection.style">
               <b-card-body>
@@ -45,6 +29,7 @@
           </div>
         </b-col>
         <b-col>
+          <div><b-badge variant="primary">Bookmarks</b-badge></div>
           <div class="list-scrollable">
             <b-card v-for="bookmark in bookmarkCardItems" :key="bookmark.id" :style="bookmark.style">
               <b-card-body>
@@ -65,6 +50,7 @@
           </div>
         </b-col>
         <b-col>
+          <div><b-badge variant="success">Current Collection</b-badge></div>
           <div>
             <label>{{ lblCurrentCollectionId }}</label>
           </div>
@@ -88,6 +74,7 @@
           </div>
         </b-col>
         <b-col>
+          <div><b-badge variant="info">Current Collection's connectome</b-badge></div>
           <div>
             <label>{{ lblCurrentCollectionId }}</label>
           </div>
@@ -111,13 +98,13 @@
           </div>
         </b-col>
         <b-col>
+          <div><b-badge variant="light">Current Collection's requests</b-badge><b-spinner :label="requestLabelSpinner"></b-spinner></div>
           <div><b-button v-on:click="onSearchRequestList()" variant="primary">load</b-button></div>
+          <div>
+            <label>{{ requestListCollectionId }}</label>
+          </div>
           <div class="list-scrollable">
-            <ul id="listNodes">
-              <li v-for="request in requestList" :key="request">
-                <label>{{ request }}</label>
-              </li>
-            </ul>
+            <pre>{{ requests }}</pre>
           </div>
         </b-col>
       </b-row>
