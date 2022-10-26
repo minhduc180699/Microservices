@@ -59,49 +59,53 @@ export default class BuilderMap extends Vue {
       listDocIds.push(card.id);
     });
     this.collectionCardItems = new Array<documentCard>();
-    this.getCollectionsFromDocIds({ docIds: listDocIds }).then(res => {
-      console.log('getCollectionsFromDocIds', res);
-      if (!res) {
-        return;
-      }
-
-      if (res.status === 'NOK') {
-        return;
-      }
-
-      if (!res.result) {
-        return;
-      }
-
-      if (!this.collectionCardItems) {
-        this.collectionCardItems = new Array<documentCard>();
-      }
-
-      res.result.forEach(collection => {
-        const card = new documentCard();
-        card.id = collection.collectionId;
-        card.author = 'me';
-        card.type = 'COLLECTION';
-        card.title = collection.collectionId;
-        card.content = collection.documentIdList.length + ' documents included';
-        card.modifiedAt = collection.modifiedDate;
-
-        const indexcard = this.collectionCardItems.find(x => x.id == collection.collectionId);
-        if (!indexcard) {
-          this.collectionCardItems.push(card);
+    this.getCollectionsFromDocIds({ docIds: listDocIds })
+      .then(res => {
+        console.log('getCollectionsFromDocIds', res);
+        if (!res) {
+          return;
         }
-      });
 
-      if (this.getCurrentCollection && this.getCurrentCollection.collectionId) {
-        this.collectionCardItems.forEach(collection => {
-          if (collection.id === this.getCurrentCollection.collectionId) {
-            collection.style = 'border-color:red; border-width:thick';
-          } else {
-            collection.style = '';
+        if (res.status === 'NOK') {
+          return;
+        }
+
+        if (!res.result) {
+          return;
+        }
+
+        if (!this.collectionCardItems) {
+          this.collectionCardItems = new Array<documentCard>();
+        }
+
+        res.result.forEach(collection => {
+          const card = new documentCard();
+          card.id = collection.collectionId;
+          card.author = 'me';
+          card.type = 'COLLECTION';
+          card.title = collection.collectionId;
+          card.content = collection.documentIdList.length + ' documents included';
+          card.modifiedAt = collection.modifiedDate;
+          card.isGroup = true;
+          const indexcard = this.collectionCardItems.find(x => x.id == collection.collectionId);
+          if (!indexcard) {
+            this.collectionCardItems.push(card);
           }
         });
-      }
-    });
+
+        if (this.getCurrentCollection && this.getCurrentCollection.collectionId) {
+          this.collectionCardItems.forEach(collection => {
+            if (collection.id === this.getCurrentCollection.collectionId) {
+              collection.style = 'border-color:red; border-width:thick';
+            } else {
+              collection.style = '';
+            }
+          });
+        }
+      })
+      .finally(() => {
+        this.processDocumentsSelectorList();
+      });
   }
 
   @Watch('isCurrentCollectionChanged')
@@ -150,6 +154,7 @@ export default class BuilderMap extends Vue {
           card.keyword = item.keyword;
           card.addedAt = new Date(item.publishedAt);
           card.modifiedAt = new Date(item.publishedAt);
+          card.isGroup = false;
           console.log(' inside getDocumentsSelected');
           card.isAdded = true;
           card.style = 'border-color:' + this.getDocumentColors.get(card.id) + '; border-width:thick';
@@ -160,7 +165,7 @@ export default class BuilderMap extends Vue {
       if (this.bookmarkCardItems && this.bookmarkCardItems.length > 0) {
         this.bookmarkCardItems.forEach(bookmark => {
           if (res.result.documentIdList.includes(bookmark.id)) {
-            bookmark.style = 'border-color:lime; border-width:thick';
+            bookmark.style = 'border-color:' + this.getDocumentColors.get(bookmark.id) + '; border-width:thick';
           } else {
             bookmark.style = '';
           }
@@ -293,62 +298,129 @@ export default class BuilderMap extends Vue {
         if (this.totalItems != res.data.totalItems) {
           this.totalFeeds = res.data.totalItems;
         }
-        res.data.results.forEach(item => {
-          if (!this.bookmarkCardItems) {
-            this.bookmarkCardItems = new Array<documentCard>();
-          }
-          const card = new documentCard();
 
-          card.id = item.docId;
-          card.author = item.author;
-          card.type = item.type;
-          card.title = item.title;
-          card.content = item.contentSummary ? '[Summary]' + item.contentSummary : '[Content]' + this.getShortContent(item.content);
-          card.keyword = item.keyword;
-          card.group.push(item.keyword);
-          card.addedAt = new Date(item.publishedAt);
-          card.modifiedAt = new Date(item.publishedAt);
-
-          this.bookmarkCardItems.push(card);
-
-          this.getCollectionsFromDocIds({ docIds: [item.docId] }).then(res => {
-            console.log('getCollectionsFromDocIds', res);
-            if (!res) {
-              return;
-            }
-
-            if (res.status === 'NOK') {
-              return;
-            }
-
-            if (!res.result) {
-              return;
-            }
-
-            if (!this.collectionCardItems) {
-              this.collectionCardItems = new Array<documentCard>();
-            }
-
-            res.result.forEach(collection => {
-              const card = new documentCard();
-              card.id = collection.collectionId;
-              card.author = 'me';
-              card.type = 'COLLECTION';
-              card.title = collection.collectionId;
-              card.content = collection.documentIdList.length + ' documents included';
-              card.modifiedAt = collection.modifiedDate;
-
-              const indexcard = this.collectionCardItems.find(x => x.id == collection.collectionId);
-              if (!indexcard) {
-                this.collectionCardItems.push(card);
+        this.getCurrentDraftCollection()
+          .then(currentCollectionResult => {
+            res.data.results.forEach(item => {
+              if (!this.bookmarkCardItems) {
+                this.bookmarkCardItems = new Array<documentCard>();
               }
+              const card = new documentCard();
+
+              card.id = item.docId;
+              card.author = item.author;
+              card.type = item.type;
+              card.title = item.title;
+              card.content = item.contentSummary ? '[Summary]' + item.contentSummary : '[Content]' + this.getShortContent(item.content);
+              card.keyword = item.keyword;
+              card.group.push(item.keyword);
+              card.addedAt = new Date(item.publishedAt);
+              card.modifiedAt = new Date(item.publishedAt);
+
+              this.bookmarkCardItems.push(card);
+
+              this.getCollectionsFromDocIds({ docIds: [item.docId] })
+                .then(res => {
+                  console.log('getCollectionsFromDocIds', res);
+                  if (!res) {
+                    return;
+                  }
+
+                  if (res.status === 'NOK') {
+                    return;
+                  }
+
+                  if (!res.result) {
+                    return;
+                  }
+
+                  if (!this.collectionCardItems) {
+                    this.collectionCardItems = new Array<documentCard>();
+                  }
+
+                  res.result.forEach(collection => {
+                    const indexcard = this.collectionCardItems.find(x => x.id == collection.collectionId);
+                    if (!indexcard) {
+                      const card = new documentCard();
+                      card.id = collection.collectionId;
+                      card.author = 'me';
+                      card.type = 'COLLECTION';
+                      card.title = collection.collectionId;
+                      card.content = collection.documentIdList.length + ' documents included';
+                      card.modifiedAt = collection.modifiedDate;
+                      card.isGroup = true;
+                      this.collectionCardItems.push(card);
+                    }
+                  });
+
+                  if (!currentCollectionResult) {
+                    return;
+                  }
+
+                  if (currentCollectionResult.status != 'OK') {
+                    return;
+                  }
+
+                  if (!currentCollectionResult.result) {
+                    return;
+                  }
+
+                  if (!currentCollectionResult.result.collectionId) {
+                    return;
+                  }
+
+                  if (this.collectionCardItems && this.collectionCardItems.length > 0) {
+                    this.collectionCardItems.forEach(collection => {
+                      if (collection.id === currentCollectionResult.result.collectionId) {
+                        collection.style = 'border-color:red; border-width:thick';
+                      } else {
+                        collection.style = '';
+                      }
+                    });
+                  }
+                })
+                .finally(() => {
+                  this.processDocumentsSelectorList();
+                });
             });
+
+            if (!currentCollectionResult) {
+              return;
+            }
+
+            if (currentCollectionResult.status != 'OK') {
+              return;
+            }
+
+            if (!currentCollectionResult.result) {
+              return;
+            }
+
+            if (!currentCollectionResult.result.documentIdList || currentCollectionResult.result.documentIdList.length == 0) {
+              return;
+            }
+
+            if (this.bookmarkCardItems && this.bookmarkCardItems.length > 0) {
+              this.bookmarkCardItems.forEach(bookmark => {
+                if (currentCollectionResult.result.documentIdList.includes(bookmark.id)) {
+                  bookmark.style = 'border-color:' + this.getDocumentColors.get(bookmark.id) + '; border-width:thick';
+                } else {
+                  bookmark.style = '';
+                }
+              });
+            }
+          })
+          .finally(() => {
+            this.processDocumentsSelectorList();
           });
-        });
+
         console.log(res);
       })
       .catch(reason => {
         console.log('catch get mini connectome', reason);
+      })
+      .finally(() => {
+        this.processDocumentsSelectorList();
       });
   }
   public onMoreBookmark(event) {
@@ -377,6 +449,32 @@ export default class BuilderMap extends Vue {
         return;
       }
     });
+  }
+  //documents selector
+  documentOrGroupDocumentsCardItems: Array<documentCard> = new Array<documentCard>();
+
+  processDocumentsSelectorList() {
+    this.documentOrGroupDocumentsCardItems = new Array<documentCard>();
+
+    if (this.bookmarkCardItems && this.bookmarkCardItems.length > 0) {
+      this.documentOrGroupDocumentsCardItems.push(...this.bookmarkCardItems);
+    }
+
+    if (this.collectionCardItems && this.collectionCardItems.length > 0) {
+      this.documentOrGroupDocumentsCardItems.push(...this.collectionCardItems);
+    }
+    this.documentOrGroupDocumentsCardItems = this.documentOrGroupDocumentsCardItems.sort((a, b) => {
+      if (!a.modifiedAt) {
+        return 1;
+      }
+
+      if (!b.modifiedAt) {
+        return -1;
+      }
+      return new Date(b.modifiedAt).getTime() - new Date(a.modifiedAt).getTime();
+    });
+
+    console.log('this.documentOrGroupDocumentsCardItems', this.documentOrGroupDocumentsCardItems);
   }
 
   //bookmark inside current Collection

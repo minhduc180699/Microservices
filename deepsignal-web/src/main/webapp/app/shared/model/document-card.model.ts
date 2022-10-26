@@ -9,6 +9,7 @@ export class documentCard {
   type: string = null;
   group: Array<string> = new Array<string>();
   tags: Array<string> = new Array<string>();
+  isGroup = false;
   addedAt: Date = null;
   modifiedAt: Date = null;
   url: string = null;
