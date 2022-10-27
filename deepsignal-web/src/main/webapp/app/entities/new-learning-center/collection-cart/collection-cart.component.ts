@@ -64,9 +64,24 @@ export default class CollectionCart extends Vue {
     return this.bookmarkCardItems.find(bookmard => bookmard.id == docId);
   }
 
-  setCollection(arrDoc?) {
-    this.newCollection = this.newCollection.splice(0, 0);
+  arrCollection = [
+    { type: 'search', arr: [] },
+    { type: 'text', arr: [] },
+    { type: 'web', arr: [] },
+    { type: 'doc', arr: [] },
+  ];
+
+  setCollection(arrDoc, type) {
     this.isChild = true;
-    this.newCollection = arrDoc;
+    for (let i = 0; i < this.arrCollection.length; i++) {
+      if (this.arrCollection[i].type === type) {
+        this.arrCollection[i].arr = arrDoc;
+        break;
+      }
+    }
+    this.newCollection = this.newCollection.splice(0, 0);
+    this.arrCollection.forEach(item => {
+      this.newCollection = this.newCollection.concat(item.arr);
+    });
   }
 }

@@ -196,7 +196,7 @@ export default class Search extends Vue {
   watchSelectedItems() {
     const arrTmp = this.checkArraySelected();
     this.totalSelected = this.allData.length - arrTmp.length;
-    this.$emit('handleSelectedSearch', this.selectedItems);
+    // this.$emit('handleSelectedSearch', this.selectedItems);
   }
 
   @Watch('allData')
@@ -238,12 +238,16 @@ export default class Search extends Vue {
     return onlyInLeft(this.allData, this.selectedItems);
   }
 
-  public setSelectedItems(newData) {
+  setSelectedItems(newData) {
     this.selectedItems = newData;
     const arrTmp = this.checkArraySelected();
     this.totalSelected = this.allData.length - arrTmp.length;
-    this.$emit('handleSelectedSearch', this.selectedItems);
+    // this.$emit('handleSelectedSearch', this.selectedItems);
     if (this.totalSelected > 0 && arrTmp.length === 0) $('#btnSelect').addClass('active');
     else $('#btnSelect').removeClass('active');
+  }
+
+  insertToMemory() {
+    this.$root.$emit('cart-to-conlection', this.selectedItems, 'search');
   }
 }

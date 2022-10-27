@@ -61,10 +61,10 @@
         </div> -->
         <div class="lc-list-top">
           <div class="elements-left">
-            <!-- <div class="check-group">
-              <button type="button" class="btn btn-check" id="list-check-all" data-toggle="button" aria-pressed="false"></button>
+            <div class="check-group">
+              <!-- <button type="button" class="btn btn-check" id="list-check-all" data-toggle="button" aria-pressed="false"></button> -->
               <label for="list-check-all">전체 선택</label>
-            </div> -->
+            </div>
             <div class="list-info">
               (<strong>{{ newCollection.length }}</strong
               >)

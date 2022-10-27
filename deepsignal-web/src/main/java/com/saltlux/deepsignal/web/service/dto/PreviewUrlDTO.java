@@ -22,4 +22,12 @@ public class PreviewUrlDTO {
     private String image;
 
     private String imageAlt;
+
+    private String author;
+
+    private String favicon;
+
+    private String publicTime;
+
+    private String keyword;
 }

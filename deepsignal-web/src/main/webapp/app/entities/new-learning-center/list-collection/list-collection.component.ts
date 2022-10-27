@@ -53,19 +53,6 @@ export default class ListCollection extends Vue {
     });
   }
 
-  handleSelectedWeb(data) {}
-  selectedSearch = [];
-
-  handleSelectedSearch(data) {
-    this.selectedSearch = data;
-    console.log('this.selectedSearch', this.selectedSearch);
-  }
-  handleSelectedDocument(data) {}
-
-  insertToMemory() {
-    this.$root.$emit('cart-to-conlection', this.selectedSearch);
-  }
-
   @collectionsManagerStore.Action
   public getCollectionsFromDocIds: (payload: {
     docIds: Array<string>;

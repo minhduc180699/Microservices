@@ -30,10 +30,6 @@ export default class singleCard extends Vue {
   private loading = true;
   private currentCollectionDocIds: any[];
 
-  // created() {
-  //   console.log(this.currentCollectionDocIds,123333);
-  // }
-
   handleClickSingleCard() {
     const doc = this.currentCollectionDocIds.find(docId => docId == this.document.id);
     if (doc) {
@@ -90,7 +86,13 @@ export default class singleCard extends Vue {
     this.dataTmp = this.selectedItems;
   }
 
-  mounted() {
+  created() {
     this.dataTmp = this.selectedItems;
+  }
+
+  checkRegexDate(value) {
+    const regex = new RegExp('ago');
+    if (regex.test(value)) return value;
+    else return new Date(value);
   }
 }

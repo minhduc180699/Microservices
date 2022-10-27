@@ -27,7 +27,20 @@
         </div>
         <a class="media-img" href="#" id="image">
           <div v-if="document.searchType === 'searchVideo'" class="icon-play"></div>
-          <img :src="document.img" alt="" style="width: 100%" @error="document.img = ['content/images/empty-image.png']" />
+          <img
+            v-if="document.img"
+            :src="document.img"
+            alt=""
+            style="width: 100%"
+            @error="document.img = ['content/images/empty-image.png']"
+          />
+          <img
+            v-else
+            src="content/images/empty-image.png"
+            alt=""
+            style="width: 100%"
+            @error="docShow.img = ['content/images/empty-image.png']"
+          />
         </a>
       </div>
     </div>

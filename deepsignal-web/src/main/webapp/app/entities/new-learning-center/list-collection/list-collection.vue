@@ -366,29 +366,9 @@
               </ul>
             </div>
             <div class="tab-content">
-              <div class="tab-pane fade show active">
-                <div class="panel-collection">
-                  <div class="panel-header">
-                    <div class="panel-title">
-                      <strong class="title">{{ currentTab.name }}</strong>
-                    </div>
-                  </div>
-                  <keep-alive>
-                    <component
-                      :is="currentTab.component"
-                      :displayMode.sync="displayMode"
-                      v-on:handleSelectedSearch="handleSelectedSearch"
-                      v-on:handleSelectedDocument="handleSelectedDocument"
-                      v-on:handleSelectedWeb="handleSelectedWeb"
-                    ></component>
-                  </keep-alive>
-                  <div class="panel-footer">
-                    <div class="elements-right">
-                      <button type="button" class="btn btn-secondary" @click="insertToMemory">스토리지에 추가</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <keep-alive>
+                <component :is="currentTab.component" :displayMode.sync="displayMode"></component>
+              </keep-alive>
             </div>
           </div>
         </div>
