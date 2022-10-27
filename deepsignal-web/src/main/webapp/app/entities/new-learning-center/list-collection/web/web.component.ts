@@ -2,6 +2,7 @@ import { Component, Inject, Vue, Watch } from 'vue-property-decorator';
 import PublicService from '@/service/public.service';
 import singleCard from '@/entities/new-learning-center/aside/single-card/single-card.vue';
 import vueCustomScrollbar from 'vue-custom-scrollbar';
+import { documentCard } from '@/shared/model/document-card.model';
 
 @Component({
   components: {
@@ -35,18 +36,18 @@ export default class web extends Vue {
           this.resetPreview();
           return;
         }
-        const obj = {
-          favicon: res.data.favicon,
-          author: res.data.author,
-          org_date: res.data.publicTime,
-          img: res.data.image ? res.data.image : res.data.imageAlt ? res.data.imageAlt : null,
-          title: res.data.title,
-          description: res.data.desc,
-          searchType: null,
-          keyword: res.data.keyword,
-          url: res.data.url,
-          selected: true,
-        };
+
+        const obj = new documentCard();
+        obj.author = res.data.author;
+        obj.title = res.data.title;
+        obj.content = res.data.desc;
+        obj.keyword = res.data.keyword;
+        obj.type = 'URL';
+        obj.addedAt = res.data.publicTime;
+        obj.url = res.data.link;
+        obj.images = [res.data.image ? res.data.image : res.data.imageAlt ? res.data.imageAlt : null];
+        obj.favicon = res.data.favicon;
+
         this.previewModels.push(obj);
         this.resetPreview();
       })

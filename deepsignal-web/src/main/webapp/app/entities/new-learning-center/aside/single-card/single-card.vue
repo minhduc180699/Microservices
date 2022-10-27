@@ -13,7 +13,7 @@
             {{ document.author }}
           </div>
         </div>
-        <div class="info-item">{{ document.org_date }}</div>
+        <div class="info-item">{{ checkRegexDate(document.addedAt) | formatDate }}</div>
       </div>
       <div class="lc-btn" v-show="isHideCheck">
         <a class="btn-close" href="#"><i class="icon-common icon-close"></i></a>
@@ -23,24 +23,18 @@
       <div class="lc-media">
         <div class="media-body">
           <a class="media-title" href="#">{{ document.title }}</a>
-          <p class="media-desc" v-html="document.description"></p>
+          <p class="media-desc" v-html="document.content"></p>
         </div>
         <a class="media-img" href="#" id="image">
           <div v-if="document.searchType === 'searchVideo'" class="icon-play"></div>
           <img
-            v-if="document.img"
-            :src="document.img"
+            v-if="document.images && document.images.length > 0"
+            :src="document.images[0]"
             alt=""
             style="width: 100%"
-            @error="document.img = ['content/images/empty-image.png']"
+            @error="['content/images/empty-image.png']"
           />
-          <img
-            v-else
-            src="content/images/empty-image.png"
-            alt=""
-            style="width: 100%"
-            @error="docShow.img = ['content/images/empty-image.png']"
-          />
+          <img v-else src="content/images/empty-image.png" alt="" style="width: 100%" @error="['content/images/empty-image.png']" />
         </a>
       </div>
     </div>

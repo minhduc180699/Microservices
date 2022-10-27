@@ -2,6 +2,7 @@ import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import vueCustomScrollbar from 'vue-custom-scrollbar';
 import axios from 'axios';
 import singleCard from '@/entities/new-learning-center/aside/single-card/single-card.vue';
+import { documentCard } from '@/shared/model/document-card.model';
 
 @Component({
   components: {
@@ -124,7 +125,21 @@ export default class Search extends Vue {
               }
             }
           }
-          this.lengthData = this.allData.length - this.metaSearch.length;
+          this.allData = this.allData.map(item => {
+            const objectTmp = new documentCard();
+            objectTmp.author = item.author;
+            objectTmp.title = item.title;
+            objectTmp.content = item.description;
+            objectTmp.keyword = item.keyword;
+            objectTmp.type = item.searchType;
+            objectTmp.addedAt = item.org_date;
+            objectTmp.url = item.link;
+            objectTmp.images = [item.img];
+            objectTmp.favicon = item.favicon;
+            return objectTmp;
+          });
+          console.log(this.allData);
+
           this.isShowMore = false;
         })
         .catch(error => {
@@ -183,7 +198,7 @@ export default class Search extends Vue {
       for (let i = 0; i < this.allData.length; i++) {
         let j = 0;
         while (j < this.selectedItems.length) {
-          if (this.allData[i].link == this.selectedItems[j].link) {
+          if (this.allData[i].url == this.selectedItems[j].url) {
             this.selectedItems.splice(j, 1);
             break;
           }
@@ -205,7 +220,7 @@ export default class Search extends Vue {
     for (const item of this.selectedItems) {
       let i = 0;
       while (i < this.allData.length) {
-        if (this.allData[i].link == item.link) {
+        if (this.allData[i].url == item.url) {
           arrItem.push(this.allData[i]);
           break;
         }
@@ -224,7 +239,7 @@ export default class Search extends Vue {
         let j = 0;
         let isSame = false;
         while (j < rightValue.length) {
-          if (rightValue[j].link == leftValue[i].link) {
+          if (rightValue[j].url == leftValue[i].url) {
             isSame = true;
             break;
           }
