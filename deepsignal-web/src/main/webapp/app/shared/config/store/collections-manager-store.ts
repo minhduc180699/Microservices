@@ -149,7 +149,7 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
       if (docIds.length == 0) {
         return [];
       }
-      console.log(docIds);
+      //console.log(docIds);
       const result = new Array<CmCollectionsItem>();
       docIds.forEach(docId => {
         const listCollections = getters.getCollectionsFromDocument(docId);
@@ -336,6 +336,12 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
 
       state.currentCollection = new CmCollection(payload.collection);
       state.currentCollectionChanged++;
+
+      if (!payload.collection.nodeList) {
+        return;
+      }
+      state.currentConnectome = payload.collection.nodeList.map(x => x);
+      state.currentConnectomeChanged++;
     },
     AddDocumentsToCurrentCollection(state, payload: { docToAdd: Array<string> }) {
       console.log('AddDocumentsToCurrentCollection', payload);
@@ -627,7 +633,7 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
       //     .finally(() => {});
       // });
 
-      //context.commit('disableOrphans');
+      // context.commit('disableOrphans');
     },
     createCollection: async (
       context,
@@ -711,8 +717,11 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
           if (!res) {
             return;
           }
-
-          console.log('create new collection', res);
+          if (!res.data.body) {
+            return;
+          }
+          const response = res.data.body;
+          console.log('update collection', response);
           //context.commit('setCurrentCollection', { collection: payload.collection });
           context
             .dispatch('loadUserCollections')
@@ -727,7 +736,7 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
               return { status: 'NOK', message: 'error load User Context', result: null };
             })
             .finally(() => {});
-          return res;
+          return response;
         })
         .catch(reason => {
           console.log('Reason', reason);
@@ -934,8 +943,8 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
             if (!res) {
               return { status: 'NOK', message: 'cannot create the collection', result: null };
             }
-            context.commit('setCurrentCollection', { collection: context.getters.getCurrentCollection });
-            return { status: 'OK', message: 'collection updated', result: null };
+            context.commit('setCurrentCollection', { collection: new CmCollection(res) });
+            return { status: 'OK', message: 'collection updated', result: res };
           });
       }
     },

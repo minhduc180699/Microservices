@@ -4,18 +4,18 @@ import com.saltlux.deepsignal.web.service.dto.ConnectomeFeed;
 import com.saltlux.deepsignal.web.service.dto.Feed;
 import com.saltlux.deepsignal.web.service.dto.FilterFeedDTO;
 import com.saltlux.deepsignal.web.service.dto.MetaSearchDTO;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
-
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 
 @Component
-public class DsAdapterClientFallback implements DsAdapterClient{
+public class DsAdapterClientFallback implements DsAdapterClient {
 
     @Override
     public ResponseEntity<Map<String, Object>> getAllConnectomeFeed(int page, int size, String orderBy, String sortDirection) {
@@ -33,7 +33,15 @@ public class DsAdapterClientFallback implements DsAdapterClient{
     }
 
     @Override
-    public ResponseEntity<Map<String, Object>> getFeedByConnectomeId(int page, int size, String orderBy, String sortDirection, String keyword, String connectomeId, List<FilterFeedDTO> filterFeedDTOS) {
+    public ResponseEntity<Map<String, Object>> getFeedByConnectomeId(
+        int page,
+        int size,
+        String orderBy,
+        String sortDirection,
+        String keyword,
+        String connectomeId,
+        List<FilterFeedDTO> filterFeedDTOS
+    ) {
         Map<String, Object> response = new HashMap<>();
         response.put("connectomeFeeds", new ArrayList<Feed>());
         response.put("currentPage", 0);
@@ -48,7 +56,15 @@ public class DsAdapterClientFallback implements DsAdapterClient{
     }
 
     @Override
-    public ResponseEntity<Map<String, Object>> getFeedByConnectomeIdAndTopic(int page, int size, String orderBy, String sortDirection, String connectomeId, String topic, boolean excepted) {
+    public ResponseEntity<Map<String, Object>> getFeedByConnectomeIdAndTopic(
+        int page,
+        int size,
+        String orderBy,
+        String sortDirection,
+        String connectomeId,
+        String topic,
+        boolean excepted
+    ) {
         Map<String, Object> response = new HashMap<>();
         response.put("connectomeFeeds", new ArrayList<Feed>());
         response.put("currentPage", 0);
@@ -93,7 +109,15 @@ public class DsAdapterClientFallback implements DsAdapterClient{
     }
 
     @Override
-    public ResponseEntity<?> getActivity(String connectomeId, int page, int size, String orderBy, String sortDirection, String lang, List<FilterFeedDTO> filterFeedDTOS) {
+    public ResponseEntity<?> getActivity(
+        String connectomeId,
+        int page,
+        int size,
+        String orderBy,
+        String sortDirection,
+        String lang,
+        List<FilterFeedDTO> filterFeedDTOS
+    ) {
         return null;
     }
 
