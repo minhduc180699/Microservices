@@ -103,4 +103,4 @@
     </b-container>
   </div>
 </template>
-<script lang="ts" src="./builder-map.component.ts"></script>
+<script lang="ts" src="./collection-tool.component.ts"></script>

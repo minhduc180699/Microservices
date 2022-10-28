@@ -39,7 +39,7 @@ public class FeedResource {
         @RequestParam(value = "until", required = false) String until,
         @RequestParam(value = "page", defaultValue = "0") int page,
         @RequestParam(value = "size", defaultValue = "10") int size,
-        @RequestParam(value = "searchType", required = false) String searchType,
+        @RequestParam(value = "search_type", required = false) String searchType,
         @RequestParam(value = "channels", required = false) String channels,
         @RequestParam(value = "type", required = false) String type,
         @RequestParam(value = "lang", required = true, defaultValue = "en") String lang

@@ -27,6 +27,7 @@ import { namespace } from 'vuex-class';
 import { SignalTodayIssueModel } from '@/core/home/signals/signal-today-issue/signal-today-issue.model';
 import { UserSettingService } from '@/service/usersetting.service';
 import { CHART_STOCK_STYLE } from '@/shared/constants/ds-constants';
+import moment from 'moment';
 
 const cardState = namespace('cardStore');
 const networkStore = namespace('connectomeNetworkStore');
@@ -69,7 +70,13 @@ export default class DsFeed extends mixins(ShowMoreMixin) {
   private parent: [] | any;
   private pageDefault = 0;
   private size = 20;
+  private totalData = 0;
+  private totalDataSearch = 0;
   private pageSearch = 0;
+  private fromDate = '';
+  private untilDate = '';
+  private formatDate = 'MM/DD/YYYY';
+  private isDatePicker = false;
   private hashTag = '';
   private expected = false;
   private dataMetaSearch: [] | any;
@@ -99,6 +106,8 @@ export default class DsFeed extends mixins(ShowMoreMixin) {
   private sortDirection = 'desc';
   private isFiltering = false;
   private isAll = true;
+  private search_type = '';
+  private lang = '';
   stockCodes = [];
   peoples = []; // array data of card top ten for people
   private searchFilter = false;
@@ -139,7 +148,6 @@ export default class DsFeed extends mixins(ShowMoreMixin) {
     this.$root.$on('hide-weather-card', this.hideWeatherCard);
     this.$root.$on('hide-stock-card', this.hideStockCard);
   }
-
   data() {
     return {
       parent: this.parent,
@@ -184,6 +192,7 @@ export default class DsFeed extends mixins(ShowMoreMixin) {
     this.$root.$off('hide-weather-card', this.hideWeatherCard);
     this.$root.$off('hide-stock-card', this.hideStockCard);
   }
+
   updateNewLang() {
     this.isNoResult = false;
     this.goToLearningCenter = false;
@@ -232,28 +241,60 @@ export default class DsFeed extends mixins(ShowMoreMixin) {
     if (isAppend && this.pageSearch < this.totalPagesSearch) {
       this.pageSearch += 1;
     }
+    if (this.isSearching) {
+      this.goToLearningCenter = false;
+    }
     this.feedService()
-      .getAllConnectomeFeedByConnectomeId(
+      .getListFeed(
         this.connectomeId,
+        null,
+        this.keyword,
+        this.fromDate,
+        this.untilDate,
         this.pageSearch,
         this.size,
-        '',
-        this.sortDirection,
-        this.hashTag,
-        this.expected,
-        this.keyword,
-        // this.isFiltering ? this.listFilter : []
-        this.listFilter
+        this.search_type,
+        null,
+        null,
+        null
       )
       .then(res => {
-        this.isNoResult = res.data.totalItems <= 0;
-        this.loaderDisable = res.data.connectomeFeeds.length < this.size;
+        this.totalDataSearch += res.data.body.data.length;
+        this.isNoResult = res.data.body.totalItems <= 0;
+        // this.loaderDisable = res.data.body.data.length < this.size;
+        this.loaderDisable = res.data.body.totalItems == this.totalDataSearch;
+        console.log('res.data.body.totalItems: ', res.data.body.totalItems, 'totalDataSearch: ', this.totalDataSearch);
+        if (this.loaderDisable) {
+          this.goToLearningCenter = true;
+        }
+        console.log('JAJAJAJA');
         this.setTimeoutFeed();
+        console.log('KAKAKAKA');
         this.processResponseConnectomeFeed(res);
       })
-      .catch(err => {
-        this.setTimeoutFeed();
-      });
+      .catch(() => this.setTimeoutFeed());
+    // this.feedService()
+    //   .getAllConnectomeFeedByConnectomeId(
+    //     this.connectomeId,
+    //     this.pageSearch,
+    //     this.size,
+    //     '',
+    //     this.sortDirection,
+    //     this.hashTag,
+    //     this.expected,
+    //     this.keyword,
+    //     // this.isFiltering ? this.listFilter : []
+    //     this.listFilter
+    //   )
+    //   .then(res => {
+    //     this.isNoResult = res.data.totalItems <= 0;
+    //     this.loaderDisable = res.data.connectomeFeeds.length < this.size;
+    //     this.setTimeoutFeed();
+    //     this.processResponseConnectomeFeed(res);
+    //   })
+    //   .catch(err => {
+    //     this.setTimeoutFeed();
+    //   });
   }
 
   // @Watch('signalIssues')
@@ -348,6 +389,7 @@ export default class DsFeed extends mixins(ShowMoreMixin) {
     if (isAppend && this.pageDefault < this.totalPagesDefault) {
       this.pageDefault += 1;
     }
+
     // this.cardItems = this.cardFakes;
     if (!this.cardItems) {
       this.cardItems = [];
@@ -356,7 +398,8 @@ export default class DsFeed extends mixins(ShowMoreMixin) {
   }
 
   getConnectomeFeedByLogin(item, expected) {
-    this.getAllConnectomeFeedByConnectomeId(item, expected, this.connectomeId);
+    // this.getAllConnectomeFeedByConnectomeId(item, expected, this.connectomeId);
+    this.getAllFeeds(this.connectomeId);
   }
 
   getAllConnectomeFeed() {
@@ -371,28 +414,32 @@ export default class DsFeed extends mixins(ShowMoreMixin) {
       });
   }
 
-  getAllConnectomeFeedByConnectomeId(item, expected, connectomeId) {
+  getAllFeeds(connectomeId) {
     if (!connectomeId) {
       return;
     }
     this.isDisabled = true;
     this.isTrainingDone = false;
     this.feedService()
-      .getAllConnectomeFeedByConnectomeId(
+      .getListFeed(
         connectomeId,
+        null,
+        this.keyword,
+        this.fromDate,
+        this.untilDate,
         this.pageDefault,
         this.size,
-        '',
-        this.sortDirection,
-        item,
-        expected,
+        this.search_type,
         null,
-        // this.isFiltering ? this.listFilter : []
-        this.listFilter
+        null,
+        null
       )
       .then(res => {
-        this.isNoResult = res.data.totalItems <= 0;
-        this.loaderDisable = res.data.connectomeFeeds.length < this.size;
+        this.totalData += res.data.body.data.length;
+        this.isNoResult = res.data.body.totalItems <= 0;
+        // this.loaderDisable = res.data.body.data.length < this.size;
+
+        this.loaderDisable = res.data.body.totalItems == this.totalData;
         if (this.loaderDisable) {
           this.goToLearningCenter = true;
         }
@@ -402,11 +449,42 @@ export default class DsFeed extends mixins(ShowMoreMixin) {
       .catch(() => this.setTimeoutFeed());
   }
 
+  // getAllConnectomeFeedByConnectomeId(item, expected, connectomeId) {
+  //   if (!connectomeId) {
+  //     return;
+  //   }
+  //   this.isDisabled = true;
+  //   this.isTrainingDone = false;
+  //   this.feedService()
+  //     .getAllConnectomeFeedByConnectomeId(
+  //       connectomeId,
+  //       this.pageDefault,
+  //       this.size,
+  //       '',
+  //       this.sortDirection,
+  //       item,
+  //       expected,
+  //       null,
+  //       // this.isFiltering ? this.listFilter : []
+  //       this.listFilter
+  //     )
+  //     .then(res => {
+  //       this.isNoResult = res.data.totalItems <= 0;
+  //       this.loaderDisable = res.data.connectomeFeeds.length < this.size;
+  //       if (this.loaderDisable) {
+  //         this.goToLearningCenter = true;
+  //       }
+  //       this.setTimeoutFeed();
+  //       // this.processResponseConnectomeFeed(res);
+  //     })
+  //     .catch(() => this.setTimeoutFeed());
+  // }
+
   processResponseConnectomeFeed(res) {
     if (!res) {
       return;
     }
-    this.isSearching ? (this.totalPagesSearch = res.data.totalPages) : (this.totalPagesDefault = res.data.totalPages);
+    this.isSearching ? (this.totalPagesSearch = res.data.body.totalPages) : (this.totalPagesDefault = res.data.body.totalPages);
     this.processCard(res, this.isSearching ? this.cardItemSearch : this.cardItems, 'feed');
     if (this.needToLoadNextPage) {
       this.needToLoadNextPage = false;
@@ -443,49 +521,49 @@ export default class DsFeed extends mixins(ShowMoreMixin) {
 
   //sourceFeedIds:Set<string> = new Set();
   needToLoadNextPage = false;
+
   processCard(res, currentCard, component) {
     this.cardsPreAppend = [];
     this.needToLoadNextPage = false;
     if (component === 'feed') {
-      let countCardAdded = 0;
-      for (const cardFake of res.data.connectomeFeeds) {
-        const isPresent = cardFake.sourceId
-          ? currentCard.find(elem => elem.sourceId && elem.sourceId.localeCompare(cardFake.sourceId) == 0)
-            ? true
-            : false
-          : false;
-        if (!isPresent) {
-          const cardItem = new CardModel(cardFake as any, component);
-          currentCard.push(cardItem);
-          countCardAdded++;
-        }
+      // let countCardAdded = 0;
+      for (const cardFake of res.data.body.data) {
+        // const isPresent = cardFake.sourceId
+        //   ? currentCard.find(elem => elem.sourceId && elem.sourceId.localeCompare(cardFake.sourceId) == 0)
+        //     ? true
+        //     : false
+        //   : false;
+        // if (!isPresent) {
+        const cardItem = new CardModel(cardFake as any, component);
+        currentCard.push(cardItem);
+        // countCardAdded++;
+        // }
       }
-      if (countCardAdded <= Math.floor(this.size * 0.75) && res.data.currentPage < res.data.totalPages) {
-        this.needToLoadNextPage = true;
-      }
+      // if (countCardAdded <= Math.floor(this.size * 0.75) && res.data.body.currentPage < res.data.body.totalPages){
+      //   this.needToLoadNextPage = true;
+      // }
     } else {
-      res.data.forEach((item, index) => {
+      res.data.body.data.forEach((item, index) => {
         const image = [];
-        image.push(item.img);
+        image.push(item.og_image_base64 ? item.og_image_base64 : item.og_image_url);
         Object.assign(
           item,
           ...[
-            { content: item.description },
-            { docId: item.__unique__key },
-            { imageLinks: image },
-            { writerName: item.author },
-            { sourceId: item.link },
-            { recommendDate: item.recommendDate },
+            { description: item.description },
+            { docId_content: item.docId_content },
+            { imageLinks: item.og_image_base64 ? item.og_image_base64 : item.og_image_url },
+            { writer_search: item.writer_search },
+            { url: item.url },
+            { created_date: item.created_date },
           ]
         );
         const card = new CardModel(item as any, component);
         currentCard.push(card);
       });
     }
-
-    if (component === 'feed' ? res.data.currentPage == 0 : res.currentPage == 0) {
+    if (component === 'feed' ? res.data.body.currentPage == 0 : res.currentPage == 0) {
       // if ((this.isSearching || this.listFilter.length > 0) && this.isNoResult) {
-      if (this.isSearching || this.listFilter.length > 1 || this.isNoResult) {
+      if (this.isSearching || this.keyword || this.isNoResult || (this.fromDate && this.untilDate) || this.search_type) {
         return;
       }
       const stocks = this.stockCodes;
@@ -573,6 +651,7 @@ export default class DsFeed extends mixins(ShowMoreMixin) {
       };
       currentCard.push(cardTodayTopic);
     }
+    console.log('currentCard: ', currentCard);
     return currentCard;
   }
 
@@ -678,7 +757,11 @@ export default class DsFeed extends mixins(ShowMoreMixin) {
   }
 
   public filterFeed(type, condition) {
-    if (condition.selected) {
+    if (!condition.selected) {
+      this.totalData = 0;
+      this.totalDataSearch = 0;
+      this.goToLearningCenter = false;
+    } else {
       return;
     }
     this.isNoResult = false;
@@ -686,16 +769,27 @@ export default class DsFeed extends mixins(ShowMoreMixin) {
       if (document.querySelector("[data-target='#period-directInput']").classList.contains('active')) {
         document.querySelector("[data-target='#period-directInput']").classList.remove('active');
       }
-      this.periods.map(item => (item.selected = false));
-      this.listFilter = this.listFilter.filter(item => item.field !== condition.filter.field); // remove old period
-      if (condition.text !== 'all') {
-        this.listFilter.push(condition.filter); // push new period selected
+      if (condition.text === 'all') {
+        this.fromDate = null;
+        this.untilDate = null;
+      } else {
+        this.fromDate = moment(condition.filter.value?.from).format(this.formatDate);
+        this.untilDate = moment(condition.filter.value?.to).format(this.formatDate);
       }
+
+      this.periods.map(item => (item.selected = false));
+      // this.listFilter = this.listFilter.filter(item => item.field !== condition.filter.field); // remove old period
+      // if (condition.text !== 'all') {
+      //   this.listFilter.push(condition.filter); // push new period selected
+      // }
     } else {
       this.categories.map(item => (item.selected = false));
-      this.listFilter = this.listFilter.filter(item => item.field !== condition.filter.field);
+      // this.listFilter = this.listFilter.filter(item => item.field !== condition.filter.field);
       if (condition.text !== 'all') {
-        this.listFilter.push(condition.filter);
+        this.search_type = condition.filter.value;
+        // this.listFilter.push(condition.filter);
+      } else {
+        this.search_type = null;
       }
     }
     condition.selected = true;
@@ -703,16 +797,26 @@ export default class DsFeed extends mixins(ShowMoreMixin) {
   }
 
   public choosePeriod() {
+    this.isDatePicker = false;
+    this.totalData = 0;
+    this.totalDataSearch = 0;
+    this.goToLearningCenter = false;
     this.isNoResult = false;
     this.periods.map(item => (item.selected = false));
     document.querySelector("[data-target='#period-directInput']").classList.add('active');
-    const timeISO = new Date().toISOString().substring(new Date().toISOString().indexOf('T'));
+    // const timeISO = new Date().toISOString().substring(new Date().toISOString().indexOf('T'));
     const filter = {
       field: FEED_FILTER.recommendDate,
-      value: { from: this.datePicker.from + timeISO, to: this.datePicker.to + timeISO },
+      value: { from: this.datePicker.from, to: this.datePicker.to },
     };
-    this.listFilter = this.listFilter.filter(item => item.field !== FEED_FILTER.recommendDate);
-    this.listFilter.push(filter);
+    if (filter.value.from > filter.value.to) {
+      this.isDatePicker = true;
+      return;
+    }
+    this.fromDate = moment(filter.value.from).format(this.formatDate);
+    this.untilDate = moment(filter.value.to).format(this.formatDate);
+    // this.listFilter = this.listFilter.filter(item => item.field !== FEED_FILTER.recommendDate);
+    // this.listFilter.push(filter);
     this.enableScrollLoader();
   }
 

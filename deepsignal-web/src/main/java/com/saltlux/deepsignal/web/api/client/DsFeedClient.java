@@ -19,7 +19,7 @@ public interface DsFeedClient {
         @RequestParam(value = "until", required = false) String until,
         @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
         @RequestParam(value = "size", required = false, defaultValue = "10") Integer size,
-        @RequestParam(value = "searchType", required = false) String searchType,
+        @RequestParam(value = "search_type", required = false) String searchType,
         @RequestParam(value = "channels", required = false) String channels,
         @RequestParam(value = "type", required = false) String type,
         @RequestParam(value = "lang", required = true, defaultValue = "en") String lang
