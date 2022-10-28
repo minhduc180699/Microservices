@@ -28,9 +28,20 @@ export default class CollectionCart extends Vue {
 
   private isCartActive = false;
 
+  isChild = false;
+  newCollection: any = [];
+
+  @Watch('currentCollection')
+  setCurrentCollection() {
+    this.isChild = false;
+  }
+
   created() {
-    console.log(this.bookmarkCardItems, 222);
-    console.log(this.currentCollection, 22233);
+    this.$root.$on('cart-to-conlection', this.setCollection);
+  }
+
+  destroyed() {
+    this.$root.$off('cart-to-conlection', this.setCollection);
   }
 
   saveCollection() {
@@ -51,5 +62,26 @@ export default class CollectionCart extends Vue {
 
   getDocDetail(docId: any) {
     return this.bookmarkCardItems.find(bookmard => bookmard.id == docId);
+  }
+
+  arrCollection = [
+    { type: 'search', arr: [] },
+    { type: 'text', arr: [] },
+    { type: 'web', arr: [] },
+    { type: 'doc', arr: [] },
+  ];
+
+  setCollection(arrDoc, type) {
+    this.isChild = true;
+    for (let i = 0; i < this.arrCollection.length; i++) {
+      if (this.arrCollection[i].type === type) {
+        this.arrCollection[i].arr = arrDoc;
+        break;
+      }
+    }
+    this.newCollection = this.newCollection.splice(0, 0);
+    this.arrCollection.forEach(item => {
+      this.newCollection = this.newCollection.concat(item.arr);
+    });
   }
 }

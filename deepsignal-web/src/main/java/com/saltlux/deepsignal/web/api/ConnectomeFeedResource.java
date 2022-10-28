@@ -22,21 +22,21 @@ import com.saltlux.deepsignal.web.util.ConnectAdapterApi;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.util.*;
+import javax.validation.Valid;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import javax.validation.Valid;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.util.*;
 
 @RestController
 @RequestMapping("/api/connectome-feed")
@@ -74,7 +74,7 @@ public class ConnectomeFeedResource {
 
     private final Logger log = LoggerFactory.getLogger(AccountResource.class);
 
-    public ConnectomeFeedResource(DsAdapterClient adapterClient) {
+    public ConnectomeFeedResource(@Qualifier DsAdapterClient adapterClient) {
         this.adapterClient = adapterClient;
     }
 
@@ -88,8 +88,11 @@ public class ConnectomeFeedResource {
      * @return
      */
     @GetMapping("/getAll")
-    @Operation(summary = "get all connectome feed information from deepsignal adapter", tags = { "Connectome Feed Management" },
-        security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(
+        summary = "get all connectome feed information from deepsignal adapter",
+        tags = { "Connectome Feed Management" },
+        security = @SecurityRequirement(name = "bearerAuth")
+    )
     public ResponseEntity<?> getAllConnectomeFeed(
         @RequestParam(value = "page", defaultValue = "0") int page,
         @RequestParam(value = "size", defaultValue = "10") int size,
@@ -105,14 +108,18 @@ public class ConnectomeFeedResource {
     }
 
     @PostMapping("/getByIds")
-    @Operation(summary = "Get feed by id from deepsignal adapter", tags = { "Connectome Feed Management" }, security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(
+        summary = "Get feed by id from deepsignal adapter",
+        tags = { "Connectome Feed Management" },
+        security = @SecurityRequirement(name = "bearerAuth")
+    )
     public ResponseEntity<?> getAllConnectomeFeedByConnectomeId(@RequestBody List<String> ids) {
         try {
-//            String uri = "http://localhost:8060/deepsignal-adapter + /connectome-feed/getByIds";
-//            String strJson = connectAdapterApi.getDataFromAdapterApi(uri, null, HttpMethod.POST, null, ids);
-//            ObjectMapper objectMapper = new ObjectMapper();
-//            FeedRes feedRes = objectMapper.readValue(strJson, FeedRes.class);
-//            return new ResponseEntity<>(feedRes, HttpStatus.OK);
+            //            String uri = "http://localhost:8060/deepsignal-adapter + /connectome-feed/getByIds";
+            //            String strJson = connectAdapterApi.getDataFromAdapterApi(uri, null, HttpMethod.POST, null, ids);
+            //            ObjectMapper objectMapper = new ObjectMapper();
+            //            FeedRes feedRes = objectMapper.readValue(strJson, FeedRes.class);
+            //            return new ResponseEntity<>(feedRes, HttpStatus.OK);
             return adapterClient.getByIds(ids);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -120,7 +127,11 @@ public class ConnectomeFeedResource {
     }
 
     @PostMapping("/getListFeeds/{connectomeId}")
-    @Operation(summary = "Get all feed information from deepsignal adapter by ConnectomeId", tags = { "Connectome Feed Management" }, security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(
+        summary = "Get all feed information from deepsignal adapter by ConnectomeId",
+        tags = { "Connectome Feed Management" },
+        security = @SecurityRequirement(name = "bearerAuth")
+    )
     @UserActivity(activityName = Constants.UserActivities.UNKNOWN_SEARCH_FILTER_SORT)
     public ResponseEntity<?> getAllFeedByConnectomeId(
         @RequestParam(value = "page", defaultValue = "0") int page,
@@ -147,20 +158,19 @@ public class ConnectomeFeedResource {
             String strJson;
 
             if ("".equals(topic) || topic == null) {
-//                String uri = connectAdapterApi.getExternalApi() + "/connectome-feed/getListFeeds/{connectomeId}";
-//                strJson = connectAdapterApi.getDataFromAdapterApi(uri, params, HttpMethod.POST, uriParams, filterFeedDTOS);
+                //                String uri = connectAdapterApi.getExternalApi() + "/connectome-feed/getListFeeds/{connectomeId}";
+                //                strJson = connectAdapterApi.getDataFromAdapterApi(uri, params, HttpMethod.POST, uriParams, filterFeedDTOS);
                 return adapterClient.getFeedByConnectomeId(page, size, orderBy, sortDirection, keyword, connectomeId, filterFeedDTOS);
             } else {
-//                String uri = connectAdapterApi.getExternalApi() + "/connectome-feed/getListFeeds/{connectomeId}/{topic}";
-//                params.put("excepted", excepted);
-//                uriParams.put("topic", topic);
-//                strJson = connectAdapterApi.getDataFromAdapterApi(uri, params, HttpMethod.GET, uriParams);
+                //                String uri = connectAdapterApi.getExternalApi() + "/connectome-feed/getListFeeds/{connectomeId}/{topic}";
+                //                params.put("excepted", excepted);
+                //                uriParams.put("topic", topic);
+                //                strJson = connectAdapterApi.getDataFromAdapterApi(uri, params, HttpMethod.GET, uriParams);
                 return adapterClient.getFeedByConnectomeIdAndTopic(page, size, orderBy, sortDirection, connectomeId, topic, excepted);
             }
-
-//            ObjectMapper objectMapper = new ObjectMapper();
-//            FeedRes feedRes = objectMapper.readValue(strJson, FeedRes.class);
-//            return new ResponseEntity<>(feedRes, HttpStatus.OK);
+            //            ObjectMapper objectMapper = new ObjectMapper();
+            //            FeedRes feedRes = objectMapper.readValue(strJson, FeedRes.class);
+            //            return new ResponseEntity<>(feedRes, HttpStatus.OK);
         } catch (Exception e) {
             log.error(e.getMessage());
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -168,7 +178,11 @@ public class ConnectomeFeedResource {
     }
 
     @GetMapping("getFeed/{docId}")
-    @Operation(summary = "get connectome feed information by docId", tags = { "Connectome Feed Management" }, security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(
+        summary = "get connectome feed information by docId",
+        tags = { "Connectome Feed Management" },
+        security = @SecurityRequirement(name = "bearerAuth")
+    )
     public ResponseEntity<?> getFeedByDocId(@PathVariable(value = "docId") String docId) {
         try {
             ConnectomeFeedDTO connectomeFeedDTO = iConnectomeFeedService.getFeedConnectomeByDocId(docId);
@@ -179,7 +193,11 @@ public class ConnectomeFeedResource {
     }
 
     @PostMapping("/getStock")
-    @Operation(summary = "Get stock price for Feed", tags = { "Connectome Feed Management" }, security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(
+        summary = "Get stock price for Feed",
+        tags = { "Connectome Feed Management" },
+        security = @SecurityRequirement(name = "bearerAuth")
+    )
     public ResponseEntity<?> getStockPriceData(@Valid @RequestBody StockPriceVM stockPriceVM) {
         try {
             StringBuilder url = new StringBuilder(
@@ -197,7 +215,11 @@ public class ConnectomeFeedResource {
     }
 
     @PostMapping("/training/{connectomeId}")
-    @Operation(summary = "get all topic information", tags = { "Connectome Management" }, security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(
+        summary = "get all topic information",
+        tags = { "Connectome Management" },
+        security = @SecurityRequirement(name = "bearerAuth")
+    )
     @UserActivity(activityName = Constants.UserActivities.TRAINING)
     public ResponseEntity<?> trainingData(
         @PathVariable("connectomeId") String connectomeId,
@@ -220,7 +242,11 @@ public class ConnectomeFeedResource {
     }
 
     @GetMapping("/showByUrl/{connectomeId}/{feedId}")
-    @Operation(summary = "Show content of website by url", tags = { "Connectome Feed Management" }, security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(
+        summary = "Show content of website by url",
+        tags = { "Connectome Feed Management" },
+        security = @SecurityRequirement(name = "bearerAuth")
+    )
     @UserActivity(activityName = Constants.UserActivities.READ_ARTICLE)
     public ResponseEntity<?> previewByUrl(
         @RequestParam String url,
@@ -272,7 +298,11 @@ public class ConnectomeFeedResource {
     }
 
     @GetMapping("/activity/{connectomeId}")
-    @Operation(summary = "handle interaction", tags = { "Connectome Feed Management" }, security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(
+        summary = "handle interaction",
+        tags = { "Connectome Feed Management" },
+        security = @SecurityRequirement(name = "bearerAuth")
+    )
     @UserActivity(activityName = Constants.UserActivities.UNKNOWN_ACTIVITY)
     public ResponseEntity<?> handleActivity(
         @RequestParam("docId") String docId,
@@ -286,21 +316,21 @@ public class ConnectomeFeedResource {
         if (StringUtils.isEmpty(docId) || StringUtils.isEmpty(activity)) {
             return ResponseEntity.badRequest().body("Id or activity is null");
         }
-//        StringBuilder url = new StringBuilder();
-//        url.append(applicationProperties.getExternalApi().getDeepsignalAdapter()).append("/connectome-feed/handleActivity");
-//        String urlTemplate = UriComponentsBuilder
-//            .fromHttpUrl(url.toString())
-//            .queryParam("docId", docId)
-//            .queryParam("connectomeId", connectomeId)
-//            .queryParam("state", state)
-//            .queryParam("activity", activity)
-//            .queryParam("page", page)
-//            .queryParam("likeState", likeState)
-//            .build()
-//            .toUriString();
+        //        StringBuilder url = new StringBuilder();
+        //        url.append(applicationProperties.getExternalApi().getDeepsignalAdapter()).append("/connectome-feed/handleActivity");
+        //        String urlTemplate = UriComponentsBuilder
+        //            .fromHttpUrl(url.toString())
+        //            .queryParam("docId", docId)
+        //            .queryParam("connectomeId", connectomeId)
+        //            .queryParam("state", state)
+        //            .queryParam("activity", activity)
+        //            .queryParam("page", page)
+        //            .queryParam("likeState", likeState)
+        //            .build()
+        //            .toUriString();
         try {
-//            HttpEntity<String> response = restTemplate.getForEntity(urlTemplate, String.class);
-//            return ResponseEntity.ok().body(response.getBody());
+            //            HttpEntity<String> response = restTemplate.getForEntity(urlTemplate, String.class);
+            //            return ResponseEntity.ok().body(response.getBody());
             return adapterClient.handleActivity(docId, state, activity, connectomeId, page, likeState);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -324,17 +354,17 @@ public class ConnectomeFeedResource {
         if (StringUtils.isEmpty(id) || StringUtils.isEmpty(platform) || !checkPlatform) {
             return ResponseEntity.badRequest().body("");
         }
-//        StringBuilder url = new StringBuilder();
-//        url.append(applicationProperties.getExternalApi().getDeepsignalAdapter()).append("/connectome-feed/sharingCard");
-//        String urlTemplate = UriComponentsBuilder
-//            .fromHttpUrl(url.toString())
-//            .queryParam("id", id)
-//            .queryParam("platform", platform)
-//            .build()
-//            .toUriString();
+        //        StringBuilder url = new StringBuilder();
+        //        url.append(applicationProperties.getExternalApi().getDeepsignalAdapter()).append("/connectome-feed/sharingCard");
+        //        String urlTemplate = UriComponentsBuilder
+        //            .fromHttpUrl(url.toString())
+        //            .queryParam("id", id)
+        //            .queryParam("platform", platform)
+        //            .build()
+        //            .toUriString();
         try {
-//            HttpEntity<String> response = restTemplate.getForEntity(urlTemplate, String.class);
-//            return ResponseEntity.ok().body(response.getBody());
+            //            HttpEntity<String> response = restTemplate.getForEntity(urlTemplate, String.class);
+            //            return ResponseEntity.ok().body(response.getBody());
             return adapterClient.handleSharing(id, platform);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -347,12 +377,12 @@ public class ConnectomeFeedResource {
         if (StringUtils.isEmpty(id) || StringUtils.isEmpty(connectomeId)) {
             return ResponseEntity.badRequest().body("ConnectomeId or id is null");
         }
-//        StringBuilder url = new StringBuilder();
-//        url.append(applicationProperties.getExternalApi().getDeepsignalAdapter()).append("/connectome-feed/getDetailCard");
-//        String urlTemplate = UriComponentsBuilder.fromHttpUrl(url.toString()).queryParam("id", id).build().toUriString();
+        //        StringBuilder url = new StringBuilder();
+        //        url.append(applicationProperties.getExternalApi().getDeepsignalAdapter()).append("/connectome-feed/getDetailCard");
+        //        String urlTemplate = UriComponentsBuilder.fromHttpUrl(url.toString()).queryParam("id", id).build().toUriString();
         try {
-//            HttpEntity<String> response = restTemplate.getForEntity(urlTemplate, String.class);
-//            return ResponseEntity.ok().body(response.getBody());
+            //            HttpEntity<String> response = restTemplate.getForEntity(urlTemplate, String.class);
+            //            return ResponseEntity.ok().body(response.getBody());
             return adapterClient.getDetailCard(id);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -360,7 +390,11 @@ public class ConnectomeFeedResource {
     }
 
     @PostMapping("/saveAndSendEmail")
-    @Operation(summary = "Save people and send email", tags = { "Connectome Feed Management" }, security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(
+        summary = "Save people and send email",
+        tags = { "Connectome Feed Management" },
+        security = @SecurityRequirement(name = "bearerAuth")
+    )
     public ResponseEntity<?> saveAndSendEmail(
         @RequestParam("connectomeId") String connectomeId,
         @RequestParam("cardId") String cardId,
@@ -385,7 +419,11 @@ public class ConnectomeFeedResource {
     }
 
     @GetMapping("/checkPermissionShare")
-    @Operation(summary = "Check user's permission for link share by email", tags = { "Connectome Feed Management" }, security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(
+        summary = "Check user's permission for link share by email",
+        tags = { "Connectome Feed Management" },
+        security = @SecurityRequirement(name = "bearerAuth")
+    )
     public ResponseEntity<?> checkPermissionShare(
         @RequestParam("connectomeId") String connectomeId,
         @RequestParam("cardId") String cardId,
@@ -419,7 +457,11 @@ public class ConnectomeFeedResource {
         }
     }
 
-    @Operation(summary = "get the information connectome by current account ", tags = { "Connectome Management" }, security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(
+        summary = "get the information connectome by current account ",
+        tags = { "Connectome Management" },
+        security = @SecurityRequirement(name = "bearerAuth")
+    )
     @GetMapping("/getByUserId")
     public ResponseEntity<?> getDataByLogin(@RequestParam("login") String login) {
         try {
@@ -438,35 +480,39 @@ public class ConnectomeFeedResource {
         }
     }
 
-    @Operation(summary = "Get Connectome Feed By Recommend Date", tags = { "Connectome Management" }, security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(
+        summary = "Get Connectome Feed By Recommend Date",
+        tags = { "Connectome Management" },
+        security = @SecurityRequirement(name = "bearerAuth")
+    )
     @GetMapping("/getByRecommendDate/{connectomeId}")
     public ResponseEntity<?> getFeedByRecommendDate(
         @PathVariable String connectomeId,
         @RequestParam("lang") String lang,
         @RequestParam("recommend_date") String recommendDate
     ) throws ParseException {
-//        String uri = connectAdapterApi.getExternalApi() + "/connectome-feed/getFeedByDate/{connectomeId}";
-//        Map<String, Object> params = new HashMap<>();
-//        params.put("lang", lang);
+        //        String uri = connectAdapterApi.getExternalApi() + "/connectome-feed/getFeedByDate/{connectomeId}";
+        //        Map<String, Object> params = new HashMap<>();
+        //        params.put("lang", lang);
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS'Z'");
         Date dateParse = formatter.parse(recommendDate);
         Instant dateConvert = dateParse.toInstant();
-//        params.put("recommendDate", dateConvert);
-//        Map<String, Object> uriParams = new HashMap<>();
-//        uriParams.put("connectomeId", connectomeId);
-//        String strJson = connectAdapterApi.getDataFromAdapterApi(uri, params, HttpMethod.GET, uriParams);
-//        return ResponseEntity.ok().body(strJson);
+        //        params.put("recommendDate", dateConvert);
+        //        Map<String, Object> uriParams = new HashMap<>();
+        //        uriParams.put("connectomeId", connectomeId);
+        //        String strJson = connectAdapterApi.getDataFromAdapterApi(uri, params, HttpMethod.GET, uriParams);
+        //        return ResponseEntity.ok().body(strJson);
         return adapterClient.getByConnectomeIdAndDate(connectomeId, lang, dateConvert);
     }
 
     public Long countNewFeedByDate(String connectomeId, Instant recommendDate) {
-//        String uri = connectAdapterApi.getExternalApi() + "/connectome-feed/countFeedByDate/{connectomeId}";
-//        Map<String, Object> params = new HashMap<>();
-//        params.put("lang", lang);
-//        params.put("recommendDate", recommendDate);
-//        Map<String, Object> uriParams = new HashMap<>();
-//        uriParams.put("connectomeId", connectomeId);
-//        String strJson = connectAdapterApi.getDataFromAdapterApi(uri, params, HttpMethod.GET, uriParams);
+        //        String uri = connectAdapterApi.getExternalApi() + "/connectome-feed/countFeedByDate/{connectomeId}";
+        //        Map<String, Object> params = new HashMap<>();
+        //        params.put("lang", lang);
+        //        params.put("recommendDate", recommendDate);
+        //        Map<String, Object> uriParams = new HashMap<>();
+        //        uriParams.put("connectomeId", connectomeId);
+        //        String strJson = connectAdapterApi.getDataFromAdapterApi(uri, params, HttpMethod.GET, uriParams);
         ResponseEntity<?> entity = adapterClient.countFeedByDate(connectomeId, recommendDate);
         return Long.parseLong(entity.getBody().toString());
     }
@@ -489,17 +535,17 @@ public class ConnectomeFeedResource {
             return ResponseEntity.badRequest().body("User not found");
         }
 
-//        String uri = connectAdapterApi.getExternalApi() + "/connectome-feed/getActivity/{connectomeId}";
-//        Map<String, Object> params = new HashMap<>();
-//        params.put("page", page);
-//        params.put("size", size);
-//        params.put("orderBy", orderBy);
-//        params.put("sortDirection", sortDirection);
-//        params.put("lang", user.get().getLangKey());
-//        Map<String, Object> uriParams = new HashMap<>();
-//        uriParams.put("connectomeId", connectomeId);
-//        String strJson = connectAdapterApi.getDataFromAdapterApi(uri, params, HttpMethod.POST, uriParams, filterFeedDTOS);
-//        return ResponseEntity.ok().body(strJson);
+        //        String uri = connectAdapterApi.getExternalApi() + "/connectome-feed/getActivity/{connectomeId}";
+        //        Map<String, Object> params = new HashMap<>();
+        //        params.put("page", page);
+        //        params.put("size", size);
+        //        params.put("orderBy", orderBy);
+        //        params.put("sortDirection", sortDirection);
+        //        params.put("lang", user.get().getLangKey());
+        //        Map<String, Object> uriParams = new HashMap<>();
+        //        uriParams.put("connectomeId", connectomeId);
+        //        String strJson = connectAdapterApi.getDataFromAdapterApi(uri, params, HttpMethod.POST, uriParams, filterFeedDTOS);
+        //        return ResponseEntity.ok().body(strJson);
         return adapterClient.getActivity(connectomeId, page, size, orderBy, sortDirection, user.get().getLangKey(), filterFeedDTOS);
     }
 }

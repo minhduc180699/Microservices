@@ -7,6 +7,12 @@ import { namespace } from 'vuex-class';
 import groupCard from '@/entities/new-learning-center/aside/group-card/group-card.vue';
 import singleCard from '@/entities/new-learning-center/aside/single-card/single-card.vue';
 import { CmCollection } from '@/shared/model/cm-collection.model';
+
+import search from '@/entities/new-learning-center/list-collection/search/search.vue';
+import web from '@/entities/new-learning-center/list-collection/web/web.vue';
+import dsText from '@/entities/new-learning-center/list-collection/text/dsText.vue';
+import document from '@/entities/new-learning-center/list-collection/document/document.vue';
+
 const collectionsManagerStore = namespace('collectionsManagerStore');
 
 @Component({
@@ -14,6 +20,10 @@ const collectionsManagerStore = namespace('collectionsManagerStore');
     vueCustomScrollbar: vueCustomScrollbar,
     'group-card': groupCard,
     'single-card': singleCard,
+    search: search,
+    web: web,
+    document: document,
+    dsText: dsText,
   },
   computed: {
     currentCollection() {
@@ -22,6 +32,27 @@ const collectionsManagerStore = namespace('collectionsManagerStore');
   },
 })
 export default class ListCollection extends Vue {
+  displayMode = 'grid';
+  currentTab = { name: 'Web Search', component: 'search' };
+  tabs = [
+    { name: 'Web Search', component: 'search', active: true },
+    { name: 'Text', component: 'dsText', active: false },
+    { name: 'URL', component: 'web', active: false },
+    { name: 'Documents', component: 'document', active: false },
+  ];
+
+  changeTab(tab, e) {
+    e.preventDefault();
+    this.tabs.forEach(t => {
+      t.active = false;
+      if (tab.name == t.name) {
+        this.currentTab.component = tab.component;
+        this.currentTab.name = tab.name;
+        t.active = true;
+      }
+    });
+  }
+
   @collectionsManagerStore.Action
   public getCollectionsFromDocIds: (payload: {
     docIds: Array<string>;
@@ -39,19 +70,19 @@ export default class ListCollection extends Vue {
   @collectionsManagerStore.Getter
   public isCurrentConnectomeChanged!: number;
 
-  private scrollSettings = {
+  scrollSettings = {
     wheelPropagation: false,
   };
-  private isGroupCollectionActive = false;
-  private isAddCollectionActive = false;
-  private isShowAllTag = false;
+  isGroupCollectionActive = false;
+  isAddCollectionActive = false;
+  isShowAllTag = false;
 
-  private page = 0;
-  private size = 20;
+  page = 0;
+  size = 20;
   labelSave = 'Save';
-  private chosenCollection = {};
-  private isSelected = false;
-  private currentCollection: any;
+  chosenCollection: any = {};
+  isSelected = false;
+  currentCollection: any;
 
   //bookmark list
   bookmarkCardItems: Array<documentCard> = new Array<documentCard>();

@@ -62,19 +62,22 @@
         <div class="lc-list-top">
           <div class="elements-left">
             <div class="check-group">
-              <button type="button" class="btn btn-check" id="list-check-all" data-toggle="button" aria-pressed="false"></button>
+              <!-- <button type="button" class="btn btn-check" id="list-check-all" data-toggle="button" aria-pressed="false"></button> -->
               <label for="list-check-all">전체 선택</label>
             </div>
-            <div class="list-info">(<strong>0</strong>/20)</div>
+            <div class="list-info">
+              (<strong>{{ newCollection.length }}</strong
+              >)
+            </div>
           </div>
-          <div class="elements-right">
+          <!-- <div class="elements-right">
             <button type="button" class="btn btn-default btn-sm"><i class="icon-common icon-close"></i>선택 삭제</button>
-          </div>
+          </div> -->
         </div>
         <div class="lc-list-wrap">
           <div class="list-inner overflow-y-scroll">
             <vue-custom-scrollbar class="overflow-yx-scroll csScrollPositon h-100" :settings="scrollSettings">
-              <ul class="lc-card-list">
+              <ul class="lc-card-list" v-if="!isChild">
                 <li
                   class="lc-card-item"
                   v-for="item in currentCollection.documentIdList"
@@ -82,6 +85,11 @@
                   :key="item.id"
                 >
                   <single-card :document="getDocDetail(item)"></single-card>
+                </li>
+              </ul>
+              <ul class="lc-card-list" v-else>
+                <li class="lc-card-item" v-for="item in newCollection" aria-selected="true" :key="item.__unique__key">
+                  <single-card :isHideCheck="true" :document="item" :selectedItems="newCollection"></single-card>
                 </li>
               </ul>
             </vue-custom-scrollbar>

@@ -14,6 +14,8 @@ const collectionsManagerStore = namespace('collectionsManagerStore');
 })
 export default class singleCard extends Vue {
   @Prop(Object) readonly document: any;
+  @Prop() readonly selectedItems: any;
+  @Prop() readonly isHideCheck: any;
 
   @collectionsManagerStore.Action
   public addBookmarksToCurrentCollection: (payload: {
@@ -27,10 +29,6 @@ export default class singleCard extends Vue {
 
   private loading = true;
   private currentCollectionDocIds: any[];
-
-  // created() {
-  //   console.log(this.currentCollectionDocIds,123333);
-  // }
 
   handleClickSingleCard() {
     const doc = this.currentCollectionDocIds.find(docId => docId == this.document.id);
@@ -71,5 +69,30 @@ export default class singleCard extends Vue {
         return;
       }
     });
+  }
+
+  showTag(e) {
+    e.preventDefault();
+    $('.tag-box').toggleClass('show');
+  }
+
+  dataTmp = [];
+  dataTmpItemsChage() {
+    this.$emit('setSelectedItems', this.dataTmp);
+  }
+
+  @Watch('selectedItems')
+  selectedItemsChage() {
+    this.dataTmp = this.selectedItems;
+  }
+
+  created() {
+    this.dataTmp = this.selectedItems;
+  }
+
+  checkRegexDate(value) {
+    const regex = new RegExp('ago');
+    if (regex.test(value)) return value;
+    else return new Date(value);
   }
 }

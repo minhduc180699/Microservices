@@ -1,6 +1,7 @@
 import { ConnectomeNode } from './connectome-node.model';
 
 export class documentCard {
+  [x: string]: any;
   id: string = null;
   author: string = null;
   title: string = null;
@@ -9,6 +10,7 @@ export class documentCard {
   type: string = null;
   group: Array<string> = new Array<string>();
   tags: Array<string> = new Array<string>();
+  isGroup = false;
   addedAt: Date = null;
   modifiedAt: Date = null;
   url: string = null;
