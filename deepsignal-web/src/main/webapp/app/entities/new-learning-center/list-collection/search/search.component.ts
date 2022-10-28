@@ -3,6 +3,7 @@ import vueCustomScrollbar from 'vue-custom-scrollbar';
 import axios from 'axios';
 import singleCard from '@/entities/new-learning-center/aside/single-card/single-card.vue';
 import { documentCard } from '@/shared/model/document-card.model';
+import { onlyInLeft } from '@/util/ds-util';
 
 @Component({
   components: {
@@ -131,7 +132,9 @@ export default class Search extends Vue {
             objectTmp.title = item.title;
             objectTmp.content = item.description;
             objectTmp.keyword = item.keyword;
-            objectTmp.type = item.searchType;
+            objectTmp.type = 'URL';
+            if (item.searchType.startsWith('searchFileType')) objectTmp.searchType = item.searchType.substring('15').toUpperCase();
+            else objectTmp.searchType = item.searchType.substring('6').toUpperCase();
             objectTmp.addedAt = item.org_date;
             objectTmp.url = item.link;
             objectTmp.images = [item.img];
@@ -233,22 +236,6 @@ export default class Search extends Vue {
   }
 
   checkArraySelected(arg?) {
-    function onlyInLeft(leftValue, rightValue) {
-      const res = [];
-      for (let i = 0; i < leftValue.length; i++) {
-        let j = 0;
-        let isSame = false;
-        while (j < rightValue.length) {
-          if (rightValue[j].url == leftValue[i].url) {
-            isSame = true;
-            break;
-          }
-          j++;
-        }
-        if (!isSame) res.push(leftValue[i]);
-      }
-      return res;
-    }
     if (arg) return onlyInLeft(this.selectedItems, this.allData);
     return onlyInLeft(this.allData, this.selectedItems);
   }

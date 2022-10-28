@@ -3,6 +3,7 @@ import PublicService from '@/service/public.service';
 import singleCard from '@/entities/new-learning-center/aside/single-card/single-card.vue';
 import vueCustomScrollbar from 'vue-custom-scrollbar';
 import { documentCard } from '@/shared/model/document-card.model';
+import { onlyInLeft } from '@/util/ds-util';
 
 @Component({
   components: {
@@ -43,8 +44,9 @@ export default class web extends Vue {
         obj.content = res.data.desc;
         obj.keyword = res.data.keyword;
         obj.type = 'URL';
+        obj.searchType = 'WEB';
         obj.addedAt = res.data.publicTime;
-        obj.url = res.data.link;
+        obj.url = res.data.url;
         obj.images = [res.data.image ? res.data.image : res.data.imageAlt ? res.data.imageAlt : null];
         obj.favicon = res.data.favicon;
 
@@ -98,22 +100,6 @@ export default class web extends Vue {
   }
 
   checkArraySelected(arg?) {
-    function onlyInLeft(leftValue, rightValue) {
-      const res = [];
-      for (let i = 0; i < leftValue.length; i++) {
-        let j = 0;
-        let isSame = false;
-        while (j < rightValue.length) {
-          if (rightValue[j].link == leftValue[i].link) {
-            isSame = true;
-            break;
-          }
-          j++;
-        }
-        if (!isSame) res.push(leftValue[i]);
-      }
-      return res;
-    }
     if (arg) return onlyInLeft(this.selectedItems, this.previewModels);
     return onlyInLeft(this.previewModels, this.selectedItems);
   }

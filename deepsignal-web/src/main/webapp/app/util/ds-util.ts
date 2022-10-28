@@ -108,3 +108,20 @@ export function getExtensionFileBySearchType(searchType: string) {
   const fileType = searchType.split(':').pop();
   return fileType;
 }
+
+export function onlyInLeft(leftValue, rightValue) {
+  const res = [];
+  for (let i = 0; i < leftValue.length; i++) {
+    let j = 0;
+    let isSame = false;
+    while (j < rightValue.length) {
+      if (rightValue[j].url == leftValue[i].url) {
+        isSame = true;
+        break;
+      }
+      j++;
+    }
+    if (!isSame) res.push(leftValue[i]);
+  }
+  return res;
+}

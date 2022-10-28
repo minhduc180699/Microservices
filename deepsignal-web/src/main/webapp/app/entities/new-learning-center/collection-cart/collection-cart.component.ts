@@ -3,6 +3,8 @@ import vueCustomScrollbar from 'vue-custom-scrollbar';
 import singleCard from '@/entities/new-learning-center/aside/single-card/single-card.vue';
 import { namespace } from 'vuex-class';
 import { CmCollection } from '@/shared/model/cm-collection.model';
+import { ReqestModel } from '@/shared/model/request-savecollection.model';
+import axios from 'axios';
 
 const collectionsManagerStore = namespace('collectionsManagerStore');
 
@@ -21,6 +23,10 @@ export default class CollectionCart extends Vue {
 
   @collectionsManagerStore.Action
   public saveCurrentDraftCollection: () => Promise<{ status: string; message: string; result: any }>;
+  @collectionsManagerStore.Action
+  public addBookmarksToCurrentCollection: (payload: {
+    docIds: Array<string>;
+  }) => Promise<{ status: string; message: string; result: CmCollection }>;
 
   private scrollSettings = {
     wheelPropagation: false,
@@ -33,7 +39,7 @@ export default class CollectionCart extends Vue {
 
   @Watch('currentCollection')
   setCurrentCollection() {
-    this.isChild = false;
+    // this.isChild = false;
   }
 
   created() {
@@ -45,19 +51,50 @@ export default class CollectionCart extends Vue {
   }
 
   saveCollection() {
-    this.saveCurrentDraftCollection().then(res => {
-      if (!res) {
-        return;
-      }
+    console.log('this.newCollection', this.newCollection);
+    const arrReq = [];
+    let connectomeId;
+    if (localStorage.getItem('ds-connectome')) {
+      connectomeId = JSON.parse(localStorage.getItem('ds-connectome')).connectomeId;
+    }
+    if (connectomeId && this.newCollection && this.newCollection.length > 0) {
+      this.newCollection.forEach(element => {
+        const objectTmp = new ReqestModel();
+        objectTmp.id = Date.now();
+        objectTmp.name = element.title;
+        objectTmp.path = element.url;
+        objectTmp.description = element.content;
+        objectTmp.type = element.type;
+        objectTmp.connectomeId = connectomeId;
+        objectTmp.author = element.author;
+        objectTmp.searchType = element.searchType;
+        objectTmp.favicon = element.favicon;
+        objectTmp.lang = this.$store.getters.currentLanguage;
+        objectTmp.keyword = element.keyword;
+        objectTmp.originDate = element.type === 'URL' ? '' : element.addedAt;
+        arrReq.push(objectTmp);
+      });
 
-      if (res.status === 'NOK') {
-        return;
-      }
+      axios.post('/api/personal-documents/urlconvert', arrReq).then(res => {
+        console.log('res', res);
+        if (res.status === 200) {
+          this.addBookmarksToCurrentCollection({ docIds: res.data.data }).then(res => {
+            console.log('addBookmarksToCurrentCollection', res);
+            if (!res || res.status === 'NOK' || !res.result) {
+              return;
+            }
 
-      if (!res.result) {
-        return;
-      }
-    });
+            this.saveCurrentDraftCollection().then(res => {
+              if (!res || res.status === 'NOK' || !res.result) {
+                return;
+              }
+              console.log('res', res);
+              this.$router.push('/new-learning-center');
+            });
+          });
+        }
+      });
+    }
   }
 
   getDocDetail(docId: any) {
@@ -75,10 +112,12 @@ export default class CollectionCart extends Vue {
     this.isChild = true;
     for (let i = 0; i < this.arrCollection.length; i++) {
       if (this.arrCollection[i].type === type) {
-        this.arrCollection[i].arr = arrDoc;
+        if (type === 'text') this.arrCollection[i].arr = this.arrCollection[i].arr.concat(arrDoc);
+        else this.arrCollection[i].arr = arrDoc;
         break;
       }
     }
+
     this.newCollection = this.newCollection.splice(0, 0);
     this.arrCollection.forEach(item => {
       this.newCollection = this.newCollection.concat(item.arr);

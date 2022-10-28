@@ -8,7 +8,8 @@
         <div class="info-item">
           <div class="source">
             <div class="source-img">
-              <img :src="document.favicon" alt="" />
+              <img v-if="document.favicon" :src="document.favicon" alt="" />
+              <img v-else src="content/images/empty-image.png" alt="" />
             </div>
             {{ document.author }}
           </div>
@@ -26,9 +27,9 @@
           <p class="media-desc" v-html="document.content"></p>
         </div>
         <a class="media-img" href="#" id="image">
-          <div v-if="document.searchType === 'searchVideo'" class="icon-play"></div>
+          <div v-if="document.searchType === 'VIDEO'" class="icon-play"></div>
           <img
-            v-if="document.images && document.images.length > 0"
+            v-if="document.images && document.images.length > 0 && document.images[0]"
             :src="document.images[0]"
             alt=""
             style="width: 100%"
@@ -40,8 +41,11 @@
     </div>
     <div class="tag-box">
       <div class="scroll-area">
-        <div class="tag-list">
-          <a class="tag-item" v-for="(element, index) in document.keyword.split(',')" :key="index" href="#">{{ element }}</a>
+        <div class="tag-list" v-if="document.keyword">
+          <a class="tag-item" v-for="(element, index) in document.keyword.split(',')" :key="index">{{ element }}</a>
+        </div>
+        <div class="tag-list" v-else>
+          <a class="tag-item">no keyword</a>
         </div>
       </div>
       <div class="btn-wrap">

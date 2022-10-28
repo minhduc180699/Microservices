@@ -39,7 +39,7 @@ public class LearningService {
         String favicon = getFavicon(document, uri);
         String author = getAuthor(document);
         String publicTime = getPucblicTime(document);
-        String keyword = uri.getPath().replace("/", "  ").trim().replace("  ", ",");
+        //        String keyword = uri.getPath().replace("/", "  ").trim().replace("  ", ",");
         //        try {
         //            domain = InternetDomainName.from(new URL(ogUrl).getHost()).topPrivateDomain().toString();
         //        } catch (Exception e) {
@@ -55,7 +55,7 @@ public class LearningService {
             author,
             favicon,
             publicTime,
-            keyword
+            null
         );
     }
 
