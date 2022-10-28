@@ -108,11 +108,11 @@ export default class CollectionCart extends Vue {
     { type: 'doc', arr: [] },
   ];
 
-  setCollection(arrDoc, type) {
+  setCollection(arrDoc, type, remove?) {
     this.isChild = true;
     for (let i = 0; i < this.arrCollection.length; i++) {
       if (this.arrCollection[i].type === type) {
-        if (type === 'text') this.arrCollection[i].arr = this.arrCollection[i].arr.concat(arrDoc);
+        if (type === 'text' && !remove) this.arrCollection[i].arr = this.arrCollection[i].arr.concat(arrDoc);
         else this.arrCollection[i].arr = arrDoc;
         break;
       }
@@ -122,5 +122,30 @@ export default class CollectionCart extends Vue {
     this.arrCollection.forEach(item => {
       this.newCollection = this.newCollection.concat(item.arr);
     });
+  }
+
+  removeCardReq(arr, item) {
+    let arrTmp;
+    let type;
+    switch (item.searchType) {
+      case 'WEB': {
+        arrTmp = this.arrCollection.find(item => item.type === 'web').arr;
+        type = 'web';
+        break;
+      }
+      case 'USERNOTE': {
+        arrTmp = this.arrCollection.find(item => item.type === 'text').arr;
+        type = 'text';
+        break;
+      }
+      default: {
+        arrTmp = this.arrCollection.find(item => item.type === 'search').arr;
+        type = 'search';
+        break;
+      }
+    }
+    const index = arrTmp.indexOf(item);
+    if (index !== -1) arrTmp.splice(index, 1);
+    this.setCollection(arrTmp, type, true);
   }
 }

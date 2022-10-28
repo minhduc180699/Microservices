@@ -17,7 +17,7 @@
         <div class="info-item">{{ checkRegexDate(document.addedAt) | formatDate }}</div>
       </div>
       <div class="lc-btn" v-show="isHideCheck">
-        <a class="btn-close" href="#"><i class="icon-common icon-close"></i></a>
+        <a class="btn-close" @click="removeCard(document)"><i class="icon-common icon-close"></i></a>
       </div>
     </div>
     <div class="content-box">
@@ -39,13 +39,10 @@
         </a>
       </div>
     </div>
-    <div class="tag-box">
+    <div class="tag-box" v-if="document.keyword">
       <div class="scroll-area">
-        <div class="tag-list" v-if="document.keyword">
+        <div class="tag-list">
           <a class="tag-item" v-for="(element, index) in document.keyword.split(',')" :key="index">{{ element }}</a>
-        </div>
-        <div class="tag-list" v-else>
-          <a class="tag-item">no keyword</a>
         </div>
       </div>
       <div class="btn-wrap">

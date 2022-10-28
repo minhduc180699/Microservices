@@ -89,7 +89,12 @@
               </ul>
               <ul class="lc-card-list" v-else>
                 <li class="lc-card-item" v-for="item in newCollection" aria-selected="true" :key="item.__unique__key">
-                  <single-card :isHideCheck="true" :document="item" :selectedItems="newCollection"></single-card>
+                  <single-card
+                    :isHideCheck="true"
+                    :document="item"
+                    :selectedItems="newCollection"
+                    @removeCardReq="removeCardReq"
+                  ></single-card>
                 </li>
               </ul>
             </vue-custom-scrollbar>

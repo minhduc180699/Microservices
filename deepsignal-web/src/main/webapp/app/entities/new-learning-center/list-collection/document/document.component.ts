@@ -3,6 +3,7 @@ import { GOOGLE_CONFIG, UPLOAD_FILE_SUPPORT } from '@/shared/constants/ds-consta
 import { getExtensionFileByName } from '@/util/ds-util';
 import vueCustomScrollbar from 'vue-custom-scrollbar';
 import singleCard from '@/entities/new-learning-center/aside/single-card/single-card.vue';
+import { documentCard } from '@/shared/model/document-card.model';
 
 let tokenClient;
 let access_token = null;
@@ -25,6 +26,10 @@ export default class Document extends Vue {
   disableButton = true;
   updateList = 'updateList';
   countActive = 0;
+
+  totalSelected = 0;
+  selectedItems = [];
+  checked = false;
 
   @Watch('uploadQueueFiles')
   onListDataChange(value) {
@@ -69,8 +74,18 @@ export default class Document extends Vue {
           if (!this.uploadQueueFiles.filter(item => item.document && item.document === 'local').some(item => item.name === file.name)) {
             // check duplicate file name
             i++;
-            Object.assign(file, { id: i, checked: false, document: 'local', selected: true });
-            this.uploadQueueFiles.push(file);
+            console.log(file);
+            const obj = new documentCard();
+            obj.author = 'My PC';
+            obj.title = file.name;
+            obj.content = file.size;
+            obj.type = 'URL';
+            obj.searchType = 'WEB';
+            obj.addedAt = file.lastModified;
+            obj.url = '';
+            obj.images = [];
+            obj.favicon = '';
+            this.uploadQueueFiles.push(Object.assign(obj, { id: i, checked: false, document: 'local', selected: true, name: file.name }));
           }
         }
       } else {
@@ -196,23 +211,16 @@ export default class Document extends Vue {
     google.accounts.oauth2.revoke(access_token);
   }
 
-  selectCard(position) {
-    this.uploadQueueFiles[position].selected = !this.uploadQueueFiles[position].selected;
-    this.updateList += '1';
-    this.checkDisableButton();
+  selectAll() {
+    if (this.selectedItems.length === this.uploadQueueFiles.length) this.selectedItems = [];
+    else this.selectedItems = this.uploadQueueFiles;
   }
 
-  public addToCollection() {
-    const data = [];
-    for (let i = 0; i < this.uploadQueueFiles.length; i++) {
-      if (this.uploadQueueFiles[i].selected) {
-        data.push(this.uploadQueueFiles[i]);
-        this.uploadQueueFiles.splice(i, 1);
-        i--;
-      }
-    }
-    this.$store.commit('setDocumentCards', data);
-    this.closeFullScreenMode();
+  setSelectedItems(newData) {
+    console.log('a');
+    this.selectedItems = newData;
+    this.totalSelected = this.selectedItems.length;
+    this.selectedItems.length === this.uploadQueueFiles.length ? $('#btnSelect').addClass('active') : $('#btnSelect').removeClass('active');
   }
 
   checkDisableButton() {
@@ -225,7 +233,8 @@ export default class Document extends Vue {
     }
   }
 
-  closeFullScreenMode() {
-    this.$emit('closeFullScreenMode');
+  deleteAll() {
+    this.selectedItems = this.selectedItems.splice(0, 0);
+    $('#btnSelect').removeClass('active');
   }
 }

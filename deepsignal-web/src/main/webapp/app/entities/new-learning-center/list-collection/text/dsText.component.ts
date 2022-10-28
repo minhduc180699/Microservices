@@ -18,7 +18,7 @@ export default class DsText extends Vue {
       this.item.url = '';
       this.item.images = [];
       this.item.favicon = '';
-      this.$root.$emit('cart-to-conlection', [this.item], 'text');
+      this.$root.$emit('cart-to-conlection', [Object.assign({}, this.item)], 'text');
     }
   }
 }

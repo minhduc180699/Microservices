@@ -252,4 +252,9 @@ export default class Search extends Vue {
   insertToMemory() {
     this.$root.$emit('cart-to-conlection', this.selectedItems, 'search');
   }
+
+  deleteAll() {
+    this.selectedItems = this.selectedItems.splice(0, 0);
+    $('#btnSelect').removeClass('active');
+  }
 }

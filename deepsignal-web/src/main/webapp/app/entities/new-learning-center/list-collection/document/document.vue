@@ -11,7 +11,7 @@
           <div class="learning-tool">
             <ul class="learning-list">
               <li class="item-pc">
-                <a href="#">
+                <a @click="openChooseFile">
                   <span class="icon-area"><i class="bi bi-tv"></i></span>
                   <span class="name">내 컴퓨터</span>
                 </a>
@@ -27,7 +27,7 @@
                 />
               </li>
               <li class="item-channel">
-                <a class="item-link" href="#">
+                <a class="item-link" @click="googleSignin">
                   <span class="icon-area"><i class="icon-google-drive"></i></span>
                   <span class="name">Google Drive</span>
                 </a>
@@ -81,10 +81,20 @@
         <div class="lc-list-top">
           <div class="elements-left">
             <div class="check-group">
-              <button type="button" class="btn btn-check" id="list-check-all4" data-toggle="button" aria-pressed="false"></button>
+              <button
+                id="btnSelect"
+                type="button"
+                :class="['btn btn-check', { active: checked == true }]"
+                data-toggle="button"
+                aria-pressed="false"
+                @click="selectAll"
+              ></button>
               <label for="list-check-all4">전체 선택</label>
             </div>
-            <div class="list-info">(<strong>2</strong>/20)</div>
+            <div class="list-info">
+              (<strong>{{ totalSelected }}</strong
+              >/{{ uploadQueueFiles.length }})
+            </div>
           </div>
           <div class="elements-right">
             <button type="button" class="btn btn-default btn-sm"><i class="icon-common icon-close"></i>선택 삭제</button>
@@ -94,7 +104,7 @@
           <vue-custom-scrollbar class="list-inner overflow-y-scroll customScroll csScrollPosition ps" :settings="scrollSettings">
             <ul class="lc-card-list">
               <li class="lc-card-item" aria-selected="false" v-for="(file, key) of uploadQueueFiles" :key="key">
-                <single-card :document="file"></single-card>
+                <single-card :document="file" :selectedItems="selectedItems" @setSelectedItems="setSelectedItems"></single-card>
               </li>
             </ul>
           </vue-custom-scrollbar>

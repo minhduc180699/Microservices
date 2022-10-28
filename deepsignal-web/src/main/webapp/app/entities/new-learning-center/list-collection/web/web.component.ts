@@ -114,4 +114,9 @@ export default class web extends Vue {
   insertToMemory() {
     this.$root.$emit('cart-to-conlection', this.selectedItems, 'web');
   }
+
+  deleteAll() {
+    this.selectedItems = this.selectedItems.splice(0, 0);
+    $('#btnSelect').removeClass('active');
+  }
 }
