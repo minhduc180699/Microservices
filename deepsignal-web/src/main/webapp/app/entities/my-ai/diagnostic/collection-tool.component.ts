@@ -14,7 +14,7 @@ const collectionsManagerStore = namespace('collectionsManagerStore');
 @Component({
   components: {},
 })
-export default class BuilderMap extends Vue {
+export default class CollectionTool extends Vue {
   @collectionsManagerStore.Getter
   public isCollectionsChanged!: number;
 
@@ -36,7 +36,7 @@ export default class BuilderMap extends Vue {
   onUrlChange(newVal: any) {
     console.log(newVal);
 
-    if (newVal.name.localeCompare('Builder') == 0) {
+    if (newVal.name.localeCompare('diagnostic') == 0) {
       document.body.setAttribute('data-menu', 'collection-builder');
     }
   }
