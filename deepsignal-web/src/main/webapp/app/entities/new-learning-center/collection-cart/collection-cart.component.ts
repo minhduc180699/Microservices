@@ -112,8 +112,8 @@ export default class CollectionCart extends Vue {
     this.isChild = true;
     for (let i = 0; i < this.arrCollection.length; i++) {
       if (this.arrCollection[i].type === type) {
-        if (type === 'text' && !remove) this.arrCollection[i].arr = this.arrCollection[i].arr.concat(arrDoc);
-        else this.arrCollection[i].arr = arrDoc;
+        if (type === 'text' && !remove) this.arrCollection[i].arr = this.arrCollection[i].arr.concat([...arrDoc]);
+        else this.arrCollection[i].arr = [...arrDoc];
         break;
       }
     }
