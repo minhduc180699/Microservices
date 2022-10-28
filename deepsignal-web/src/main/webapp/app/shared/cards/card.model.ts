@@ -18,10 +18,13 @@ export class CardModel extends PostModel {
   dataSize: string;
   dataType: string;
   classLogo: string;
-  imageLinks: any;
+  og_image_base64: string;
+  og_image_url: any;
   swipers: any;
-  writerName: string;
-  favicon: string;
+  writer_search: string;
+  favicon_url: string;
+  favicon_base64: string;
+  search_type: string;
   notUseful = false;
   notUseful2 = false;
   name: string;
@@ -38,8 +41,8 @@ export class CardModel extends PostModel {
     super(cardModel);
     if (cardModel) {
       this.id = cardModel.id;
-      this.favicon = this.favicon ? this.favicon : this.getFavicon(this.sourceId);
-
+      this.favicon_url = this.favicon_url ? this.favicon_url : this.getFavicon(this.url);
+      this.favicon_base64 = this.favicon_base64 ? this.favicon_base64 : this.getFavicon(this.url);
       this.buildCardByPostType(component);
     }
   }
@@ -105,14 +108,19 @@ export class CardModel extends PostModel {
     }
 
     // component = feed
-    if (this.writerName && this.writerName.toLowerCase().includes('youtube')) {
+    if (this.writer_search && this.writer_search.toLowerCase().includes('youtube')) {
       return randomEleInArray([CARD_SIZE._2_2, CARD_SIZE._1_2]);
     } else {
-      if (this.imageLinks != null && this.imageLinks != '' && this.imageLinks.length > 0) {
-        if (this.imageLinks.filter(link => this.isImageBase64(link)).length > 0) {
+      if ((this.og_image_base64 && this.og_image_base64?.length > 0) || (this.og_image_url && this.og_image_url?.length > 0)) {
+        if (this.isImageBase64(this?.og_image_base64) || this.isImageBase64(this?.og_image_url)) {
+          console.log(this.og_image_base64, this.og_image_url);
+          return CARD_SIZE._1_1;
+        }
+        if (this.search_type && this.search_type === 'VIDEO') {
           return CARD_SIZE._1_1;
         } else {
-          return this.imageLinks.length > 1 ? randomEleInArray([CARD_SIZE._2_2, CARD_SIZE._1_2]) : CARD_SIZE._1_2;
+          console.log(this.og_image_url);
+          return this.og_image_base64 || this.og_image_url ? randomEleInArray([CARD_SIZE._2_2, CARD_SIZE._1_2]) : CARD_SIZE._1_2;
         }
       } else {
         return CARD_SIZE._1_1;

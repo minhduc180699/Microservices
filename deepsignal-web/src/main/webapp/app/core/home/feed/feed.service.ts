@@ -19,6 +19,30 @@ export default class FeedService {
     });
   }
 
+  getListFeed(connectomeId: string, request_id, keyword, from, until, page, size, search_type, channels, type, lang: string) {
+    const Language = localStorage.getItem('currentLanguage') || 'en';
+    const params = {
+      page: page,
+      size: size,
+      lang: Language,
+    };
+    if (keyword) {
+      Object.assign(params, { keyword: keyword });
+    }
+    if (search_type) {
+      Object.assign(params, { search_type: search_type });
+    }
+    if (from && until) {
+      Object.assign(params, { from: from, until: until });
+    }
+    return new Promise<any>((resolve, reject) => {
+      axios
+        .get('/api/connectome-feeds/getListFeeds/'.concat(connectomeId), { params: params })
+        .then(res => resolve(res))
+        .catch(err => reject(err));
+    });
+  }
+
   getAllConnectomeFeedByConnectomeId(
     connectomeId: string,
     page,

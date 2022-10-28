@@ -7,7 +7,7 @@ export class PostModel {
   w2vSim: string;
   esaSim: string;
   topic: string;
-  sourceId: string;
+  url: string;
   commentId: string;
   replyId: string;
   publishedAt: PublishedAt;

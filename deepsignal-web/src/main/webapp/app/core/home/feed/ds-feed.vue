@@ -57,6 +57,7 @@
                       <!--                        </div>-->
                       <!--                        <input type="text" class="form-control" placeholder="2022.02.19">-->
                       <date-picker
+                        :class="isDatePicker ? 'datePickerErr' : ''"
                         v-model="datePicker.from"
                         type="date"
                         format="YYYY-MM-DD"
@@ -71,6 +72,7 @@
                       <!--                        </div>-->
                       <!--                        <input type="text" class="form-control" placeholder="2022.02.19">-->
                       <date-picker
+                        :class="isDatePicker ? 'datePickerErr' : ''"
                         v-model="datePicker.to"
                         type="date"
                         format="YYYY-MM-DD"
@@ -128,7 +130,15 @@
 </template>
 
 <script lang="ts" src="./ds-feed.component.ts"></script>
-<style>
+<style lang="scss">
+.datePickerErr {
+  .mx-input-wrapper {
+    .mx-input {
+      border: 1px solid red;
+    }
+  }
+}
+
 .share-link .but-share {
   margin-top: 10px;
   float: right;
