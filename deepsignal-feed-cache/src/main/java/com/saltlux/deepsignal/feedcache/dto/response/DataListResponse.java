@@ -1,4 +1,4 @@
-package com.saltlux.deepsignal.feedcache.dto;
+package com.saltlux.deepsignal.feedcache.dto.response;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

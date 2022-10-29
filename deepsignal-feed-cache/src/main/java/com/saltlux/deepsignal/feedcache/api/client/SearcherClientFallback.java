@@ -1,50 +1,55 @@
 package com.saltlux.deepsignal.feedcache.api.client;
 
-import com.saltlux.deepsignal.feedcache.dto.DataListResponse;
-import com.saltlux.deepsignal.feedcache.dto.DataResponse;
-import com.saltlux.deepsignal.feedcache.dto.FeedDto;
-import com.saltlux.deepsignal.feedcache.dto.FeedIdsDto;
-import com.saltlux.deepsignal.feedcache.model.FeedContentModel;
-import com.saltlux.deepsignal.feedcache.model.FeedModel;
+import com.saltlux.deepsignal.feedcache.dto.response.DataListResponse;
+import com.saltlux.deepsignal.feedcache.dto.response.DataResponse;
+import com.saltlux.deepsignal.feedcache.dto.response.ResponseDocument;
+import com.saltlux.deepsignal.feedcache.model.DocContentModel;
+import com.saltlux.deepsignal.feedcache.model.DocModel;
+import com.saltlux.deepsignal.feedcache.model.request.RequestBodyGetDocument;
+import com.saltlux.deepsignal.feedcache.model.request.RequestBodyGetListDoc;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 @Component
 public class SearcherClientFallback implements SearcherClient{
 
 
     @Override
-    public DataListResponse<FeedModel> getListFeed(String connectomeId, Integer page, Integer size) {
+    public DataListResponse<DocModel> getListFeed(String connectomeId, Integer page, Integer size) {
         return null;
     }
 
     @Override
-    public DataListResponse<FeedModel> getListDocumentByIds(FeedIdsDto dto) {
+    public DataListResponse<?> getListDocumentByIds(RequestBodyGetListDoc requestBody) {
         return null;
     }
 
     @Override
-    public DataListResponse<FeedContentModel> getListFeedContent(String feed_content_ids) {
+    public DataListResponse<DocContentModel> getListFeedContent(String feed_content_ids) {
         return null;
     }
 
     @Override
-    public DataResponse<FeedContentModel> getFeedContent(String docId) {
+    public DataResponse<DocContentModel> getFeedContent(String docId) {
         return null;
     }
 
     @Override
-    public DataResponse<FeedModel> getFeed(String connectomeId, String docId) {
+    public DataResponse<DocModel> getFeed(String connectomeId, String docId) {
         return null;
     }
 
     @Override
-    public DataListResponse<FeedModel> searchFeed(String connectomeId, String keyword, String from, String until, Integer page, Integer size, String searchType, String channels, String lang, String type) {
+    public DataListResponse<DocModel> searchFeed(String connectomeId, String keyword, String from, String until, Integer page, Integer size, String searchType, String channels, String lang, String type) {
         return null;
     }
 
     @Override
-    public DataListResponse<FeedModel> getListFilterFeed(String connectomeId, Integer page, Integer size, String type) {
+    public DataListResponse<DocModel> getListFilterFeed(String connectomeId, Integer page, Integer size, String type) {
+        return null;
+    }
+
+    @Override
+    public ResponseDocument getDocumentById(RequestBodyGetDocument requestBody) {
         return null;
     }
 }

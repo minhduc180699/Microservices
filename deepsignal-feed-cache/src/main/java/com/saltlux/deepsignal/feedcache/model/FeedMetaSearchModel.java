@@ -53,17 +53,17 @@ public class FeedMetaSearchModel {
         feedRealtimeCrawlerModel.setRequestBy(this.requestBy);
         return feedRealtimeCrawlerModel;
     }
-    public FeedDataModel toFeedDataModel(){
-        FeedDataModel feedDataModel = new FeedDataModel();
-        feedDataModel.setTitle(this.title);
-        feedDataModel.setDescription(this.description);
-        feedDataModel.setFavicon_url(this.favicon_url);
-        feedDataModel.setWriter(this.writer);
-        feedDataModel.setKeyword(this.keyword);
-        feedDataModel.setCreated_date(this.published_at);
-        feedDataModel.setLang(this.getService_language());
-        feedDataModel.setConnectomeId(this.connectomeId);
+    public DocDataModel toFeedDataModel(){
+        DocDataModel docDataModel = new DocDataModel();
+        docDataModel.setTitle(this.title);
+        docDataModel.setDescription(this.description);
+        docDataModel.setFavicon_url(this.favicon_url);
+        docDataModel.setWriter(this.writer);
+        docDataModel.setKeyword(this.keyword);
+        docDataModel.setCreated_date(this.published_at);
+        docDataModel.setLang(this.getService_language());
+        docDataModel.setConnectomeId(this.connectomeId);
 //        feedDataModel
-        return feedDataModel;
+        return docDataModel;
     }
 }

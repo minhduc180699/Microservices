@@ -3,9 +3,10 @@ package com.saltlux.deepsignal.feedcache.redis;
 
 import com.google.gson.JsonObject;
 import com.saltlux.deepsignal.feedcache.config.Appconfig;
-import com.saltlux.deepsignal.feedcache.model.FeedContentModel;
-import com.saltlux.deepsignal.feedcache.model.FeedModel;
+import com.saltlux.deepsignal.feedcache.model.DocContentModel;
+import com.saltlux.deepsignal.feedcache.model.DocModel;
 import com.saltlux.deepsignal.feedcache.utils.GUtil;
+import io.lettuce.core.KeyValue;
 import io.lettuce.core.RedisURI;
 import io.lettuce.core.cluster.RedisClusterClient;
 import io.lettuce.core.cluster.api.StatefulRedisClusterConnection;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 @Component
@@ -66,11 +68,34 @@ public class RedisConnection {
         asSyncCmd = connection.async();
     }
 
-    public FeedModel getValueOfFeed(String key){
+    public DocModel getValueOfFeed(String key){
         try{
             String value = syncCmd.get(appconfig.getRedis().getFeedPrefixCache() + key);
             if (value == null || value.isEmpty()) return null;
-            return GUtil.gson.fromJson(value, FeedModel.class);
+            return GUtil.gson.fromJson(value, DocModel.class);
+        }catch (Exception e){
+            logger.error("[getValueOfFeed] Redis error ", e);
+            return null;
+        }
+    }
+
+    public List<DocModel> getListValueOfDoc(List<String> keys){
+        try{
+            List<String> tempList = new ArrayList<>();
+
+            for(String key : keys){
+                key = appconfig.getRedis().getFeedPrefixCache() + key;
+                tempList.add(key);
+            }
+            String[] redisKeys = tempList.toArray(new String[tempList.size()]);
+
+            List<KeyValue<String, String>> values = syncCmd.mget(redisKeys);
+            if (values == null || values.isEmpty()) return null;
+            List<DocModel> docModels = new ArrayList<>();
+            for (KeyValue<String, String> value : values){
+                docModels.add(GUtil.gson.fromJson(value.getValue(), DocModel.class));
+            }
+            return docModels;
         }catch (Exception e){
             logger.error("[getValueOfFeed] Redis error ", e);
             return null;
@@ -94,13 +119,36 @@ public class RedisConnection {
             logger.error("[saveValueToFeedAsSync] Redis error ", e);
         }
     }
-    public FeedContentModel getValueOfFeedContent(String key){
+    public DocContentModel getValueOfFeedContent(String key){
         try{
             String value = syncCmd.get(appconfig.getRedis().getFeedContentPrefixCache() + key);
             if (value == null || value.isEmpty()) return null;
-            return GUtil.gson.fromJson(value, FeedContentModel.class);
+            return GUtil.gson.fromJson(value, DocContentModel.class);
         }catch (Exception e){
             logger.error("[getValueOfFeedContent] Redis error ", e);
+            return null;
+        }
+    }
+
+    public List<DocContentModel> getListValueOfDocContent(List<String> keys){
+        try{
+            List<String> tempList = new ArrayList<>();
+
+            for(String key : keys){
+                key = appconfig.getRedis().getFeedContentPrefixCache() + key;
+                tempList.add(key);
+            }
+            String[] redisKeys = tempList.toArray(new String[tempList.size()]);
+
+            List<KeyValue<String, String>> values = syncCmd.mget(redisKeys);
+            if (values == null || values.isEmpty()) return null;
+            List<DocContentModel> docContentModels = new ArrayList<>();
+            for (KeyValue<String, String> value : values){
+                docContentModels.add(GUtil.gson.fromJson(value.getValue(), DocContentModel.class));
+            }
+            return docContentModels;
+        }catch (Exception e){
+            logger.error("[getValueOfFeed] Redis error ", e);
             return null;
         }
     }

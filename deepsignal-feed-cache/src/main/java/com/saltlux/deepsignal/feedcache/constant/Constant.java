@@ -43,7 +43,7 @@ public class Constant {
         public static final String COLLECTOR_FIELD = "collector";
         public static final String CONNECTOME_ID_FIELD = "connectomeId";
         public static final String FEED_CONTENT_ID_FIELD = "feed_content_id";
-        public static final String DOC_ID_CONTENT_FIELD = "docId_content";
+        public static final String DOC_ID_CONTENT_FIELD = "docId";
         public static final String LIKED_FIELD = "liked";
         public static final String TAGS_FIELD = "tags";
         public static final String TYPE_FEED_FIELD = "type";

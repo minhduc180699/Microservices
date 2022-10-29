@@ -9,7 +9,7 @@ import java.util.List;
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class FeedIdsDto {
-    private String request_id;
+    private String requestId;
     private List<String> docIds;
     private String connectomeId;
     private Integer size = 10;

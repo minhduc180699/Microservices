@@ -5,11 +5,14 @@ import com.saltlux.deepsignal.feedcache.api.client.RealtimeCrawlerClient;
 import com.saltlux.deepsignal.feedcache.api.client.SearcherClient;
 import com.saltlux.deepsignal.feedcache.constant.Constant;
 import com.saltlux.deepsignal.feedcache.constant.KafkaConstant;
-import com.saltlux.deepsignal.feedcache.dto.*;
+import com.saltlux.deepsignal.feedcache.dto.response.DataListResponse;
+import com.saltlux.deepsignal.feedcache.dto.response.DataResponse;
+import com.saltlux.deepsignal.feedcache.dto.response.ResponseDocument;
+import com.saltlux.deepsignal.feedcache.dto.response.ResultResponse;
 import com.saltlux.deepsignal.feedcache.kafka.Producer;
-import com.saltlux.deepsignal.feedcache.model.FeedContentModel;
-import com.saltlux.deepsignal.feedcache.model.FeedDataModel;
-import com.saltlux.deepsignal.feedcache.model.FeedModel;
+import com.saltlux.deepsignal.feedcache.model.*;
+import com.saltlux.deepsignal.feedcache.model.request.RequestBodyGetDocument;
+import com.saltlux.deepsignal.feedcache.model.request.RequestBodyGetListDoc;
 import com.saltlux.deepsignal.feedcache.redis.RedisConnection;
 import com.saltlux.deepsignal.feedcache.utils.GUtil;
 import com.saltlux.deepsignal.feedcache.utils.Utils;
@@ -39,58 +42,46 @@ public class FeedService implements IFeedService {
     private RealtimeCrawlerClient realtimeCrawlerClient;
 
     @Override
-    public DataListResponse<FeedModel> getListFeed(String connectomeId, String request_id, Integer page, Integer size) {
-        DataListResponse<FeedModel> response = new DataListResponse<>(0, "success", request_id);
-        List<FeedModel> feedModelList = null;
-        try{
+    public DataListResponse<DocModel> getListFeed(String connectomeId, String request_id, Integer page, Integer size) {
+        DataListResponse<DocModel> response = new DataListResponse<>(0, "success", request_id);
+        List<DocModel> docModelList = null;
+        try {
 
-            DataListResponse<FeedModel> response1 = searcherClient.getListFeed(connectomeId, page, size);
+            DataListResponse<DocModel> response1 = searcherClient.getListFeed(connectomeId, page, size);
 
-            feedModelList = response1.getData();
-            if (feedModelList != null && !feedModelList.isEmpty()){
-                for (FeedModel feedModel : feedModelList){
+            docModelList = response1.getData();
+            if (docModelList != null && !docModelList.isEmpty()) {
+                for (DocModel docModel : docModelList) {
 
                     // Save in Redis
-                    redisConnection.saveValueToFeedAsSync(connectomeId+ feedModel.getDocId(), GUtil.gson.toJson(feedModel));
+                    redisConnection.saveValueToFeedAsSync(connectomeId + docModel.getDocId(), GUtil.gson.toJson(docModel));
 
                 }
                 logger.info(String.format("[getListFeedData] requestId: %s DONE success", request_id));
             }
             return response1;
 
-        }catch (Exception e){
+        } catch (Exception e) {
             response.setStatus(-1, "failed");
             logger.error(String.format("[getListFeedData] requestId: %s error unknown" + e.getMessage(), request_id), e);
         }
-        response.setData(feedModelList);
+        response.setData(docModelList);
         return response;
     }
 
     @Override
-    public DataListResponse<FeedModel> getListDocumentByIds(FeedIdsDto dto) {
-        DataListResponse<FeedModel> response = new DataListResponse<>(0, "success", dto.getRequest_id());
+    public DataListResponse<DocModel> searchFeed(String connectomeId, String request_id, String keyword, String from, String until, Integer page, Integer size, String searchType, String channels, String lang, String type) {
+        DataListResponse<DocModel> response = new DataListResponse<>(0, "success", request_id);
+
         try {
-            return searcherClient.getListDocumentByIds(dto);
-        }catch (Exception e){
-            response.setStatus(-1, "failed");
-            logger.error(String.format("[getListDocumentByIds] requestId: %s error unknown" + e.getMessage(), dto.getRequest_id()), e);
-        }
-        return response;
-    }
-
-    @Override
-    public DataListResponse<FeedModel> searchFeed(String connectomeId, String request_id, String keyword, String from, String until, Integer page, Integer size, String searchType, String channels, String lang, String type) {
-        DataListResponse<FeedModel> response = new DataListResponse<>(0, "success", request_id);
-
-        try{
             // Search fee data from Elasticsearch
             response = searcherClient.searchFeed(connectomeId, keyword, from, until, page, size, searchType, channels, lang, type);
-            List<FeedModel> feedModelList = response.getData();
-            for (FeedModel feedModel : feedModelList){
-                redisConnection.saveValueToFeedAsSync(feedModel.getConnectomeId() + feedModel.getDocId(), GUtil.gson.toJson(feedModel));
+            List<DocModel> docModelList = response.getData();
+            for (DocModel docModel : docModelList) {
+                redisConnection.saveValueToFeedAsSync(docModel.getConnectomeId() + docModel.getDocId(), GUtil.gson.toJson(docModel));
             }
             logger.info(String.format("[searchFeedData] requestId: %s DONE success", request_id));
-        }catch (Exception e){
+        } catch (Exception e) {
             response.setStatus(-1, "failed");
             logger.error(String.format("[searchFeedData] requestId: %s error unknown" + e.getMessage(), request_id), e);
         }
@@ -98,95 +89,109 @@ public class FeedService implements IFeedService {
     }
 
     @Override
-    public DataResponse<FeedDataModel> getFeed(String connectomeId, String request_id, String docId) {
-        DataResponse<FeedDataModel> response = new DataResponse<>(0, "success", request_id);
-        FeedDataModel feedDataModel = new FeedDataModel();
+    public DataResponse<FeedDataResponse> getFeed(String connectomeId, String request_id, String docId) {
+        DataResponse<FeedDataResponse> response = new DataResponse<>(0, "success", request_id);
+        FeedDataResponse feedDataResponse = new FeedDataResponse();
 
         try {
             // Get feed from redis
-            FeedModel feedModel = redisConnection.getValueOfFeed(connectomeId+docId);
-            FeedContentModel feedContentModel = null;
+            DocModel docModel = redisConnection.getValueOfFeed(connectomeId + docId);
+            DocContentModel docContentModel = null;
             // Has feed
-            if (feedModel != null) {
+            if (docModel != null) {
                 // Check feed content in redis
-                feedContentModel = redisConnection.getValueOfFeedContent(docId);
+                docContentModel = redisConnection.getValueOfFeedContent(docId);
                 // Has not feed content: get feed content from Elasticsearch
-                if (feedContentModel == null){
-                    feedContentModel = searcherClient.getFeedContent(feedModel.getDocId()).getData();
-                    if (feedContentModel != null){
-                        redisConnection.saveValueToFeedContentAsSync(feedContentModel.get_id(), GUtil.gson.toJson(feedContentModel));
+                if (docContentModel == null) {
+                    docContentModel = searcherClient.getFeedContent(docModel.getDocId()).getData();
+                    if (docContentModel != null) {
+                        redisConnection.saveValueToFeedContentAsSync(docContentModel.getDocId(), GUtil.gson.toJson(docContentModel));
                     }
                 }
             }
             // Has not feed: Get feed & feed content from Elasticsearch
-            else{
-                feedModel = searcherClient.getFeed(connectomeId, docId).getData();
-                feedContentModel = searcherClient.getFeedContent(docId).getData();
+            else {
+                docModel = searcherClient.getFeed(connectomeId, docId).getData();
+                docContentModel = searcherClient.getFeedContent(docId).getData();
                 // Execute task save feed into Redis
-                if (feedModel != null) {
-                    redisConnection.saveValueToFeedAsSync(feedModel.getConnectomeId()+feedModel.getDocId(), GUtil.gson.toJson(feedModel));
+                if (docModel != null) {
+                    redisConnection.saveValueToFeedAsSync(docModel.getConnectomeId() + docModel.getDocId(), GUtil.gson.toJson(docModel));
                 }
-                if (feedContentModel != null){
-                    redisConnection.saveValueToFeedContentAsSync(feedContentModel.get_id(), GUtil.gson.toJson(feedContentModel));
+                if (docContentModel != null) {
+                    redisConnection.saveValueToFeedContentAsSync(docContentModel.getDocId(), GUtil.gson.toJson(docContentModel));
                 }
 
             }
 
-            feedDataModel.buildFeedDataModel(feedModel, feedContentModel);
+            feedDataResponse.buildFeedDataModel(docModel, docContentModel);
             logger.info(String.format("[getFeed] requestId: %s DONE success", request_id));
-        }catch (Exception e){
+        } catch (Exception e) {
             response.setStatus(-1, "failed");
             logger.error(String.format("[getFeed] requestId: %s error unknown" + e.getMessage(), request_id), e);
         }
-        response.setData(feedDataModel);
+        response.setData(feedDataResponse);
         return response;
     }
 
     @Override
-    public DataListResponse<FeedModel> getListFilterFeed(String connectomeId, String request_id, Integer page, Integer size, String type) {
-        DataListResponse<FeedModel> response = new DataListResponse<>(0, "success", request_id);
-        List<FeedModel> feedModelList = null;
-        try{
+    public DataListResponse<DocModel> getListFilterFeed(String connectomeId, String request_id, Integer page, Integer size, String type) {
+        DataListResponse<DocModel> response = new DataListResponse<>(0, "success", request_id);
+        List<DocModel> docModelList = null;
+        try {
 
-            DataListResponse<FeedModel> response1 = searcherClient.getListFilterFeed(connectomeId, page, size, type);
+            DataListResponse<DocModel> response1 = searcherClient.getListFilterFeed(connectomeId, page, size, type);
 
-            feedModelList = response1.getData();
-            if (feedModelList != null && !feedModelList.isEmpty()){
-                for (FeedModel feedModel : feedModelList){
+            docModelList = response1.getData();
+            if (docModelList != null && !docModelList.isEmpty()) {
+                for (DocModel docModel : docModelList) {
 
                     // Save in Redis
-                    redisConnection.saveValueToFeedAsSync(connectomeId+ feedModel.getDocId(), GUtil.gson.toJson(feedModel));
+                    redisConnection.saveValueToFeedAsSync(connectomeId + docModel.getDocId(), GUtil.gson.toJson(docModel));
 
                 }
                 logger.info(String.format("[getListFilterFeed] requestId: %s DONE success", request_id));
             }
             return response1;
 
-        }catch (Exception e){
+        } catch (Exception e) {
             response.setStatus(-1, "failed");
             logger.error(String.format("[getListFilterFeed] requestId: %s error unknown" + e.getMessage(), request_id), e);
         }
-        response.setData(feedModelList);
+        response.setData(docModelList);
         return response;
     }
 
     @Override
-    public ResultResponse createFeed(FeedDataModel data) {
+    public ResultResponse createFeed(DocDataModel data) {
         ResultResponse response = new ResultResponse(0, "success", data.getRequestId());
         try {
             LinkedHashMap<String, Object> saveRecord = new LinkedHashMap<>();
             List<String> keyField = new ArrayList<>();
-            String sourceId = data.getSource_uri() + "-" + data.getComment_id() + "-" + data.getReply_id();
+            String sourceId = null;
+
+            if (data.getComment_id() != null && data.getReply_id() != null) {
+                sourceId = data.getSource_uri() + "-" + data.getComment_id() + "-" + data.getReply_id();
+            } else if (data.getComment_id() == null) {
+                sourceId = data.getSource_uri() + "-0-" + data.getReply_id();
+            } else if (data.getReply_id() == null) {
+                sourceId = data.getSource_uri() + "-" + data.getComment_id() + "-0";
+            } else {
+                sourceId = data.getSource_uri() + "-0-0";
+            }
+
             saveRecord.put("source_id", sourceId);
             keyField.add("source_id");
             Long uniqueKey = Utils.getHashCode(saveRecord, keyField);
             data.set__unique__key(uniqueKey);
+            data.setCollector("RECOMMENDATION");
             producer.send(KafkaConstant.FEED_CREATE_TOPIC, GUtil.gson.toJson(data));
-            if (data.getContent() == null || data.getContent().isEmpty() && !data.getSource_uri().contains("youtube")){
+            producer.send(KafkaConstant.FEED_CREATE_TOPIC_TEST, GUtil.gson.toJson(data));
+            if ((data.getContent() == null || data.getContent().isEmpty()) && !data.getSource_uri().contains("youtube")) {
                 realtimeCrawlerClient.postRealtimeCrawler(Collections.singletonList(data.toFeedRealtimeCrawlerModel()));
             }
             logger.info(String.format("[createFeed] requestId: %s DONE success", data.getRequestId()));
-        }catch (Exception e){
+            logger.info(String.format("FeedModel pushed to Kafka: %s", GUtil.gson.toJson(data)));
+        } catch (Exception e) {
             response.setStatus(-1, "failed");
             logger.error(String.format("[createFeed] requestId: %s error unknown" + e.getMessage(), data.getRequestId()), e);
         }
@@ -194,25 +199,29 @@ public class FeedService implements IFeedService {
     }
 
     @Override
-    public ResultResponse updateFeed(FeedModel feedModel) {
+    public ResultResponse updateFeed(FeedUpdateModel feedModel) {
 
         ResultResponse response = new ResultResponse(0, "success", feedModel.getRequestId());
         try {
-            JsonObject data = GUtil.gson.toJsonTree(feedModel).getAsJsonObject();
-            JsonObject feedFromRedis = redisConnection.getValueOfFeedTypeJsonObject(data.get(Constant.DocumentFieldName.CONNECTOME_ID_FIELD).getAsString() + data.get(Constant.DocumentFieldName.DOC_ID_CONTENT_FIELD).getAsString());
-            if (feedFromRedis != null) {
-                for (String key : data.keySet()){
-                    feedFromRedis.remove(key);
-                    feedFromRedis.add(key, data.get(key));
-                }
-                redisConnection.saveValueToFeedAsSync(data.get(Constant.DocumentFieldName.CONNECTOME_ID_FIELD).getAsString() + data.get(Constant.DocumentFieldName.DOC_ID_CONTENT_FIELD).getAsString(), GUtil.gson.toJson(feedFromRedis));
+            JsonObject data = GUtil.gson.toJsonTree(feedModel.getFeed()).getAsJsonObject();
+            JsonObject feedJsonObject = redisConnection.getValueOfFeedTypeJsonObject(data.get(Constant.DocumentFieldName.CONNECTOME_ID_FIELD).getAsString() + "_" + data.get(Constant.DocumentFieldName.DOC_ID_CONTENT_FIELD).getAsString());
 
-                data.add("feed_partition", feedFromRedis.get("feed_partition"));
+            if (feedJsonObject == null) {
+                feedJsonObject = GUtil.gson.toJsonTree(searcherClient.getFeed(data.get(Constant.DocumentFieldName.CONNECTOME_ID_FIELD).getAsString(), data.get(Constant.DocumentFieldName.DOC_ID_CONTENT_FIELD).getAsString()).getData()).getAsJsonObject();
             }
+
+            for (String key : data.keySet()) {
+                feedJsonObject.remove(key);
+                feedJsonObject.add(key, data.get(key));
+            }
+            redisConnection.saveValueToFeedAsSync(data.get(Constant.DocumentFieldName.CONNECTOME_ID_FIELD).getAsString() + "_" + data.get(Constant.DocumentFieldName.DOC_ID_CONTENT_FIELD).getAsString(), GUtil.gson.toJson(feedJsonObject));
+
+            data.remove(Constant.DocumentFieldName.FEED_PARTITION_FIELD);
+            data.add("feed_partition", feedJsonObject.get("feed_partition"));
 
             producer.send(KafkaConstant.FEED_UPDATE_TOPIC, GUtil.gson.toJson(data));
             logger.info(String.format("[updateFeed] requestId: %s DONE success", feedModel.getRequestId()));
-        }catch (Exception e){
+        } catch (Exception e) {
             response.setStatus(-1, "failed");
             logger.error(String.format("[updateFeed] requestId: %s error unknown" + e.getMessage(), feedModel.getRequestId()), e);
         }
@@ -220,29 +229,24 @@ public class FeedService implements IFeedService {
     }
 
     @Override
-    public ResultResponse likeFeed(FeedModel feedModel) {
+    public ResultResponse likeFeed(FeedInputModel feedModel) {
         ResultResponse response = new ResultResponse(0, "success", feedModel.getRequestId());
         try {
             JsonObject data = GUtil.gson.toJsonTree(feedModel).getAsJsonObject();
-            JsonObject feedJsonObject = redisConnection.getValueOfFeedTypeJsonObject(data.get(Constant.DocumentFieldName.CONNECTOME_ID_FIELD).getAsString() + data.get(Constant.DocumentFieldName.DOC_ID_CONTENT_FIELD).getAsString());
-            if (feedJsonObject != null) {
-                feedJsonObject.remove("liked");
-                feedJsonObject.add("liked", data.get("liked"));
-
-                redisConnection.saveValueToFeedAsSync(data.get(Constant.DocumentFieldName.CONNECTOME_ID_FIELD).getAsString() + data.get(Constant.DocumentFieldName.DOC_ID_CONTENT_FIELD).getAsString(), GUtil.gson.toJson(feedJsonObject));
-            } else {
+            JsonObject feedJsonObject = redisConnection.getValueOfFeedTypeJsonObject(data.get(Constant.DocumentFieldName.CONNECTOME_ID_FIELD).getAsString() + "_" + data.get(Constant.DocumentFieldName.DOC_ID_CONTENT_FIELD).getAsString());
+            if (feedJsonObject == null) {
                 feedJsonObject = GUtil.gson.toJsonTree(searcherClient.getFeed(data.get(Constant.DocumentFieldName.CONNECTOME_ID_FIELD).getAsString(), data.get(Constant.DocumentFieldName.DOC_ID_CONTENT_FIELD).getAsString()).getData()).getAsJsonObject();
-                feedJsonObject.remove("liked");
-                feedJsonObject.add("liked", data.get("liked"));
-
-                redisConnection.saveValueToFeedAsSync(data.get(Constant.DocumentFieldName.CONNECTOME_ID_FIELD).getAsString() + data.get(Constant.DocumentFieldName.DOC_ID_CONTENT_FIELD).getAsString(), GUtil.gson.toJson(feedJsonObject));
             }
+            feedJsonObject.remove("liked");
+            feedJsonObject.add("liked", data.get("liked"));
+
+            redisConnection.saveValueToFeedAsSync(data.get(Constant.DocumentFieldName.CONNECTOME_ID_FIELD).getAsString() + "_" + data.get(Constant.DocumentFieldName.DOC_ID_CONTENT_FIELD).getAsString(), GUtil.gson.toJson(feedJsonObject));
 
             data.remove(Constant.DocumentFieldName.FEED_PARTITION_FIELD);
             data.add("feed_partition", feedJsonObject.get("feed_partition"));
             producer.send(KafkaConstant.FEED_UPDATE_TOPIC, GUtil.gson.toJson(data));
             logger.error(String.format("[likeFeed] requestId: %s DONE success", feedModel.getRequestId()));
-        }catch (Exception e){
+        } catch (Exception e) {
             response.setStatus(-1, "failed");
             logger.info(String.format("[likeFeed] requestId: %s error unknown" + e.getMessage(), feedModel.getRequestId()), e);
         }
@@ -250,28 +254,25 @@ public class FeedService implements IFeedService {
     }
 
     @Override
-    public ResultResponse hideFeed(FeedModel feedModel) {
+    public ResultResponse hideFeed(FeedInputModel feedModel) {
         ResultResponse response = new ResultResponse(0, "success", feedModel.getRequestId());
         try {
             JsonObject data = GUtil.gson.toJsonTree(feedModel).getAsJsonObject();
-            JsonObject feedJsonObject = redisConnection.getValueOfFeedTypeJsonObject(data.get(Constant.DocumentFieldName.CONNECTOME_ID_FIELD).getAsString() + data.get(Constant.DocumentFieldName.DOC_ID_CONTENT_FIELD).getAsString());
-            if (feedJsonObject != null) {
-                feedJsonObject.remove("isDeleted");
-                feedJsonObject.add("isDeleted", data.get("isDeleted"));
-                redisConnection.saveValueToFeedAsSync(data.get(Constant.DocumentFieldName.CONNECTOME_ID_FIELD).getAsString() + data.get(Constant.DocumentFieldName.DOC_ID_CONTENT_FIELD).getAsString(), GUtil.gson.toJson(feedJsonObject));
-            } else {
-                feedJsonObject = GUtil.gson.toJsonTree(searcherClient.getFeed(data.get(Constant.DocumentFieldName.CONNECTOME_ID_FIELD).getAsString(), data.get(Constant.DocumentFieldName.DOC_ID_CONTENT_FIELD).getAsString()).getData()).getAsJsonObject();
-                feedJsonObject.remove("isDeleted");
-                feedJsonObject.add("isDeleted", data.get("isDeleted"));
+            JsonObject feedJsonObject = redisConnection.getValueOfFeedTypeJsonObject(data.get(Constant.DocumentFieldName.CONNECTOME_ID_FIELD).getAsString() + "_" + data.get(Constant.DocumentFieldName.DOC_ID_CONTENT_FIELD).getAsString());
 
-                redisConnection.saveValueToFeedAsSync(data.get(Constant.DocumentFieldName.CONNECTOME_ID_FIELD).getAsString() + data.get(Constant.DocumentFieldName.DOC_ID_CONTENT_FIELD).getAsString(), GUtil.gson.toJson(feedJsonObject));
+            if (feedJsonObject == null) {
+                feedJsonObject = GUtil.gson.toJsonTree(searcherClient.getFeed(data.get(Constant.DocumentFieldName.CONNECTOME_ID_FIELD).getAsString(), data.get(Constant.DocumentFieldName.DOC_ID_CONTENT_FIELD).getAsString()).getData()).getAsJsonObject();
             }
+
+            feedJsonObject.remove("isDeleted");
+            feedJsonObject.add("isDeleted", data.get("isDeleted"));
+            redisConnection.saveValueToFeedAsSync(data.get(Constant.DocumentFieldName.CONNECTOME_ID_FIELD).getAsString() + "_" + data.get(Constant.DocumentFieldName.DOC_ID_CONTENT_FIELD).getAsString(), GUtil.gson.toJson(feedJsonObject));
 
             data.remove(Constant.DocumentFieldName.FEED_PARTITION_FIELD);
             data.add(Constant.DocumentFieldName.FEED_PARTITION_FIELD, feedJsonObject.get(Constant.DocumentFieldName.FEED_PARTITION_FIELD));
             producer.send(KafkaConstant.FEED_UPDATE_TOPIC, GUtil.gson.toJson(data));
             logger.info(String.format("[hideFeed] requestId: %s DONE success", feedModel.getRequestId()));
-        }catch (Exception e){
+        } catch (Exception e) {
             response.setStatus(-1, "failed");
             logger.error(String.format("[hideFeed] requestId: %s error unknown" + e.getMessage(), feedModel.getRequestId()), e);
         }
@@ -279,31 +280,135 @@ public class FeedService implements IFeedService {
     }
 
     @Override
-    public ResultResponse bookmarkFeed(FeedModel feedModel) {
+    public ResultResponse bookmarkFeed(FeedInputModel feedModel) {
         ResultResponse response = new ResultResponse(0, "success", feedModel.getRequestId());
         try {
             JsonObject data = GUtil.gson.toJsonTree(feedModel).getAsJsonObject();
-            JsonObject feedJsonObject = redisConnection.getValueOfFeedTypeJsonObject(data.get(Constant.DocumentFieldName.CONNECTOME_ID_FIELD).getAsString() + data.get(Constant.DocumentFieldName.DOC_ID_CONTENT_FIELD).getAsString());
-            if (feedJsonObject != null) {
-                feedJsonObject.remove("isBookmarked");
-                feedJsonObject.add("isBookmarked", data.get("isBookmarked"));
-                redisConnection.saveValueToFeedAsSync(data.get("_id").getAsString(), GUtil.gson.toJson(feedJsonObject));
-            } else {
-                feedJsonObject = GUtil.gson.toJsonTree(searcherClient.getFeed(data.get(Constant.DocumentFieldName.CONNECTOME_ID_FIELD).getAsString(), data.get(Constant.DocumentFieldName.DOC_ID_CONTENT_FIELD).getAsString()).getData()).getAsJsonObject();
-                feedJsonObject.remove("isBookmarked");
-                feedJsonObject.add("isBookmarked", data.get("isBookmarked"));
+            JsonObject feedJsonObject = redisConnection.getValueOfFeedTypeJsonObject(data.get(Constant.DocumentFieldName.CONNECTOME_ID_FIELD).getAsString() + "_" + data.get(Constant.DocumentFieldName.DOC_ID_CONTENT_FIELD).getAsString());
 
-                redisConnection.saveValueToFeedAsSync(data.get(Constant.DocumentFieldName.CONNECTOME_ID_FIELD).getAsString() + data.get(Constant.DocumentFieldName.DOC_ID_CONTENT_FIELD).getAsString(), GUtil.gson.toJson(feedJsonObject));
+            if (feedJsonObject == null) {
+                feedJsonObject = GUtil.gson.toJsonTree(searcherClient.getFeed(data.get(Constant.DocumentFieldName.CONNECTOME_ID_FIELD).getAsString(), data.get(Constant.DocumentFieldName.DOC_ID_CONTENT_FIELD).getAsString()).getData()).getAsJsonObject();
             }
+
+            feedJsonObject.remove("isBookmarked");
+            feedJsonObject.add("isBookmarked", data.get("isBookmarked"));
+
+            redisConnection.saveValueToFeedAsSync(data.get(Constant.DocumentFieldName.CONNECTOME_ID_FIELD).getAsString() + "_" + data.get(Constant.DocumentFieldName.DOC_ID_CONTENT_FIELD).getAsString(), GUtil.gson.toJson(feedJsonObject));
 
             data.remove(Constant.DocumentFieldName.FEED_PARTITION_FIELD);
             data.add(Constant.DocumentFieldName.FEED_PARTITION_FIELD, feedJsonObject.get(Constant.DocumentFieldName.FEED_PARTITION_FIELD));
+
             producer.send(KafkaConstant.FEED_UPDATE_TOPIC, GUtil.gson.toJson(data));
             logger.info(String.format("[bookmarkFeed] requestId: %s DONE success", feedModel.getRequestId()));
-        }catch (Exception e){
+        } catch (Exception e) {
             response.setStatus(-1, "failed");
             logger.error(String.format("[bookmarkFeed] requestId: %s error unknown" + e.getMessage(), feedModel.getRequestId()), e);
         }
         return response;
+    }
+
+    @Override
+    public ResponseDocument getDocumentById(RequestBodyGetDocument requestBody) {
+        ResponseDocument response = new ResponseDocument();
+        try {
+            // no connectomeId => data is Doc content
+            if (Objects.equals(requestBody.getConnectomeId(), "")) {
+                DocContentModel docContentModel = redisConnection.getValueOfFeedContent(requestBody.getDocId());
+                // doc content existed in redis
+                if (docContentModel != null) {
+                    response.success();
+                    response.setRequestId(requestBody.getRequestId());
+                    response.setData(docContentModel);
+                    return response;
+                } else {
+                    // call goSearcher
+                    response = searcherClient.getDocumentById(requestBody);
+                    redisConnection.saveValueToFeedContentAsSync(requestBody.getDocId(), Utils.gson.toJson(response.getData()));
+                }
+            } else {
+                // require content = false => data is only Document (Not content)
+                if (!requestBody.getRequire_content()) {
+                    DocModel docModel = redisConnection.getValueOfFeed(requestBody.getConnectomeId() + "_" + requestBody.getDocId());
+                    // document existed in redis
+                    if (docModel != null) {
+                        response.success();
+                        response.setRequestId(requestBody.getRequestId());
+                        response.setData(docModel);
+                        return response;
+                    } else {
+                        // call goSearcher
+                        response = searcherClient.getDocumentById(requestBody);
+                        redisConnection.saveValueToFeedAsSync(requestBody.getConnectomeId() + "_" + requestBody.getDocId(), Utils.gson.toJson(response.getData()));
+                    }
+                }
+                // require content = true => data is Document and Content
+                else {
+                    DocContentModel docContentModel = redisConnection.getValueOfFeedContent(requestBody.getDocId());
+                    DocModel docModel = redisConnection.getValueOfFeed(requestBody.getConnectomeId() + "_" + requestBody.getDocId());
+                    DocDataModel docDataModel = new DocDataModel();
+                    if (docContentModel != null && docModel != null) {
+                        docDataModel.buildFeedDataModel(docModel, docContentModel);
+                        response.success();
+                        response.setRequestId(requestBody.getRequestId());
+                        response.setData(docDataModel);
+                    } else {
+                        // redis save not full (only Doc or only Doc content) => call goSearcher
+                        response = searcherClient.getDocumentById(requestBody);
+                        docModel = GUtil.gson.fromJson(GUtil.gson.toJson(response.getData()), DocModel.class);
+                        docContentModel = GUtil.gson.fromJson(GUtil.gson.toJson(response.getData()), DocContentModel.class);
+                        redisConnection.saveValueToFeedAsSync(requestBody.getConnectomeId() + "_" + requestBody.getDocId(), GUtil.gson.toJson(docModel));
+                        redisConnection.saveValueToFeedContentAsSync(requestBody.getDocId(), GUtil.gson.toJson(docContentModel));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            response.setResult("failed");
+            response.setResult_code(-1);
+            logger.error(String.format("[getListDocumentByIds] requestId: %s error unknown" + e.getMessage(), requestBody.getRequestId()), e);
+        }
+        return response;
+    }
+
+    @Override
+    public DataListResponse<?> getListDocumentByIds(RequestBodyGetListDoc requestBody) {
+        DataListResponse<?> searcherResponse = searcherClient.getListDocumentByIds(requestBody);
+        try {
+
+            // no connectomeId => data is List Doc content
+            if (Objects.equals(requestBody.getConnectomeId(), "")) {
+                DataListResponse<DocContentModel> response = new DataListResponse<>(0,"success", requestBody.getRequestId());
+                Map<String, DocContentModel> docContentModelMap = new HashMap<>();
+
+                for(Object data : searcherResponse.getData()){
+                    DocContentModel docContentModel = GUtil.gson.fromJson(GUtil.gson.toJson(data), DocContentModel.class);
+                    docContentModelMap.put(docContentModel.getDocId(), docContentModel);
+                }
+
+                List<String> keys = new ArrayList<>(docContentModelMap.keySet());
+                List<DocContentModel> docContentModelList = redisConnection.getListValueOfDocContent(keys);
+
+                for(DocContentModel docContentModel : docContentModelList){
+                    docContentModelMap.put(docContentModel.getDocId(), docContentModel);
+                }
+
+                response.setData(new ArrayList<DocContentModel>(docContentModelMap.values()));
+                return response;
+            } else {
+                // require content = false => data is only List Document (Not content)
+                if (!requestBody.getRequire_content()) {
+
+
+                }
+                // require content = true => data is Document and Content
+                else {
+
+                }
+            }
+            return searcherClient.getListDocumentByIds(requestBody);
+        } catch (Exception e) {
+            searcherResponse.setStatus(-1, "failed");
+            logger.error(String.format("[getListDocumentByIds] requestId: %s error unknown" + e.getMessage(), requestBody.getRequestId()), e);
+        }
+        return searcherResponse;
     }
 }
