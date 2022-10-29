@@ -9,12 +9,12 @@
           <div class="source">
             <div class="source-img">
               <img v-if="document.favicon" :src="document.favicon" alt="" />
-              <img v-else src="content/images/empty-image.png" alt="" />
+              <img v-else :src="`https://www.google.com/s2/favicons?domain=${document.url}`" alt="" />
             </div>
-            {{ document.author }}
+            {{ document.author + '' }}
           </div>
         </div>
-        <div class="info-item">{{ checkRegexDate(document.addedAt) | formatDate }}</div>
+        <div class="info-item">{{ document.noConvertTime ? document.addedAt : checkRegexDate(document.addedAt) | formatDate }}</div>
       </div>
       <div class="lc-btn" v-show="isHideCheck">
         <a class="btn-close" @click="removeCard(document)"><i class="icon-common icon-close"></i></a>
@@ -23,7 +23,7 @@
     <div class="content-box">
       <div class="lc-media">
         <div class="media-body">
-          <a class="media-title" href="#">{{ document.title }}</a>
+          <a class="media-title" href="#"><p v-html="document.title"></p></a>
           <p class="media-desc" v-html="document.content"></p>
         </div>
         <a class="media-img" href="#" id="image">

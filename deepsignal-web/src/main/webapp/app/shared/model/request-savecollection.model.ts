@@ -11,4 +11,6 @@ export class ReqestModel {
   lang: any;
   keyword: any;
   originDate: any;
+  img: any;
+  docId: any;
 }

@@ -3,7 +3,7 @@ import vueCustomScrollbar from 'vue-custom-scrollbar';
 import axios from 'axios';
 import singleCard from '@/entities/new-learning-center/aside/single-card/single-card.vue';
 import { documentCard } from '@/shared/model/document-card.model';
-import { onlyInLeft } from '@/util/ds-util';
+import { getDomainFromUrl, onlyInLeft } from '@/util/ds-util';
 
 @Component({
   components: {
@@ -21,11 +21,8 @@ export default class Search extends Vue {
   textSearch = '';
   isShowSpinner = false;
   dataSearch = [];
-  cardSelected = [];
   allData = [];
-  total = 0;
-  isSelectAll = false;
-  tabTypeActive = '';
+  tabTypeActive = 'WEB';
   loaderDisable = true;
   internalSearch = [];
   metaSearch = [];
@@ -35,9 +32,9 @@ export default class Search extends Vue {
   lengthData = 0;
   isAddCondition = true;
   tabs = [
-    { name: 'All', searchType: '', value: 1 },
-    { name: 'News', searchType: 'searchNews', value: 2 },
-    { name: 'Videos', searchType: 'searchVideo', value: 3 },
+    { name: 'All', searchType: 'WEB', value: 1 },
+    { name: 'News', searchType: 'NEWS', value: 2 },
+    { name: 'Videos', searchType: 'VIDEOS', value: 3 },
     { name: 'Documents', searchType: 'searchFileType', value: 4 },
   ];
   tabActive = 1;
@@ -71,10 +68,8 @@ export default class Search extends Vue {
       this.dataSearch = [];
       this.textSearch = this.queries;
       this.allData = [];
-      this.cardSelected = [];
-      this.isSelectAll = false;
     }
-    if (this.dataSearch.length > 0 && this.total < 10 && this.getParam() == null) {
+    if (this.dataSearch.length > 0 && this.getParam() == null) {
       this.loaderDisable = true;
     } else {
       await axios
@@ -85,33 +80,29 @@ export default class Search extends Vue {
         })
         .then(res => {
           this.isShowSpinner = false;
+          console.log('res', res);
           if (res.data.internalSearch) {
             this.internalSearch = res.data.internalSearch.body;
             // @ts-ignore
             this.dataSearch = this.internalSearch.documents;
           }
           if (res.data.metaSearch) {
-            this.externalSearch = res.data.metaSearch.body;
+            this.externalSearch = res.data.metaSearch.body.data[0];
             // @ts-ignore
-            this.metaSearch = this.externalSearch.data;
+            this.metaSearch = this.externalSearch.search_result;
+            this.isMoreResults = true;
+
             // @ts-ignore
-            if (this.externalSearch.total < 1) {
-              this.loaderDisable = true;
-              this.isMoreResults = false;
-              this.isShowMore = false;
-              return;
-            } else {
-              this.isMoreResults = true;
-            }
-            // @ts-ignore
-            if (this.externalSearch.result.includes('NO_MORE_DATA')) {
+            if (this.metaSearch.length <= 0) {
               this.isMoreResults = false;
               return;
             }
           }
           if (this.allData.length > 0) {
-            this.allData = this.allData.concat(this.dataSearch, this.metaSearch);
+            console.log(1);
+            this.allData = this.allData.concat(this.badArrToGoodArr(this.dataSearch), this.badArrToGoodArr(this.metaSearch));
           } else {
+            console.log(2);
             this.dataSearch.forEach((item, index) => {
               this.allData.push(item);
               this.metaSearch.forEach((val, ind) => {
@@ -125,29 +116,15 @@ export default class Search extends Vue {
                 this.allData.push(this.metaSearch[i]);
               }
             }
+            this.allData = this.badArrToGoodArr(this.allData);
           }
-          this.allData = this.allData.map(item => {
-            const objectTmp = new documentCard();
-            objectTmp.author = item.author;
-            objectTmp.title = item.title;
-            objectTmp.content = item.description;
-            objectTmp.keyword = item.keyword;
-            objectTmp.type = 'URL';
-            if (item.searchType.startsWith('searchFileType')) objectTmp.searchType = item.searchType.substring('15').toUpperCase();
-            else objectTmp.searchType = item.searchType.substring('6').toUpperCase();
-            objectTmp.addedAt = item.org_date;
-            objectTmp.url = item.link;
-            objectTmp.images = [item.img];
-            objectTmp.favicon = item.favicon;
-            return objectTmp;
-          });
-          console.log(this.allData);
 
           this.isShowMore = false;
         })
         .catch(error => {
+          console.log(error);
           this.isShowMore = false;
-          const err = error.response.data;
+          const err = error;
           this.$bvToast.toast(err.message, {
             toaster: 'b-toaster-bottom-right',
             title: err.errorKey,
@@ -179,8 +156,6 @@ export default class Search extends Vue {
     this.allData = [];
     this.timeShowSpinner = 0;
     this.tabTypeActive = searchType;
-    this.cardSelected = [];
-    this.isSelectAll = false;
     this.searching();
   }
 
@@ -256,5 +231,31 @@ export default class Search extends Vue {
   deleteAll() {
     this.selectedItems = this.selectedItems.splice(0, 0);
     $('#btnSelect').removeClass('active');
+  }
+
+  showMore() {
+    this.isShowMore = true;
+    this.searching();
+  }
+
+  badArrToGoodArr(arr) {
+    return arr.map(item => {
+      const objectTmp = new documentCard();
+      if (objectTmp.author) objectTmp.author = item.author;
+      else objectTmp.author = getDomainFromUrl(item.link);
+      console.log(' objectTmp.author', objectTmp.author);
+      objectTmp.title = decodeURI(item.title);
+      objectTmp.content = decodeURI(item.description);
+      objectTmp.keyword = decodeURI(item.keyword);
+      objectTmp.type = 'URL';
+      objectTmp.searchType = item.searchType;
+      objectTmp.addedAt = item.org_date;
+      objectTmp.url = item.link;
+      objectTmp.images = [item.img ? item.img : item.imgBase64 ? item.imgBase64 : ''];
+      objectTmp.favicon = item.favicon;
+      objectTmp.docId = item.docId;
+      objectTmp.noConvertTime = true;
+      return objectTmp;
+    });
   }
 }

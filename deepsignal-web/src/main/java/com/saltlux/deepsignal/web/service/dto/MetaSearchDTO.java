@@ -14,4 +14,5 @@ public class MetaSearchDTO {
     private String lang;
     private String searchType;
     private int page;
+    private String channel;
 }

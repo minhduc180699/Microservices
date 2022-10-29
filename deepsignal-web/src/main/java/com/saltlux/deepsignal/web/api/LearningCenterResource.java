@@ -18,7 +18,6 @@ import java.util.Objects;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
-import org.redisson.api.RMapCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
@@ -27,6 +26,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
 @RequestMapping("/api/learning")
@@ -68,7 +68,8 @@ public class LearningCenterResource {
         @PathVariable("language") String language,
         @PathVariable("page") int page,
         @PathVariable("keyword") String keyword,
-        @RequestParam(name = "searchType", defaultValue = "") String searchType
+        @RequestParam(name = "searchType", defaultValue = "") String searchType,
+        @RequestParam(name = "channel", defaultValue = "google") String channel
     ) {
         //        dataTransfer.setLanguage(language);
         //        SearchResponse searchResponse = new SearchResponse();
@@ -108,6 +109,7 @@ public class LearningCenterResource {
         metaSearchDTO.setConnectomeId(connectomeId);
         metaSearchDTO.setKeyword(keyword);
         metaSearchDTO.setSearchType(searchType);
+        metaSearchDTO.setChannel(channel);
         try {
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
             LocalDateTime now = LocalDateTime.now();
@@ -139,7 +141,8 @@ public class LearningCenterResource {
                     connectomeId,
                     language,
                     Constants.MetaSearchType.news.toString(),
-                    page
+                    page,
+                    null
                 );
 
                 if (!isRealtimeSearch) {
@@ -183,10 +186,12 @@ public class LearningCenterResource {
                 .append("?keyword=" + metaSearchDTO.getKeyword())
                 .append("&searchType=" + metaSearchDTO.getSearchType())
                 .append("&lang=" + metaSearchDTO.getLang())
-                .append("&page=" + metaSearchDTO.getPage())
-                .append("&connectomeId=" + metaSearchDTO.getConnectomeId());
+                .append("&session=[ { 'session_page':" + metaSearchDTO.getPage() + "}]")
+                .append("&connectomeId=" + metaSearchDTO.getConnectomeId())
+                .append("&channel=" + metaSearchDTO.getChannel());
             log.warn("Calling api /getMetaSearch...");
-            return restTemplate.getForEntity(urlSearch.toString(), JSONObject.class);
+            UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(urlSearch.toString());
+            return restTemplate.getForEntity(builder.toUriString(), JSONObject.class);
         } else {
             urlSearch.append(metasearchDatapterAPI).append(Constants.META_SEARCH_CACHE);
             HttpEntity<MetaSearchDTO> request = new HttpEntity<>(metaSearchDTO);
