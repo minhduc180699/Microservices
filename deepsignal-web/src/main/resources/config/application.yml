@@ -69,17 +69,17 @@ spring:
   application:
     name: deepsignal-web
   config:
-    import: 'optional:configserver:http://192.168.10.16:8088'
+    import: 'optional:configserver:http://192.168.9.224:18200'
   rabbitmq:
     host: 192.168.10.12
     port: 5672
     username: deepsignal
     password: deeppass22
   zipkin:
-    baseUrl: http://localhost:9411
-    sleuth:
-      sampler:
-        probability: 1.0
+    baseUrl: http://192.168.9.224:9411
+  sleuth:
+    sampler:
+      probability: 0.1
   profiles:
     # The commented value for `active` can be replaced with valid Spring profiles to load.
     # Otherwise, it will be filled in by maven when building the JAR file
