@@ -91,7 +91,7 @@ export default class CollectionCart extends Vue {
                 return;
               }
               console.log('res', res);
-              this.$router.go();
+              // this.$router.go();
             });
           });
         }
@@ -127,25 +127,23 @@ export default class CollectionCart extends Vue {
   }
 
   removeCardReq(arr, item) {
-    let arrTmp;
     let type;
     switch (item.searchType) {
       case 'WEB': {
-        arrTmp = this.arrCollection.find(item => item.type === 'web').arr;
         type = 'web';
         break;
       }
       case 'USERNOTE': {
-        arrTmp = this.arrCollection.find(item => item.type === 'text').arr;
         type = 'text';
         break;
       }
       default: {
-        arrTmp = this.arrCollection.find(item => item.type === 'search').arr;
         type = 'search';
         break;
       }
     }
+    const arrTmp = this.arrCollection.find(item => item.type === type).arr;
+
     const index = arrTmp.indexOf(item);
     if (index !== -1) arrTmp.splice(index, 1);
     this.setCollection(arrTmp, type, true);

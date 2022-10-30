@@ -108,7 +108,9 @@ export default class Search extends Vue {
             this.isMoreResults = true;
           }
           if (this.allData.length > 0) {
-            this.allData = this.allData.concat(this.badArrToGoodArr(this.dataSearch)).concat(this.badArrToGoodArr(this.metaSearch));
+            this.allData = this.allData
+              .concat(this.badArrToGoodArr(this.dataSearch, this.tabActive === 4 ? true : false))
+              .concat(this.badArrToGoodArr(this.metaSearch, this.tabActive === 4 ? true : false));
           } else {
             this.dataSearch.forEach((item, index) => {
               this.allData.push(item);
@@ -123,7 +125,7 @@ export default class Search extends Vue {
                 this.allData.push(this.metaSearch[i]);
               }
             }
-            this.allData = this.badArrToGoodArr(this.allData);
+            this.allData = this.badArrToGoodArr(this.allData, this.tabActive === 4 ? true : false);
           }
 
           this.isShowMore = false;
@@ -248,7 +250,7 @@ export default class Search extends Vue {
     this.searching();
   }
 
-  badArrToGoodArr(arr) {
+  badArrToGoodArr(arr, typeDownload?) {
     return arr.map(item => {
       const objectTmp = new documentCard();
       if (objectTmp.author) objectTmp.author = item.author;
@@ -257,7 +259,7 @@ export default class Search extends Vue {
       objectTmp.title = item.title;
       objectTmp.content = item.description;
       objectTmp.keyword = item.keyword;
-      objectTmp.type = 'URL';
+      objectTmp.type = typeDownload ? 'DOWNLOAD' : 'URL';
       objectTmp.searchType = item.searchType;
       objectTmp.addedAt = item.org_date;
       objectTmp.url = item.link;
