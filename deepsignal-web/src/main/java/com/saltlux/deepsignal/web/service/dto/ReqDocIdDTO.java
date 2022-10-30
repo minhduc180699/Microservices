@@ -23,4 +23,5 @@ public class ReqDocIdDTO {
     private String lang;
     private String keyword;
     private String originDate;
+    private String img;
 }

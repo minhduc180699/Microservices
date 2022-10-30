@@ -78,6 +78,20 @@ export default class CollectionCart extends Vue {
           objectTmp.docId = element.docId;
           objectTmp.img = element?.images?.[0] ? element.images[0] : '';
           arrReq.push(objectTmp);
+        } else {
+          const docIds = this.newCollection.map(item => item.id);
+          this.addBookmarksToCurrentCollection({ docIds: docIds }).then(res => {
+            console.log('addBookmarksToCurrentCollection', res);
+            if (!res || res.status === 'NOK' || !res.result) {
+              return;
+            }
+
+            this.saveCurrentDraftCollection().then(res => {
+              if (!res || res.status === 'NOK' || !res.result) {
+                return;
+              }
+            });
+          });
         }
       });
 
@@ -97,13 +111,13 @@ export default class CollectionCart extends Vue {
                   return;
                 }
                 console.log('res', res);
-                // @ts-ignore
-                // this.$router.go();
               });
             });
           }
         });
       }
+      // @ts-ignore
+      // this.$router.go();
     }
   }
 
