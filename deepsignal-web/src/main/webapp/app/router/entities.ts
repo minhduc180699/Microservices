@@ -102,7 +102,7 @@ export default [
     meta: { authorities: [Authority.USER] },
   },
   {
-    path: '/new-learning-center',
+    path: '/collection',
     name: 'New-Learning-Center',
     component: NewLearningCenter,
     meta: { authorities: [Authority.USER] },

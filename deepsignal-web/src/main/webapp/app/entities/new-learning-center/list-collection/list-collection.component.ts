@@ -1,4 +1,4 @@
-import { Component, Vue, Watch } from 'vue-property-decorator';
+import { Component, Inject, Vue, Watch } from 'vue-property-decorator';
 import vueCustomScrollbar from 'vue-custom-scrollbar';
 import axios from 'axios';
 import { documentCard } from '@/shared/model/document-card.model';
@@ -13,6 +13,9 @@ import web from '@/entities/new-learning-center/list-collection/web/web.vue';
 import dsText from '@/entities/new-learning-center/list-collection/text/dsText.vue';
 import document from '@/entities/new-learning-center/list-collection/document/document.vue';
 
+import { PrincipalService } from '@/service/principal.service';
+import { getDomainFromUrl, onlyInLeft } from '@/util/ds-util';
+const networkStore = namespace('connectomeNetworkStore');
 const collectionsManagerStore = namespace('collectionsManagerStore');
 
 @Component({
@@ -32,6 +35,15 @@ const collectionsManagerStore = namespace('collectionsManagerStore');
   },
 })
 export default class ListCollection extends Vue {
+  @Inject('principalService')
+  private principalService: () => PrincipalService;
+
+  @networkStore.Getter
+  public lang!: string;
+
+  @collectionsManagerStore.Getter
+  public isCurrentCollectionChanged!: number;
+
   displayMode = 'grid';
   currentTab = { name: 'Web Search', component: 'search' };
   tabs = [
@@ -40,6 +52,11 @@ export default class ListCollection extends Vue {
     { name: 'URL', component: 'web', active: false },
     { name: 'Documents', component: 'document', active: false },
   ];
+
+  //documents selector
+  documentOrGroupDocumentsCardItems: Array<documentCard> = new Array<documentCard>();
+
+  selectedItems = [];
 
   changeTab(tab, e) {
     e.preventDefault();
@@ -70,19 +87,29 @@ export default class ListCollection extends Vue {
   @collectionsManagerStore.Getter
   public isCurrentConnectomeChanged!: number;
 
-  scrollSettings = {
+  @collectionsManagerStore.Getter
+  public getCollections!: any;
+
+  @collectionsManagerStore.Action
+  public loadUserCollections!: (payload: { connectomeId: string; language: string }) => Promise<any>;
+
+  @collectionsManagerStore.Action
+  public addBookmarksToCurrentCollection: (payload: { docIds: Array<string> }) => Promise<any>;
+
+  private scrollSettings = {
     wheelPropagation: false,
   };
-  isGroupCollectionActive = false;
-  isAddCollectionActive = false;
-  isShowAllTag = false;
+  private isGroupCollectionActive = false;
+  private isAddCollectionActive = false;
+  private isShowAllTag = false;
 
-  page = 0;
-  size = 20;
+  private page = 0;
+  private size = 20;
   labelSave = 'Save';
-  chosenCollection: any = {};
-  isSelected = false;
-  currentCollection: any;
+  private chosenCollection = {};
+  private isSelected = false;
+  private currentCollection: any;
+  private loaderDisable = false;
 
   //bookmark list
   bookmarkCardItems: Array<documentCard> = new Array<documentCard>();
@@ -92,108 +119,174 @@ export default class ListCollection extends Vue {
   currentCollectiontCardItems: Array<documentCard> = new Array<documentCard>();
 
   mounted(): void {
-    this.getPDApi();
     this.onCurrentCollectionDataChange(0);
+  }
+  @Watch('getCollections')
+  onCollectionsChange() {
+    this.getPDApi();
   }
 
   getPDApi() {
-    const connectomeId = JSON.parse(localStorage.getItem('ds-connectome')).connectomeId;
+    const connectomeId = this.principalService().getConnectomeInfo().connectomeId;
     axios
-      .get(`/api/personal-documents/getListDocuments/${connectomeId}`, {
+      .get(`/api/connectome-feeds/getListFeeds/${connectomeId}`, {
         params: {
           page: this.page,
-          size: this.size,
-          uploadType: '',
-          isDelete: 0,
+          size: 30,
+          requestId: Date.now().toString(),
+          lang: this.lang,
+          type: '',
         },
       })
       .then(res => {
-        res.data.results.forEach(item => {
-          if (!this.bookmarkCardItems) {
-            this.bookmarkCardItems = new Array<documentCard>();
-          }
-          const card = new documentCard();
-
-          card.id = item.docId;
-          card.author = item.author;
-          card.type = item.type;
-          card.title = item.title;
-          card.content = item.contentSummary ? item.contentSummary : item.content;
-          card.keyword = item.keyword;
-          card.tags.push(item.keyword);
-          card.addedAt = new Date(item.publishedAt);
-          card.modifiedAt = new Date(item.publishedAt);
-          card.favicon = item.faviconUrl || item.faviconBase64 || '';
-          card.images[0] = (item.imageUrl && item.imageUrl[0]) || item.imageBase64 || item.ogImageUrl || item.ogImageBase64 || '';
-
-          this.bookmarkCardItems.push(card);
-
-          this.getCollectionsFromDocIds({ docIds: [item.docId] }).then(res => {
-            if (!res) {
-              return;
-            }
-
-            if (res.status === 'NOK') {
-              return;
-            }
-
-            if (!res.result) {
-              return;
-            }
-
-            if (!this.collectionCardItems) {
-              this.collectionCardItems = new Array<documentCard>();
-            }
-
-            res.result.forEach(collection => {
-              const card = new documentCard();
-              card.id = collection.collectionId;
-              card.author = 'me';
-              card.type = 'COLLECTION';
-              card.title = collection.collectionId;
-              card.content = collection.documentIdList.length + ' documents included';
-              card.modifiedAt = collection.modifiedDate;
-              card.totalDocuments = collection.documentIdList.length;
-              const indexcard = this.collectionCardItems.find(x => x.id == collection.collectionId);
-              if (!indexcard) {
-                const docsDetail = [];
-                collection.documentIdList.forEach(docId => {
-                  const item = this.bookmarkCardItems.find(item => item.id == docId);
-                  if (item) {
-                    // let l = [];
-                    docsDetail.push(item);
-                  }
-                  if (item.images[0]) {
-                    card.images.push(item.images[0]);
-                  }
-                  if (item.tags) {
-                    card.tags = item.tags;
-                  }
-                });
-                card['docDetail'] = docsDetail;
-                console.log('card1233', card);
-                this.collectionCardItems.push(card);
+        res.data.body.data.length < this.size ? (this.loaderDisable = true) : (this.page += 1);
+        // if (this.totalItems != res.data.totalItems) {
+        //   this.totalFeeds = res.data.totalItems;
+        // }
+        this.getCurrentDraftCollection()
+          .then(currentCollectionResult => {
+            res.data.body.data.forEach(item => {
+              if (!this.bookmarkCardItems) {
+                this.bookmarkCardItems = new Array<documentCard>();
               }
+              const card = new documentCard();
+              card.id = item.docId;
+              card.author = item.writer ? item.writer : getDomainFromUrl(item?.url);
+              card.type = item.type;
+              card.title = item.title;
+              card.url = item.url;
+              card.content = item.description ? '[Summary] ' + item.description : '[Content] ' + this.getShortContent(item.description);
+              card.keyword = item.keyword;
+              if (card.tags.indexOf(item.keyword) > -1) {
+                card.tags.push(item.keyword);
+              }
+              card.addedAt = new Date(item.published_at);
+              card.modifiedAt = new Date(item.published_at);
+              card.totalDocuments = 1;
+              card.favicon = item.favicon_url ? item.favicon_url : item.favicon_base64;
+              card.images.push(item.og_image_url ? item.og_image_url : item.og_image_base64);
+
+              this.bookmarkCardItems.push(card);
+
+              this.getCollectionsFromDocIds({ docIds: [item.docId] })
+                .then(res => {
+                  console.log('getCollectionsFromDocIds', res);
+                  if (!res) {
+                    return;
+                  }
+
+                  if (res.status === 'NOK') {
+                    return;
+                  }
+
+                  if (!res.result) {
+                    return;
+                  }
+
+                  if (!this.collectionCardItems) {
+                    this.collectionCardItems = new Array<documentCard>();
+                  }
+
+                  // console.log(this.bookmarkCardItems, '2710book');
+                  res.result.forEach(collection => {
+                    const indexcard = this.collectionCardItems.find(x => x.id == collection.collectionId);
+                    if (!indexcard) {
+                      const card = new documentCard();
+                      card.id = collection.collectionId;
+                      card.author = 'me';
+                      card.type = 'COLLECTION';
+                      card.title = collection.collectionId;
+                      card.content = collection.documentIdList.length + ' documents included';
+                      card.modifiedAt = collection.modifiedDate;
+                      card.isGroup = true;
+                      card.totalDocuments = collection.documentIdList.length;
+
+                      const docsDetail = [];
+                      collection.documentIdList.forEach(docId => {
+                        const item = this.bookmarkCardItems.find(item => item.id == docId);
+                        if (item) {
+                          docsDetail.push(item);
+                        }
+                        if (item?.images[0] && item.images[0].length) {
+                          card.images.push(item.images[0]);
+                        }
+                        if (item?.keyword) {
+                          if (card.tags.indexOf(item.keyword) > -1) {
+                            card.tags.push(item.keyword);
+                          }
+                        }
+                      });
+                      card.docDetail = docsDetail;
+                      this.collectionCardItems.push(card);
+                    }
+                  });
+                  console.log('collectionCardItems2710', this.collectionCardItems);
+
+                  if (!currentCollectionResult || currentCollectionResult.status != 'OK') {
+                    return;
+                  }
+
+                  if (!currentCollectionResult.result) {
+                    return;
+                  }
+
+                  if (!currentCollectionResult.result.collectionId) {
+                    return;
+                  }
+                })
+                .finally(() => {
+                  // this.processDocumentsSelectorList();
+                });
             });
+
+            if (!currentCollectionResult || currentCollectionResult.status != 'OK' || !currentCollectionResult.result) {
+              return;
+            }
+
+            if (!currentCollectionResult.result.documentIdList || currentCollectionResult.result.documentIdList.length == 0) {
+              return;
+            }
+          })
+          .finally(() => {
+            this.processDocumentsSelectorList();
           });
-        });
-        this.$emit('changeBookmarkItems', this.bookmarkCardItems);
-        console.log('bookmarkCardItems', this.bookmarkCardItems);
       })
       .catch(reason => {
         console.log('catch get mini connectome', reason);
+      })
+      .finally(() => {
+        this.processDocumentsSelectorList();
       });
+  }
+
+  processDocumentsSelectorList() {
+    this.documentOrGroupDocumentsCardItems = new Array<documentCard>();
+
+    if (this.bookmarkCardItems && this.bookmarkCardItems.length > 0) {
+      this.documentOrGroupDocumentsCardItems.push(...this.bookmarkCardItems);
+    }
+    if (this.collectionCardItems && this.collectionCardItems.length > 0) {
+      this.documentOrGroupDocumentsCardItems.push(...this.collectionCardItems);
+    }
+    this.documentOrGroupDocumentsCardItems = this.documentOrGroupDocumentsCardItems.sort((a, b) => {
+      if (!a.modifiedAt) {
+        return 1;
+      }
+
+      if (!b.modifiedAt) {
+        return -1;
+      }
+      return new Date(b.modifiedAt).getTime() - new Date(a.modifiedAt).getTime();
+    });
+
+    console.log('this.documentOrGroupDocumentsCardItems', this.documentOrGroupDocumentsCardItems);
   }
 
   @Watch('isCurrentCollectionChanged')
   onCurrentCollectionDataChange(newVal: number) {
     this.getCurrentDraftCollection().then(res => {
       console.log('getCurrentDraftCollection', res);
-      if (!res) {
-        return;
-      }
-
-      if (res.status === 'NOK') {
+      if (!res || res.status === 'NOK') {
         return;
       }
 
@@ -221,15 +314,21 @@ export default class ListCollection extends Vue {
           }
           const card = new documentCard();
           card.id = item.docId;
-          card.author = item.author;
+          card.author = item.writer;
           card.type = item.type;
           card.title = item.title;
-          card.content = item.contentSummary;
+          card.content = item.description ? '[Summary]' + item.description : '[Content]' + this.getShortContent(item.description);
           card.keyword = item.keyword;
-          card.addedAt = new Date(item.publishedAt);
-          card.modifiedAt = new Date(item.publishedAt);
-          card.isAdded = true;
-          card.style = 'background-color:' + this.getDocumentColors.get(card.id);
+          if (card.group.indexOf(item.keyword) > -1) {
+            card.group.push(item.keyword);
+          }
+          card.addedAt = new Date(item.published_at);
+          card.modifiedAt = new Date(item.published_at);
+          card.totalDocuments = 1;
+          card.favicon = item.favicon_url ? item.favicon_url : item.favicon_base64;
+          card.images[0] = item.og_image_url ? item.og_image_url : item.og_image_base64;
+          card.isGroup = item.isGroup ? item.isGroup : '';
+
           this.currentCollectiontCardItems.push(card);
         });
       });
@@ -250,5 +349,127 @@ export default class ListCollection extends Vue {
     } else {
       this.isSelected = false;
     }
+  }
+
+  // getDocsDetailApi(docIds?: string[]) {
+  //   const connectomeId = JSON.parse(localStorage.getItem('ds-connectome')).connectomeId;
+  //   axios
+  //     .get(`api/feed-cache/getListFeed?connectomeId=${connectomeId}&page=0&size=100&requestId=${Date.now().toString()}`
+  //     )
+  //     .then(res => {
+  //       console.log(res, 25100000)
+  //       res.data.data.forEach(item => {
+  //         if (!this.bookmarkCardItems) {
+  //           this.bookmarkCardItems = new Array<documentCard>();
+  //         }
+  //         const card = new documentCard();
+  //
+  //         card.id = item.docId_content;
+  //         card.author = item.writer_search;
+  //         card.type = item.type;
+  //         card.title = item.title;
+  //         card.content = item.contentSummary ? item.contentSummary : item.content;
+  //         card.keyword = item.keyword;
+  //         card.tags.push(item.keyword);
+  //         card.addedAt = new Date(item.published_at);
+  //         card.modifiedAt = new Date(item.published_at);
+  //         card.favicon = item.favicon_base64 || '';
+  //         card.images[0] = item.og_image_base64 || '';
+  //
+  //         this.bookmarkCardItems.push(card);
+  //
+  //         if (item.docId_content == "ds-global-web-eng-N5679041210752547614-0-0"
+  //           || item.docId_content == "ds-global-web-eng-7125651114231972591-0-0") {
+  //           this.getCollectionsFromDocIds({docIds: [item.docId_content]}).then(res => {
+  //             console.log(item.docId_content,2510);
+  //             console.log(res,2510);
+  //             if (!res) {
+  //               return;
+  //             }
+  //
+  //             if (res.status === 'NOK') {
+  //               return;
+  //             }
+  //
+  //             if (!res.result) {
+  //               return;
+  //             }
+  //
+  //             if (!this.collectionCardItems) {
+  //               this.collectionCardItems = new Array<documentCard>();
+  //             }
+  //
+  //             res.result.forEach(collection => {
+  //               console.log(collection, 25100);
+  //               const card = new documentCard();
+  //               card.id = collection.collectionId;
+  //               card.author = 'me';
+  //               card.type = 'COLLECTION';
+  //               card.title = collection.collectionId;
+  //               card.content = collection.documentIdList.length + ' documents included';
+  //               card.modifiedAt = collection.modifiedDate;
+  //               card.totalDocuments = collection.documentIdList.length;
+  //               const indexcard = this.collectionCardItems.find(x => x.id == collection.collectionId);
+  //               if (!indexcard) {
+  //                 const docsDetail = [];
+  //                 collection.documentIdList.forEach(docId => {
+  //                   const item = this.bookmarkCardItems.find(item => item.id == docId);
+  //                   if (item) {
+  //                     // let l = [];
+  //                     docsDetail.push(item);
+  //                   }
+  //                   if (item.images[0]) {
+  //                     card.images.push(item.images[0]);
+  //                   }
+  //                   if (item.tags) {
+  //                     card.tags = item.tags;
+  //                   }
+  //                 });
+  //                 card['docDetail'] = docsDetail;
+  //                 console.log('card1233', card);
+  //                 this.collectionCardItems.push(card);
+  //               }
+  //             });
+  //           });
+  //         }
+  //       });
+  //       this.$emit('changeBookmarkItems', this.bookmarkCardItems);
+  //       console.log('bookmarkCardItems', this.bookmarkCardItems);
+  //     })
+  //     .catch(reason => {
+  //       console.log('catch get mini connectome', reason);
+  //     });
+  // }
+
+  getShortContent(content: string) {
+    if (!content) {
+      return ' ';
+    }
+
+    if (content.length < 256) {
+      return content;
+    }
+
+    return content.substring(0, 255) + '...';
+  }
+
+  selectAllInGroup(items: any) {
+    items.forEach(item => {
+      this.selectedItems.push(item);
+    });
+    this.$root.$emit('cart-to-conlection', this.selectedItems, 'doc');
+  }
+
+  setSelectedItems(newData) {
+    console.log('this.delec2710', newData);
+    this.selectedItems = newData;
+    const arrTmp = this.checkArraySelected();
+    // this.totalSelected = this.allData.length - arrTmp.length;
+    this.$root.$emit('cart-to-conlection', this.selectedItems, 'doc');
+  }
+
+  checkArraySelected(arg?) {
+    // if (arg) return onlyInLeft(this.selectedItems, this.allData);
+    // return onlyInLeft(this.allData, this.selectedItems);
   }
 }

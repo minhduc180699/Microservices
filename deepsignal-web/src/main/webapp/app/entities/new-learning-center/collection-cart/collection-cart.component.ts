@@ -52,6 +52,7 @@ export default class CollectionCart extends Vue {
 
   saveCollection() {
     console.log('this.newCollection', this.newCollection);
+    let trainedDocumentIds = [];
     const arrReq = [];
     let connectomeId;
     if (localStorage.getItem('ds-connectome')) {
@@ -60,42 +61,49 @@ export default class CollectionCart extends Vue {
     if (connectomeId && this.newCollection && this.newCollection.length > 0) {
       console.log('this.newCollection2', this.newCollection);
       this.newCollection.forEach(element => {
-        const objectTmp = new ReqestModel();
-        objectTmp.id = Date.now();
-        objectTmp.name = element.title;
-        objectTmp.path = element.url;
-        objectTmp.description = element.content;
-        objectTmp.type = element.type;
-        objectTmp.connectomeId = connectomeId;
-        objectTmp.author = element.author;
-        objectTmp.searchType = element.searchType;
-        objectTmp.favicon = element.favicon;
-        objectTmp.lang = this.$store.getters.currentLanguage;
-        objectTmp.keyword = element.keyword;
-        objectTmp.originDate = element.addedAt;
-        objectTmp.docId = element.docId;
-        arrReq.push(objectTmp);
+        if (element?.type) {
+          const objectTmp = new ReqestModel();
+          objectTmp.id = Date.now();
+          objectTmp.name = element.title;
+          objectTmp.path = element.url;
+          objectTmp.description = element.content;
+          objectTmp.type = element.type;
+          objectTmp.connectomeId = connectomeId;
+          objectTmp.author = element.author;
+          objectTmp.searchType = element.searchType;
+          objectTmp.favicon = element.favicon;
+          objectTmp.lang = this.$store.getters.currentLanguage;
+          objectTmp.keyword = element.keyword;
+          objectTmp.originDate = element.addedAt;
+          objectTmp.docId = element.docId;
+          objectTmp.img = element?.images?.[0] ? element.images[0] : '';
+          arrReq.push(objectTmp);
+        }
       });
 
-      axios.post('/api/personal-documents/urlconvert', arrReq).then(res => {
-        console.log('res', res);
-        if (res.status === 200) {
-          this.addBookmarksToCurrentCollection({ docIds: res.data.data }).then(res => {
-            console.log('addBookmarksToCurrentCollection', res);
-            if (!res || res.status === 'NOK' || !res.result) {
-              return;
-            }
-
-            this.saveCurrentDraftCollection().then(res => {
+      if (arrReq.length > 0) {
+        axios.post('/api/personal-documents/urlconvert', arrReq).then(res => {
+          console.log('res', res);
+          if (res.data?.data?.[0]) {
+            trainedDocumentIds = this.newCollection.filter(item => !item.type).map(x => x.id);
+            this.addBookmarksToCurrentCollection({ docIds: [...res.data.data, ...trainedDocumentIds] }).then(res => {
+              console.log('addBookmarksToCurrentCollection', res);
               if (!res || res.status === 'NOK' || !res.result) {
                 return;
               }
-              console.log('res', res);
-              // this.$router.go();
+
+              this.saveCurrentDraftCollection().then(res => {
+                if (!res || res.status === 'NOK' || !res.result) {
+                  return;
+                }
+                console.log('res', res);
+                // @ts-ignore
+                // this.$router.go();
+              });
             });
-          });
-        }
-      });
+          }
+        });
+      }
     }
   }
 

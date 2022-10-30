@@ -22,9 +22,9 @@
       </div>
       <div class="panel-body">
         <div class="list-wrap overflow-y-scroll">
-          <ul class="lc-card-list lc-context-list" v-for="(data, index) in listData" :key="index">
-            <single-card :document="data"></single-card>
-          </ul>
+          <!--          <ul class="lc-card-list lc-context-list" v-for="(data, index) in listData" :key="index">-->
+          <!--            <single-card :document="data"></single-card>-->
+          <!--          </ul>-->
         </div>
       </div>
     </div>

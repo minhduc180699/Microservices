@@ -230,7 +230,6 @@ export default class Search extends Vue {
     this.selectedItems = newData;
     const arrTmp = this.checkArraySelected();
     this.totalSelected = this.allData.length - arrTmp.length;
-    // this.$emit('handleSelectedSearch', this.selectedItems);
     if (this.totalSelected > 0 && arrTmp.length === 0) $('#btnSelect').addClass('active');
     else $('#btnSelect').removeClass('active');
   }

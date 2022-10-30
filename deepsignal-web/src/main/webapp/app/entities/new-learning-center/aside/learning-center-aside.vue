@@ -8,7 +8,7 @@
             <vue-custom-scrollbar class="overflow-yx-scroll csScrollPositon h-100" :settings="scrollSettings">
               <ul class="lc-card-list lc-context-list" v-for="item in collections" :key="item.collectionId">
                 <group-card v-if="item.documentIdList.length > 1" :item="item" @showListGroupCard="showListGroupCard"></group-card>
-                <single-card :documentId="item.documentIdList" v-if="item.documentIdList.length == 1"></single-card>
+                <!--                <single-card :documentId="item.documentIdList" v-if="item.documentIdList.length == 1"></single-card>-->
               </ul>
             </vue-custom-scrollbar>
             <div class="list-add">
