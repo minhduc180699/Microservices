@@ -78,20 +78,6 @@ export default class CollectionCart extends Vue {
           objectTmp.docId = element.docId;
           objectTmp.img = element?.images?.[0] ? element.images[0] : '';
           arrReq.push(objectTmp);
-        } else {
-          const docIds = this.newCollection.map(item => item.id);
-          this.addBookmarksToCurrentCollection({ docIds: docIds }).then(res => {
-            console.log('addBookmarksToCurrentCollection', res);
-            if (!res || res.status === 'NOK' || !res.result) {
-              return;
-            }
-
-            this.saveCurrentDraftCollection().then(res => {
-              if (!res || res.status === 'NOK' || !res.result) {
-                return;
-              }
-            });
-          });
         }
       });
 
@@ -106,18 +92,21 @@ export default class CollectionCart extends Vue {
                 return;
               }
 
-              this.saveCurrentDraftCollection().then(res => {
-                if (!res || res.status === 'NOK' || !res.result) {
-                  return;
-                }
-                console.log('res', res);
-              });
+              this.doSaveCurrentDraftCollection();
             });
           }
         });
+      } else {
+        const docIds = this.newCollection.map(item => item.id);
+        this.addBookmarksToCurrentCollection({ docIds: docIds }).then(res => {
+          console.log('addBookmarksToCurrentCollection', res);
+          if (!res || res.status === 'NOK' || !res.result) {
+            return;
+          }
+
+          this.doSaveCurrentDraftCollection();
+        });
       }
-      // @ts-ignore
-      // this.$router.go();
     }
   }
 
@@ -169,5 +158,16 @@ export default class CollectionCart extends Vue {
     const index = arrTmp.indexOf(item);
     if (index !== -1) arrTmp.splice(index, 1);
     this.setCollection(arrTmp, type, true);
+  }
+
+  doSaveCurrentDraftCollection() {
+    this.saveCurrentDraftCollection().then(res => {
+      console.log('res', res);
+      if (!res || res.status === 'NOK' || !res.result) {
+        return;
+      }
+      // @ts-ignore
+      this.$router.go();
+    });
   }
 }
