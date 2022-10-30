@@ -100,9 +100,9 @@
             <template v-if="isFile">
               <div class="row-wrap">
                 <div class="text-wrap">
-                  <div class="title max-line-4" v-if="item.title">
+                  <div class="title max-line-4" v-if="item.description || item.title">
                     <text-highlight :queries="highlightedWord" highlightStyle="padding: 0 0.2em">
-                      {{ item.title }}
+                      {{item.title? item.title : item.description }}
                     </text-highlight>
                   </div>
                 </div>
