@@ -2,33 +2,35 @@
   <div class="item-wrap">
     <div class="content-top">
       <div class="lc-check" id="customInput" v-show="!isHideCheck">
-        <input type="checkbox" name="selected-items" v-model="dataTmp" @change="dataTmpItemsChage" :value="document" />
+        <input type="checkbox" name="selected-items" v-model="internalSelectedItems" @change="internalItemsChange" :value="document" />
       </div>
       <div class="media-info">
         <div class="info-item">
           <div class="source">
             <div class="source-img">
-              <img :src="document.favicon" alt="" />
+              <img v-if="document.favicon" :src="document.favicon" alt="" />
+              <img v-else :src="`https://www.google.com/s2/favicons?domain=${document.url}`" alt="" />
             </div>
-            {{ document.author }}
+            {{ document.author + '' }}
           </div>
         </div>
-        <div class="info-item">{{ checkRegexDate(document.addedAt) | formatDate }}</div>
+        <div class="info-item" v-if="document.addedAt && !document.noConvertTime">{{ checkRegexDate(document.addedAt) | formatDate }}</div>
+        <div class="info-item" v-if="document.addedAt && document.noConvertTime">{{ document.addedAt }}</div>
       </div>
       <div class="lc-btn" v-show="isHideCheck">
-        <a class="btn-close" href="#"><i class="icon-common icon-close"></i></a>
+        <a class="btn-close" @click="removeCard(document)"><i class="icon-common icon-close"></i></a>
       </div>
     </div>
     <div class="content-box">
       <div class="lc-media">
         <div class="media-body">
-          <a class="media-title" href="#">{{ document.title }}</a>
+          <a class="media-title" href="#"><p v-html="document.title"></p></a>
           <p class="media-desc" v-html="document.content"></p>
         </div>
         <a class="media-img" href="#" id="image">
-          <div v-if="document.searchType === 'searchVideo'" class="icon-play"></div>
+          <div v-if="document.searchType === 'VIDEO'" class="icon-play"></div>
           <img
-            v-if="document.images && document.images.length > 0"
+            v-if="document.images && document.images.length > 0 && document.images[0]"
             :src="document.images[0]"
             alt=""
             style="width: 100%"
@@ -38,10 +40,10 @@
         </a>
       </div>
     </div>
-    <div class="tag-box">
+    <div class="tag-box" v-if="document.keyword">
       <div class="scroll-area">
         <div class="tag-list">
-          <a class="tag-item" v-for="(element, index) in document.keyword.split(',')" :key="index" href="#">{{ element }}</a>
+          <a class="tag-item" v-for="(element, index) in document.keyword.split(',')" :key="index">{{ element }}</a>
         </div>
       </div>
       <div class="btn-wrap">
@@ -60,7 +62,7 @@
           type="button"
           class="btn btn-check active focus"
           data-toggle="button"
-          aria-pressed='true' 
+          aria-pressed='true'
           @click="handleClickSingleCard"
         ></button>
       </div>

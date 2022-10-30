@@ -1,27 +1,26 @@
 package com.saltlux.deepsignal.web.api.adapter;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.saltlux.deepsignal.web.aop.userActivities.UserActivity;
+import com.saltlux.deepsignal.web.api.errors.BadRequestException;
+import com.saltlux.deepsignal.web.api.errors.ErrorConstants;
 import com.saltlux.deepsignal.web.config.ApplicationProperties;
 import com.saltlux.deepsignal.web.config.Constants;
 import com.saltlux.deepsignal.web.service.dto.FilterFeedDTO;
-import com.saltlux.deepsignal.web.service.dto.PersonalDocumentRes;
+import com.saltlux.deepsignal.web.service.dto.ReqDocIdDTO;
 import com.saltlux.deepsignal.web.util.ConnectAdapterApi;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+import org.zalando.problem.Status;
 
 @RestController
 @RequestMapping("/api/personal-documents")
@@ -210,6 +209,32 @@ public class PersonalDocumentResource {
             return ResponseEntity.ok().body(response);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @PostMapping("/urlconvert")
+    @Operation(summary = "get document id from api real time crawler ", tags = { "Personal Documents Management" })
+    public ResponseEntity<?> getDocumentId(@RequestBody List<ReqDocIdDTO> arrReq) {
+        try {
+            UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(
+                "http://35.223.12.7/deepsignalconverter/documentconverter/urlconvert"
+            );
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            builder.encode(StandardCharsets.UTF_8);
+            HttpEntity<List<ReqDocIdDTO>> request = new HttpEntity<>(arrReq);
+            ResponseEntity<String> result = restTemplate.exchange(
+                builder.toUriString(),
+                HttpMethod.POST,
+                request,
+                new ParameterizedTypeReference<String>() {}
+            );
+            if (!result.getStatusCode().equals(HttpStatus.OK)) {
+                throw new BadRequestException(ErrorConstants.DEFAULT_TYPE, null, Status.valueOf(result.getStatusCodeValue()));
+            }
+            return ResponseEntity.ok().body(result.getBody());
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

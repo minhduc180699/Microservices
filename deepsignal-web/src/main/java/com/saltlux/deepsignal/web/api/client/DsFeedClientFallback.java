@@ -4,6 +4,7 @@ import com.saltlux.deepsignal.web.service.dto.Feed;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import org.json.simple.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -39,6 +40,16 @@ public class DsFeedClientFallback implements DsFeedClient {
     public ResponseEntity<?> getFeed(String connectomeId, String requestId, String docId) {
         Map<String, Object> response = new HashMap<>();
         response.put("Card", -1);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<?> getListDocumentByIds(JSONObject body) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("connectomeFeeds", new ArrayList<Feed>());
+        response.put("currentPage", 0);
+        response.put("totalItems", 0);
+        response.put("totalPages", 0);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

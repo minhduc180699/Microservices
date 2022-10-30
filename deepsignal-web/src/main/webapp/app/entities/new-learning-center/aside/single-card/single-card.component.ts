@@ -76,23 +76,29 @@ export default class singleCard extends Vue {
     $('.tag-box').toggleClass('show');
   }
 
-  dataTmp = [];
-  dataTmpItemsChage() {
-    this.$emit('setSelectedItems', this.dataTmp);
+  // avoid mutating props
+  internalSelectedItems = [];
+  internalItemsChange() {
+    this.$emit('setSelectedItems', this.internalSelectedItems);
   }
 
   @Watch('selectedItems')
   selectedItemsChage() {
-    this.dataTmp = this.selectedItems;
+    // console.log('selectedItems2710', this.selectedItems);
+    this.internalSelectedItems = this.selectedItems;
   }
 
   created() {
-    this.dataTmp = this.selectedItems;
+    this.internalSelectedItems = this.selectedItems;
   }
 
   checkRegexDate(value) {
     const regex = new RegExp('ago');
     if (regex.test(value)) return value;
     else return new Date(value);
+  }
+
+  removeCard(item) {
+    this.$emit('removeCardReq', this.internalSelectedItems, item);
   }
 }

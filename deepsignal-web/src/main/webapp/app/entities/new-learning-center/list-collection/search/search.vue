@@ -53,7 +53,7 @@
             </div>
           </div>
           <div class="elements-right">
-            <button type="button" class="btn btn-default btn-sm"><i class="icon-common icon-close"></i>선택 삭제</button>
+            <button type="button" class="btn btn-default btn-sm" @click="deleteAll"><i class="icon-common icon-close"></i>선택 삭제</button>
           </div>
         </div>
         <div class="lc-list-wrap">
@@ -68,6 +68,16 @@
                 <single-card @setSelectedItems="setSelectedItems" :document="item" :selectedItems="selectedItems"></single-card>
               </li>
             </ul>
+            <div v-if="isMoreResults" class="last-more" style="text-align: center">
+              <span class="connected-keyword">
+                <a class="active" v-if="isShowMore" style="border-color: #e2e2e2; font-size: 0.85rem; color: #e2e2e2; border-radius: 4px"
+                  >Loading...</a
+                >
+                <a class="active" v-else style="border-color: #6a7681; font-size: 0.85rem; border-radius: 4px" @click="showMore"
+                  >Show more</a
+                >
+              </span>
+            </div>
           </vue-custom-scrollbar>
         </div>
       </div>

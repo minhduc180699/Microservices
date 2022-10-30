@@ -9,16 +9,16 @@
       <div class="panel-body">
         <div class="add-input-area memo-area">
           <div class="memo-title">
-            <input type="text" class="form-control" placeholder="Title" />
+            <input type="text" class="form-control" placeholder="Title" v-model="item.title" />
           </div>
           <div class="memo-desc">
-            <textarea class="form-control" placeholder="Write a text"></textarea>
+            <textarea class="form-control" placeholder="Write a text" v-model="item.content"></textarea>
           </div>
         </div>
       </div>
       <div class="panel-footer">
         <div class="elements-right">
-          <button type="button" class="btn btn-secondary">Add to current collection</button>
+          <button type="button" class="btn btn-secondary" @click="insertToMemory">Add to current collection</button>
         </div>
       </div>
     </div>

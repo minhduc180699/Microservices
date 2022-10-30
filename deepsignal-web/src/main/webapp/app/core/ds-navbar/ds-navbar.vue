@@ -21,7 +21,7 @@
             <!--              </router-link>-->
             <!--            </li>-->
             <li class="nav-item">
-              <router-link to="/new-learning-center" v-slot="{ href, navigate, isActive, isExactActive }" custom>
+              <router-link to="/collection" v-slot="{ href, navigate, isActive, isExactActive }" custom>
                 <a :href="href" @click="navigate" :class="[isActive ? 'nav-link active' : 'nav-link', isExactActive && 'nav-link active']">
                   <div class="animation-myai"></div>
                   <span class="text">Collection</span>
@@ -40,22 +40,22 @@
                 </a>
               </router-link>
             </li>
-            <li class="nav-item">
-              <router-link to="/people" v-slot="{ href, navigate, isActive, isExactActive }" custom>
-                <a :href="href" @click="navigate" :class="[isActive ? 'nav-link active' : 'nav-link', isExactActive && 'active']">
-                  <i class="icon-mainmenu icon-people"></i>
-                  <span class="text" v-text="$t('global.menu.people')">People</span>
-                </a>
-              </router-link>
-            </li>
-            <li class="nav-item">
-              <router-link to="/signals" v-slot="{ href, navigate, isActive, isExactActive }" custom>
-                <a :href="href" @click="navigate" :class="[isActive ? 'nav-link active' : 'nav-link', isExactActive && 'active']">
-                  <i class="icon-mainmenu icon-signal"></i>
-                  <span class="text" v-text="$t('global.menu.signal')">Signal</span>
-                </a>
-              </router-link>
-            </li>
+            <!--            <li class="nav-item">-->
+            <!--              <router-link to="/people" v-slot="{ href, navigate, isActive, isExactActive }" custom>-->
+            <!--                <a :href="href" @click="navigate" :class="[isActive ? 'nav-link active' : 'nav-link', isExactActive && 'active']">-->
+            <!--                  <i class="icon-mainmenu icon-people"></i>-->
+            <!--                  <span class="text" v-text="$t('global.menu.people')">People</span>-->
+            <!--                </a>-->
+            <!--              </router-link>-->
+            <!--            </li>-->
+            <!--            <li class="nav-item">-->
+            <!--              <router-link to="/signals" v-slot="{ href, navigate, isActive, isExactActive }" custom>-->
+            <!--                <a :href="href" @click="navigate" :class="[isActive ? 'nav-link active' : 'nav-link', isExactActive && 'active']">-->
+            <!--                  <i class="icon-mainmenu icon-signal"></i>-->
+            <!--                  <span class="text" v-text="$t('global.menu.signal')">Signal</span>-->
+            <!--                </a>-->
+            <!--              </router-link>-->
+            <!--            </li>-->
           </ul>
           <div class="wrap">
             <ul class="nav nav-util">
@@ -168,36 +168,36 @@
                   </div>
                 </div>
               </li>
-              <li class="nav-item">
-                <a class="nav-link link-notice new" data-toggle="dropdown">
-                  <div class="animation-myai"></div>
-                  <span class="tooltip">My AI</span>
-                </a>
-                <div class="dropdown-menu">
-                  <div class="util-content lnb-content">
-                    <nav class="nav nav-lnb">
-                      <router-link to="/my-ai/learning-center" v-slot="{ isActive, isExactActive }" custom>
-                        <a
-                          @click="changeTab('/my-ai/learning-center')"
-                          :class="[isActive ? 'nav-link active' : 'nav-link', isExactActive && 'nav-link active']"
-                        >
-                          <i class="icon-mainmenu icon-learning"></i>
-                          <span class="text" v-text="$t('global.menu.learningCenter')">LearningCenter</span>
-                        </a>
-                      </router-link>
-                      <router-link to="/my-ai/connectome/2dnetwork" v-slot="{ isActive, isExactActive }" custom>
-                        <a
-                          @click="changeTab('/my-ai/connectome/2dnetwork')"
-                          :class="[isActive ? 'nav-link active' : 'nav-link', isExactActive && 'nav-link active']"
-                        >
-                          <i class="icon-mainmenu icon-connectome"></i>
-                          <span class="text" v-text="$t('global.menu.connectomes.connectome')">Connectome</span>
-                        </a>
-                      </router-link>
-                    </nav>
-                  </div>
-                </div>
-              </li>
+              <!--              <li class="nav-item">-->
+              <!--                <a class="nav-link link-notice new" data-toggle="dropdown">-->
+              <!--                  <div class="animation-myai"></div>-->
+              <!--                  <span class="tooltip">My AI</span>-->
+              <!--                </a>-->
+              <!--                <div class="dropdown-menu">-->
+              <!--                  <div class="util-content lnb-content">-->
+              <!--                    <nav class="nav nav-lnb">-->
+              <!--                      <router-link to="/my-ai/learning-center" v-slot="{ isActive, isExactActive }" custom>-->
+              <!--                        <a-->
+              <!--                          @click="changeTab('/my-ai/learning-center')"-->
+              <!--                          :class="[isActive ? 'nav-link active' : 'nav-link', isExactActive && 'nav-link active']"-->
+              <!--                        >-->
+              <!--                          <i class="icon-mainmenu icon-learning"></i>-->
+              <!--                          <span class="text" v-text="$t('global.menu.learningCenter')">LearningCenter</span>-->
+              <!--                        </a>-->
+              <!--                      </router-link>-->
+              <!--                      <router-link to="/my-ai/connectome/2dnetwork" v-slot="{ isActive, isExactActive }" custom>-->
+              <!--                        <a-->
+              <!--                          @click="changeTab('/my-ai/connectome/2dnetwork')"-->
+              <!--                          :class="[isActive ? 'nav-link active' : 'nav-link', isExactActive && 'nav-link active']"-->
+              <!--                        >-->
+              <!--                          <i class="icon-mainmenu icon-connectome"></i>-->
+              <!--                          <span class="text" v-text="$t('global.menu.connectomes.connectome')">Connectome</span>-->
+              <!--                        </a>-->
+              <!--                      </router-link>-->
+              <!--                    </nav>-->
+              <!--                  </div>-->
+              <!--                </div>-->
+              <!--              </li>-->
               <!--              <li class="nav-item">-->
               <!--                <a-->
               <!--                  class="nav-link link-notice new"-->

@@ -11,12 +11,16 @@ export class documentCard {
   group: Array<string> = new Array<string>();
   tags: Array<string> = new Array<string>();
   isGroup = false;
-  addedAt: Date = null;
-  modifiedAt: Date = null;
+  addedAt: any = null;
+  modifiedAt: any = null;
   url: string = null;
   isAdded = false;
   style = null;
   totalDocuments: number = null;
   images: Array<string> = new Array<string>();
   favicon: string;
+  constructor() {
+    this.content = '';
+    this.title = '';
+  }
 }

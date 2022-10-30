@@ -108,3 +108,60 @@ export function getExtensionFileBySearchType(searchType: string) {
   const fileType = searchType.split(':').pop();
   return fileType;
 }
+
+export function onlyInLeft(leftValue, rightValue, keyCompare: string[]) {
+  const res = [];
+
+  for (let i = 0; i < leftValue.length; i++) {
+    let j = 0;
+    let isSame = false;
+    while (j < rightValue.length) {
+      let m = 0;
+      for (let n = 0; n < keyCompare.length; n++) {
+        if (rightValue[j][keyCompare[n]] == leftValue[i][keyCompare[n]]) {
+          m++;
+        }
+      }
+      if (m == keyCompare.length) {
+        isSame = true;
+        break;
+      }
+      j++;
+    }
+    if (!isSame) res.push(leftValue[i]);
+  }
+  return res;
+}
+
+export function timeDifference(current, previous) {
+  const msPerMinute = 60 * 1000;
+  const msPerHour = msPerMinute * 60;
+  const msPerDay = msPerHour * 24;
+  const msPerMonth = msPerDay * 30;
+  const msPerYear = msPerDay * 365;
+
+  const elapsed = current - previous;
+
+  if (elapsed < msPerMinute) {
+    return Math.round(elapsed / 1000) + ' seconds ago';
+  } else if (elapsed < msPerHour) {
+    return Math.round(elapsed / msPerMinute) + ' minutes ago';
+  } else if (elapsed < msPerDay) {
+    return Math.round(elapsed / msPerHour) + ' hours ago';
+  } else if (elapsed < msPerMonth) {
+    return Math.round(elapsed / msPerDay) + ' days ago';
+  } else if (elapsed < msPerYear) {
+    return Math.round(elapsed / msPerMonth) + ' months ago';
+  } else {
+    return Math.round(elapsed / msPerYear) + ' years ago';
+  }
+}
+
+export function getDomainFromUrl(url) {
+  try {
+    const domain = new URL(url);
+    return domain.hostname;
+  } catch {
+    return '';
+  }
+}

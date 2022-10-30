@@ -1,5 +1,6 @@
 package com.saltlux.deepsignal.web.api.client;
 
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
@@ -31,4 +32,7 @@ public interface DsFeedClient {
         @RequestParam(value = "requestId",required = false) String requestId,
         @RequestParam(value = "docId") String docId
     );
+
+    @PostMapping(API_CONNECTOME_FEED + "/getListDocumentByIds")
+    ResponseEntity<?> getListDocumentByIds(@RequestBody JSONObject bodyJSON);
 }

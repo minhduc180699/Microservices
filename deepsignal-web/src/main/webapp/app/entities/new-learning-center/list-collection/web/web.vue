@@ -41,7 +41,7 @@
             </div>
           </div>
           <div class="elements-right">
-            <button type="button" class="btn btn-default btn-sm"><i class="icon-common icon-close"></i>선택 삭제</button>
+            <button type="button" class="btn btn-default btn-sm" @click="deleteAll"><i class="icon-common icon-close"></i>선택 삭제</button>
           </div>
         </div>
         <div class="lc-list-wrap">

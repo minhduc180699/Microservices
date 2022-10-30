@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -71,6 +72,17 @@ public class FeedResource {
         try {
             return ResponseEntity.ok(dsFeedClient.getFeed(connectomeId, requestId, docId));
         }catch (Exception e){
+            log.error(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/getListDocumentByIds")
+    @Operation(summary = "Get all feed information in list", tags = { "Connectome Feed Management" })
+    public ResponseEntity<?> getAllFeedByIds(@RequestBody JSONObject bodyJSON) {
+        try {
+            return ResponseEntity.ok(dsFeedClient.getListDocumentByIds(bodyJSON));
+        } catch (Exception e) {
             log.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }

@@ -12,6 +12,7 @@ const getCollectionsURL = baseCollectionsApiUrl + '/get/all';
 const getCollectionURL = baseCollectionsApiUrl + '/get';
 const getCollectionRequestListURL = baseCollectionsApiUrl + '/getRequestList';
 const postCreateCollectionURL = baseCollectionsApiUrl + '/create';
+const postCreateTmpCollectionURL = baseCollectionsApiUrl + '/tmp/create';
 const postUpdateCollectionURL = baseCollectionsApiUrl + '/update';
 const getDocGraphUrl = baseCollectionsApiUrl + '/document-map';
 
@@ -25,36 +26,66 @@ const keyStoreStorageList = 'ConnectomeBuilderStorageList';
 const keyStoreNodesPrefix = 'ConnectomeBuilderNodes_';
 
 const circleColors = [
-  '#8600b0',
-  '#6bc600',
-  '#002aba',
-  '#ffe022',
-  '#0081fa',
-  '#00db83',
-  '#a40075',
-  '#008d2c',
-  '#ff4e92',
-  '#cbffa8',
-  '#0a003e',
-  '#ffa54c',
-  '#004089',
-  '#8b7400',
-  '#31a7ff',
-  '#975b00',
-  '#01b5df',
-  '#ff775f',
-  '#95f6ff',
-  '#5e000d',
-  '#e8ffff',
-  '#440035',
-  '#008d78',
-  '#ff8cd3',
-  '#1e3f00',
-  '#ffbffa',
-  '#051b00',
-  '#a9baff',
-  '#001127',
-  '#008285',
+  '#016962',
+  '#45132d',
+  '#ff73ad',
+  '#680038',
+  '#dd75ff',
+  '#01479f',
+  '#ff764f',
+  '#005b18',
+  '#725200',
+  '#01b666',
+  '#a48a00',
+  '#408e00',
+  '#c88c00',
+  '#5d0015',
+  '#be4afc',
+  '#ffa4ff',
+  '#004774',
+  '#b9d138',
+  '#ff958a',
+  '#ff6059',
+  '#67a900',
+  '#4500aa',
+  '#b0808c',
+  '#f50059',
+  '#4f1400',
+  '#440a49',
+  '#46aeff',
+  '#c80017',
+  '#006cc3',
+  '#d0c975',
+  '#01a534',
+  '#ecbf7c',
+  '#6f9bff',
+  '#a7008f',
+  '#01cba8',
+  '#ffa664',
+  '#7f8300',
+  '#d36200',
+  '#003f1c',
+  '#018f7e',
+  '#92cdf8',
+  '#141d63',
+  '#332305',
+  '#aed191',
+  '#eeb2f5',
+  '#5479ff',
+  '#5a2c00',
+  '#bfc3f2',
+  '#77dc7b',
+  '#f0bb9a',
+  '#c8006e',
+  '#8c2c00',
+  '#ff2622',
+  '#7c66ff',
+  '#014ce1',
+  '#192251',
+  '#970027',
+  '#9bd2bb',
+  '#02c3d5',
+  '#12ddd2',
 ];
 
 const defaultLangKey = 'en';
@@ -111,8 +142,8 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
         .filter(
           node =>
             node.weight >= state.minNodeWeight &&
-            node.linkedNodes.length >= state.minLinkedNodes &&
-            node.relatedDocuments.length >= state.minRelatedDocuments &&
+            node.linkedNodes?.length >= state.minLinkedNodes &&
+            node.relatedDocuments?.length >= state.minRelatedDocuments &&
             !node.disable
         )
         .sort((a, b) => (a.weight > b.weight ? -1 : 1)),
@@ -203,88 +234,88 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
       state.collections = payload.collections.map(x => x);
       state.collectionsChanged++;
     },
-    addPd(
-      state,
-      payload: {
-        docId: string;
-        connectome: Array<ConnectomeNode>;
-      }
-    ) {
-      if (!payload) {
-        return;
-      }
+    // addPd(
+    //   state,
+    //   payload: {
+    //     docId: string;
+    //     connectome: Array<ConnectomeNode>;
+    //   }
+    // ) {
+    //   if (!payload) {
+    //     return;
+    //   }
 
-      if (!payload.docId) {
-        return;
-      }
+    //   if (!payload.docId) {
+    //     return;
+    //   }
 
-      payload.connectome.forEach(element => {
-        const node = state.currentConnectome.find(elem => elem.id === element.id);
-        if (node) {
-          if (node.relatedDocuments && node.relatedDocuments.length > 0) {
-            node.weight = node.weight / (node.relatedDocuments.length * node.relatedDocuments.length) + element.weight;
-          } else {
-            node.weight = element.weight;
-          }
-          node.relatedDocuments.push(payload.docId);
-          node.keywordList.push(...element.keywordList);
-          node.weight = node.weight * (node.relatedDocuments.length * node.relatedDocuments.length);
-          node.linkedNodes.push(...element.linkedNodes);
-        } else {
-          state.currentConnectome.push(new ConnectomeNode(element));
-        }
-      });
+    //   payload.connectome.forEach(element => {
+    //     const node = state.currentConnectome.find(elem => elem.id === element.id);
+    //     if (node) {
+    //       if (node.relatedDocuments && node.relatedDocuments.length > 0) {
+    //         node.weight = node.weight / (node.relatedDocuments.length * node.relatedDocuments.length) + element.weight;
+    //       } else {
+    //         node.weight = element.weight;
+    //       }
+    //       node.relatedDocuments.push(payload.docId);
+    //       node.keywordList.push(...element.keywordList);
+    //       node.weight = node.weight * (node.relatedDocuments.length * node.relatedDocuments.length);
+    //       node.linkedNodes.push(...element.linkedNodes);
+    //     } else {
+    //       state.currentConnectome.push(new ConnectomeNode(element));
+    //     }
+    //   });
 
-      state.nodesListByDocument.set(
-        payload.docId,
-        payload.connectome.map(x => new ConnectomeNode(x))
-      );
-      console.log('added doc', payload.connectome);
-      state.currentConnectomeChanged++;
-    },
-    disableOrphans(state) {
-      console.log('disableOrphans');
-      state.currentConnectome.forEach(node => {
-        if (!node.linkedNodes) {
-          return;
-        }
-        const linkedNodeSet = new Set<string>();
-        node.linkedNodes.forEach(docId => {
-          linkedNodeSet.add(docId);
-        });
+    //   state.nodesListByDocument.set(
+    //     payload.docId,
+    //     payload.connectome.map(x => new ConnectomeNode(x))
+    //   );
+    //   console.log('added doc', payload.connectome);
+    //   state.currentConnectomeChanged++;
+    // },
+    // disableOrphans(state) {
+    //   console.log('disableOrphans');
+    //   state.currentConnectome.forEach(node => {
+    //     if (!node.linkedNodes) {
+    //       return;
+    //     }
+    //     const linkedNodeSet = new Set<string>();
+    //     node.linkedNodes.forEach(docId => {
+    //       linkedNodeSet.add(docId);
+    //     });
 
-        if (linkedNodeSet.size < 1) {
-          console.log('node is disabled:' + node.label);
-          node.disable = true;
-        } else if (linkedNodeSet.size == 1) {
-          console.log('candidate to disable:' + node.label + ':' + linkedNodeSet.values().next().value);
-          try {
-            const regOption = new RegExp(node.label.toLowerCase(), 'ig');
-            const targetNodes = state.currentConnectome.filter(target => target.id === linkedNodeSet.values().next().value);
-            console.log('target node:', targetNodes);
-            if (targetNodes && targetNodes.length == 1) {
-              if (targetNodes[0].label.toLowerCase().match(regOption)) {
-                console.log('node is disabled1:' + node.label);
-                node.disable = true;
-              } else if (targetNodes[0].label.toLowerCase().includes(node.label.toLowerCase())) {
-                console.log('node is disabled2:' + node.label);
-                node.disable = true;
-              } else {
-                node.disable = false;
-              }
-            } else {
-              node.disable = false;
-            }
-          } catch (e) {
-            console.log('error' + e);
-          } finally {
-            node.disable = false;
-          }
-        } else {
-          node.disable = false;
-        }
-      });
-    },
+    //     if (linkedNodeSet.size < 1) {
+    //       console.log('node is disabled:' + node.label);
+    //       node.disable = true;
+    //     } else if (linkedNodeSet.size == 1) {
+    //       console.log('candidate to disable:' + node.label + ':' + linkedNodeSet.values().next().value);
+    //       try {
+    //         const regOption = new RegExp(node.label.toLowerCase(), 'ig');
+    //         const targetNodes = state.currentConnectome.filter(target => target.id === linkedNodeSet.values().next().value);
+    //         console.log('target node:', targetNodes);
+    //         if (targetNodes && targetNodes.length == 1) {
+    //           if (targetNodes[0].label.toLowerCase().match(regOption)) {
+    //             console.log('node is disabled1:' + node.label);
+    //             node.disable = true;
+    //           } else if (targetNodes[0].label.toLowerCase().includes(node.label.toLowerCase())) {
+    //             console.log('node is disabled2:' + node.label);
+    //             node.disable = true;
+    //           } else {
+    //             node.disable = false;
+    //           }
+    //         } else {
+    //           node.disable = false;
+    //         }
+    //       } catch (e) {
+    //         console.log('error' + e);
+    //       } finally {
+    //         node.disable = false;
+    //       }
+    //     } else {
+    //       node.disable = false;
+    //     }
+    //   });
+    // },
     addToCollections(state, payload: { collections: Array<CmCollectionsItem> }) {
       if (!payload.collections) {
         return;
@@ -353,6 +384,12 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
       }
 
       payload.docToAdd.forEach(docId => {
+        if (!state.documentColors.has(docId)) {
+          const colorIndex = state.colorSequence % circleColors.length;
+          state.colorSequence++;
+          const newColor = circleColors[colorIndex];
+          state.documentColors.set(docId, newColor);
+        }
         if (state.currentCollection.documentIdList.indexOf(docId) < 0) {
           state.currentCollection.documentIdList.push(docId);
           state.currentCollection.modifiedDate = new Date();
@@ -402,7 +439,7 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
       const newColor = circleColors[colorIndex];
       state.documentColors.set(PdData.docId, newColor);
     },
-    AddNodesList(state, payload: { documentId: string; nodesList: Array<ConnectomeNode> }) {
+    addNodesList(state, payload: { documentId: string; nodesList: Array<ConnectomeNode> }) {
       if (!payload.documentId) {
         return;
       }
@@ -415,6 +452,14 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
         state.nodesListByDocument = new Map<string, Array<ConnectomeNode>>();
       }
       state.nodesListByDocument.set(payload.documentId, payload.nodesList);
+    },
+    setCurrentConnectome(state, payload: { nodeList: Array<ConnectomeNode> }) {
+      state.currentConnectome = new Array<ConnectomeNode>();
+      if (!payload || !payload.nodeList) {
+        return;
+      }
+      state.currentConnectome = payload.nodeList.map(x => x);
+      state.currentConnectomeChanged++;
     },
     resetCurrentConnectome(state) {
       state.currentConnectome = new Array<ConnectomeNode>();
@@ -429,7 +474,6 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
       state.colorSequence = 0;
       console.log('connectome builder reset');
     },
-    ProcessCurrentDocumentList(state) {},
     resetData(state) {},
   },
   actions: {
@@ -555,12 +599,51 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
           }
 
           const response = res.data.body;
-          //context.commit('setCurrentCollection', { collection: response });
           console.log('collection requests', res);
           return response;
         })
         .catch(reason => {
           console.log('Reason', reason);
+        });
+    },
+    createTmpCollection: async (
+      context,
+      payload: {
+        docIds: Array<string>;
+      }
+    ) => {
+      if (!context.getters.getConnectomeId || !context.getters.getLang) {
+        return;
+      }
+
+      axios.defaults.headers.common['connectomeId'] = context.getters.getConnectomeId;
+      axios.defaults.headers.common['lang'] = context.getters.getLang;
+
+      const newCollection = new ContextualMemoryCollection(null);
+      newCollection.connectomeId = context.getters.getConnectomeId;
+      newCollection.lang = context.getters.getLang;
+      newCollection.documentIdList = payload.docIds.map(x => x);
+
+      const apiCallConnectomeData = new Promise<any>((resolve, reject) => {
+        axios
+          .post(postCreateTmpCollectionURL, newCollection)
+          .then(res => resolve(res))
+          .catch(err => reject(err));
+      });
+
+      return apiCallConnectomeData
+        .then(res => {
+          if (!res.data.body) {
+            return;
+          }
+          const response = res.data.body;
+          console.log('create temp collection', response);
+
+          return response;
+        })
+        .catch(reason => {
+          console.log('Reason', reason);
+          console.log('Reason mini getMiniConnectomeData', payload);
         });
     },
     GenerateCurrentConnectome: async context => {
@@ -589,51 +672,6 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
 
         context.commit('addPdColor', { docId: docId });
       });
-
-      // context.getters.getCurrentCollection.documentIdList.forEach(docId => {
-      //   if (!docId) {
-      //     return;
-      //   }
-
-      //   const docConnectome = context.getters.getNodesListByDocument.get(docId);
-      //   if (docConnectome) {
-      //     context.commit('addPd', { docId: docId, connectome: docConnectome });
-      //     return;
-      //   }
-
-      //   axios.defaults.headers.common['connectomeId'] = context.getters.getConnectomeId;
-      //   axios.defaults.headers.common['lang'] = context.getters.getLang;
-
-      //   const apiCallConnectomeData = new Promise<any>((resolve, reject) => {
-      //     axios
-      //       .post(getDocGraphUrl, {
-      //         documentId: docId,
-      //       })
-      //       .then(res => resolve(res))
-      //       .catch(err => reject(err));
-      //   });
-
-      //   apiCallConnectomeData
-      //     .then(res => {
-      //       if (!res.data.body) {
-      //         return;
-      //       }
-
-      //       const response = res.data.body;
-      //       console.log('getELData', response);
-      //       context.commit('addPd', { docId: docId, connectome: response.nodeList });
-      //       return response;
-      //     })
-      //     .catch(reason => {
-      //       console.log('Reason', reason);
-      //       console.log('Reason  getELData', getDocGraphUrl, {
-      //         documentIds: [docId],
-      //       });
-      //     })
-      //     .finally(() => {});
-      // });
-
-      // context.commit('disableOrphans');
     },
     createCollection: async (
       context,
@@ -667,9 +705,6 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
           }
           const response = res.data.body;
           console.log('create new collection', response);
-
-          // context.commit('setCurrentCollection', { collection: response });
-          // context.commit('setCurrentDocumentSet', { docSet: [] });
           context
             .dispatch('loadUserCollections')
             .then(res => {
@@ -722,7 +757,6 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
           }
           const response = res.data.body;
           console.log('update collection', response);
-          //context.commit('setCurrentCollection', { collection: payload.collection });
           context
             .dispatch('loadUserCollections')
             .then(res => {
@@ -876,7 +910,7 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
       newCurrentCollection.lang = context.getters.getLang;
 
       context.commit('setCurrentCollection', { collection: newCurrentCollection });
-      context.dispatch('GenerateCurrentConnectome');
+      //context.dispatch('GenerateCurrentConnectome');
       return { status: 'OK', message: 'collection to be edited', result: newCurrentCollection };
     },
     getCurrentDraftCollection: async context => {
@@ -899,7 +933,20 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
       }
 
       context.commit('AddDocumentsToCurrentCollection', { docToAdd: payload.docIds });
-      context.dispatch('GenerateCurrentConnectome');
+      context.dispatch('createTmpCollection', { docIds: context.getters.getCurrentCollection.documentIdList }).then(res => {
+        if (!res) {
+          return;
+        }
+        console.log('generate tmp addBookmarks', res);
+        const tmpCollection = new CmCollection(res);
+        tmpCollection.documentIdList.forEach(docId => {
+          if (!docId) {
+            return;
+          }
+        });
+
+        context.commit('setCurrentConnectome', { nodeList: tmpCollection.nodeList });
+      });
       return { status: 'OK', message: 'documents added', result: context.getters.getCurrentCollection };
     },
     //from the current draft collection container, remove the bookmark
@@ -914,7 +961,21 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
       }
 
       context.commit('RemoveFromCurrentCollection', { docToRemove: payload.docIds });
-      context.dispatch('GenerateCurrentConnectome');
+      context.dispatch('createTmpCollection', { docIds: context.getters.getCurrentCollection.documentIdList }).then(res => {
+        if (!res) {
+          return;
+        }
+        console.log('generate tmp addBookmarks', res);
+        const tmpCollection = new CmCollection(res);
+        tmpCollection.documentIdList.forEach(docId => {
+          if (!docId) {
+            return;
+          }
+          context.commit('addPdColor', { docId: docId });
+        });
+
+        context.commit('setCurrentConnectome', { nodeList: tmpCollection.nodeList });
+      });
       return { status: 'OK', message: 'documents removed', result: context.getters.getCurrentCollection };
     },
     saveCurrentDraftCollection: async context => {

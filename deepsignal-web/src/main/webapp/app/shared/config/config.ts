@@ -54,7 +54,6 @@ import { loaderStore } from '@/shared/config/store/loader-store';
 import { nodeStore } from '@/shared/config/store/node-store';
 import { connectomeNetworkStore } from '@/shared/config/store/connectome-network-store';
 import { connectomeBuilderStore } from '@/shared/config/store/connectome-builder-store';
-import { collectionManagerStore } from '@/shared/config/store/collection-manager-store';
 import { collectionsManagerStore } from '@/shared/config/store/collections-manager-store';
 import { mapNetworkStore } from './store/map-network-store';
 import { miniConnectomeNetworkStore } from '@/shared/config/store/mini-connectome-network-store';
@@ -203,7 +202,6 @@ export function initVueXStore(vue) {
       userSettingStore,
       connectomeNetworkStore,
       connectomeBuilderStore,
-      collectionManagerStore,
       collectionsManagerStore,
       mapNetworkStore,
       miniConnectomeNetworkStore,

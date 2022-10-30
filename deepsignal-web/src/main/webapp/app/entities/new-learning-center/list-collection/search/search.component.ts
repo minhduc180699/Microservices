@@ -3,6 +3,7 @@ import vueCustomScrollbar from 'vue-custom-scrollbar';
 import axios from 'axios';
 import singleCard from '@/entities/new-learning-center/aside/single-card/single-card.vue';
 import { documentCard } from '@/shared/model/document-card.model';
+import { getDomainFromUrl, onlyInLeft } from '@/util/ds-util';
 
 @Component({
   components: {
@@ -20,11 +21,8 @@ export default class Search extends Vue {
   textSearch = '';
   isShowSpinner = false;
   dataSearch = [];
-  cardSelected = [];
   allData = [];
-  total = 0;
-  isSelectAll = false;
-  tabTypeActive = '';
+  tabTypeActive = 'WEB';
   loaderDisable = true;
   internalSearch = [];
   metaSearch = [];
@@ -34,9 +32,9 @@ export default class Search extends Vue {
   lengthData = 0;
   isAddCondition = true;
   tabs = [
-    { name: 'All', searchType: '', value: 1 },
-    { name: 'News', searchType: 'searchNews', value: 2 },
-    { name: 'Videos', searchType: 'searchVideo', value: 3 },
+    { name: 'All', searchType: 'WEB', value: 1 },
+    { name: 'News', searchType: 'NEWS', value: 2 },
+    { name: 'Videos', searchType: 'VIDEO', value: 3 },
     { name: 'Documents', searchType: 'searchFileType', value: 4 },
   ];
   tabActive = 1;
@@ -70,10 +68,8 @@ export default class Search extends Vue {
       this.dataSearch = [];
       this.textSearch = this.queries;
       this.allData = [];
-      this.cardSelected = [];
-      this.isSelectAll = false;
     }
-    if (this.dataSearch.length > 0 && this.total < 10 && this.getParam() == null) {
+    if (this.dataSearch.length > 0 && this.getParam() == null) {
       this.loaderDisable = true;
     } else {
       await axios
@@ -84,32 +80,37 @@ export default class Search extends Vue {
         })
         .then(res => {
           this.isShowSpinner = false;
+          console.log('res', res);
           if (res.data.internalSearch) {
             this.internalSearch = res.data.internalSearch.body;
             // @ts-ignore
             this.dataSearch = this.internalSearch.documents;
           }
           if (res.data.metaSearch) {
-            this.externalSearch = res.data.metaSearch.body;
-            // @ts-ignore
-            this.metaSearch = this.externalSearch.data;
-            // @ts-ignore
-            if (this.externalSearch.total < 1) {
-              this.loaderDisable = true;
-              this.isMoreResults = false;
-              this.isShowMore = false;
-              return;
+            if (this.tabActive === 1) {
+              this.externalSearch = res.data.metaSearch.body.data[0];
+              // @ts-ignore
+              this.metaSearch = this.externalSearch.search_result;
+              if (this.metaSearch.length <= 0) {
+                this.isMoreResults = false;
+                return;
+              }
             } else {
-              this.isMoreResults = true;
+              this.externalSearch = res.data.metaSearch.body;
+              // @ts-ignore
+              this.metaSearch = this.externalSearch.data;
+              // @ts-ignore
+              if (this.externalSearch.result.includes('NO_MORE_DATA')) {
+                this.isMoreResults = false;
+                return;
+              }
             }
-            // @ts-ignore
-            if (this.externalSearch.result.includes('NO_MORE_DATA')) {
-              this.isMoreResults = false;
-              return;
-            }
+            this.isMoreResults = true;
           }
           if (this.allData.length > 0) {
-            this.allData = this.allData.concat(this.dataSearch, this.metaSearch);
+            this.allData = this.allData
+              .concat(this.badArrToGoodArr(this.dataSearch, this.tabActive === 4 ? true : false))
+              .concat(this.badArrToGoodArr(this.metaSearch, this.tabActive === 4 ? true : false));
           } else {
             this.dataSearch.forEach((item, index) => {
               this.allData.push(item);
@@ -124,27 +125,15 @@ export default class Search extends Vue {
                 this.allData.push(this.metaSearch[i]);
               }
             }
+            this.allData = this.badArrToGoodArr(this.allData, this.tabActive === 4 ? true : false);
           }
-          this.allData = this.allData.map(item => {
-            const objectTmp = new documentCard();
-            objectTmp.author = item.author;
-            objectTmp.title = item.title;
-            objectTmp.content = item.description;
-            objectTmp.keyword = item.keyword;
-            objectTmp.type = item.searchType;
-            objectTmp.addedAt = item.org_date;
-            objectTmp.url = item.link;
-            objectTmp.images = [item.img];
-            objectTmp.favicon = item.favicon;
-            return objectTmp;
-          });
-          console.log(this.allData);
 
           this.isShowMore = false;
         })
         .catch(error => {
+          console.log(error);
           this.isShowMore = false;
-          const err = error.response.data;
+          const err = error;
           this.$bvToast.toast(err.message, {
             toaster: 'b-toaster-bottom-right',
             title: err.errorKey,
@@ -176,8 +165,6 @@ export default class Search extends Vue {
     this.allData = [];
     this.timeShowSpinner = 0;
     this.tabTypeActive = searchType;
-    this.cardSelected = [];
-    this.isSelectAll = false;
     this.searching();
   }
 
@@ -198,7 +185,7 @@ export default class Search extends Vue {
       for (let i = 0; i < this.allData.length; i++) {
         let j = 0;
         while (j < this.selectedItems.length) {
-          if (this.allData[i].url == this.selectedItems[j].url) {
+          if (this.allData[i].docId == this.selectedItems[j].docId && this.allData[i].searchType == this.selectedItems[j].searchType) {
             this.selectedItems.splice(j, 1);
             break;
           }
@@ -220,7 +207,7 @@ export default class Search extends Vue {
     for (const item of this.selectedItems) {
       let i = 0;
       while (i < this.allData.length) {
-        if (this.allData[i].url == item.url) {
+        if (this.allData[i].docId == item.docId && this.allData[i].searchType == item.searchType) {
           arrItem.push(this.allData[i]);
           break;
         }
@@ -230,39 +217,56 @@ export default class Search extends Vue {
 
     arrItem.length === this.allData.length ? $('#btnSelect').addClass('active') : $('#btnSelect').removeClass('active');
     this.totalSelected = arrItem.length;
+
+    console.log(this.selectedItems);
   }
 
   checkArraySelected(arg?) {
-    function onlyInLeft(leftValue, rightValue) {
-      const res = [];
-      for (let i = 0; i < leftValue.length; i++) {
-        let j = 0;
-        let isSame = false;
-        while (j < rightValue.length) {
-          if (rightValue[j].url == leftValue[i].url) {
-            isSame = true;
-            break;
-          }
-          j++;
-        }
-        if (!isSame) res.push(leftValue[i]);
-      }
-      return res;
-    }
-    if (arg) return onlyInLeft(this.selectedItems, this.allData);
-    return onlyInLeft(this.allData, this.selectedItems);
+    if (arg) return onlyInLeft(this.selectedItems, this.allData, ['docId', 'searchType']);
+    return onlyInLeft(this.allData, this.selectedItems, ['docId', 'searchType']);
   }
 
   setSelectedItems(newData) {
     this.selectedItems = newData;
     const arrTmp = this.checkArraySelected();
     this.totalSelected = this.allData.length - arrTmp.length;
-    // this.$emit('handleSelectedSearch', this.selectedItems);
     if (this.totalSelected > 0 && arrTmp.length === 0) $('#btnSelect').addClass('active');
     else $('#btnSelect').removeClass('active');
   }
 
   insertToMemory() {
+    console.log(this.selectedItems);
     this.$root.$emit('cart-to-conlection', this.selectedItems, 'search');
+  }
+
+  deleteAll() {
+    this.selectedItems = this.selectedItems.splice(0, 0);
+    $('#btnSelect').removeClass('active');
+  }
+
+  showMore() {
+    this.isShowMore = true;
+    this.searching();
+  }
+
+  badArrToGoodArr(arr, typeDownload?) {
+    return arr.map(item => {
+      const objectTmp = new documentCard();
+      if (objectTmp.author) objectTmp.author = item.author;
+      else objectTmp.author = getDomainFromUrl(item.link);
+      console.log(' objectTmp.author', objectTmp.author);
+      objectTmp.title = item.title;
+      objectTmp.content = item.description;
+      objectTmp.keyword = item.keyword;
+      objectTmp.type = typeDownload ? 'DOWNLOAD' : 'URL';
+      objectTmp.searchType = item.searchType;
+      objectTmp.addedAt = item.org_date;
+      objectTmp.url = item.link;
+      objectTmp.images = [item.img ? item.img : item.imgBase64 ? item.imgBase64 : ''];
+      objectTmp.favicon = item.favicon;
+      objectTmp.docId = item.docId;
+      objectTmp.noConvertTime = true;
+      return objectTmp;
+    });
   }
 }

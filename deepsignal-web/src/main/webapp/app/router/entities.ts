@@ -6,6 +6,7 @@ import NoticeList from '@/entities/help/notice/noticeList/noticeList.vue';
 import NoticeDetail from '@/entities/help/notice/noticeDetail/noticeDetail.vue';
 import LearningSocial from '@/entities/connectome/learning-management/learningSocial/leaningSocial.vue';
 import LearningWeb from '@/entities/connectome/learning-management/learningWeb/learningWeb.vue';
+import CollectionTool from '@/entities/my-ai/diagnostic/collection-tool.vue';
 
 /* tslint:disable */
 // prettier-ignore
@@ -20,7 +21,6 @@ const LearningCenter = () => import('@/entities/my-ai/learning-center/learning-c
 const ConnectomeMap = () => import('@/entities/my-ai/connectome/connectome-map-v2.vue');
 const Map2dNetwork = () => import('@/entities/my-ai/connectome/map-2d-network/map-2d-network.vue');
 const Map3dNetwork = () => import('@/entities/my-ai/connectome/map-3d-network/map-3d-network.vue');
-const ConnectomeBuilder = () => import('@/entities/my-ai/connectome-builder/builder-map/builder-map.vue');
 const MiniConnectomeMap = () => import('@/entities/my-ai/mini-connectome/mini-connectome-map.vue');
 const MiniMap2dNetwork = () => import('@/entities/my-ai/mini-connectome/mini-map-2d-network/mini-map-2d-network.vue');
 const AddCollection = () => import('@/entities/new-learning-center/add-collection/add-collection.vue');
@@ -102,7 +102,7 @@ export default [
     meta: { authorities: [Authority.USER] },
   },
   {
-    path: '/new-learning-center',
+    path: '/collection',
     name: 'New-Learning-Center',
     component: NewLearningCenter,
     meta: { authorities: [Authority.USER] },
@@ -140,15 +140,15 @@ export default [
             name: '3DNetwork',
             component: Map3dNetwork,
           },
-          {
-            path: '/my-ai/connectome/builder',
-            name: 'Builder',
-            component: ConnectomeBuilder,
-          },
         ],
         redirect: to => {
           return '/my-ai/connectome/2dnetwork';
         },
+      },
+      {
+        path: '/my-ai/diagnostic/collection-tool',
+        name: 'diagnostic',
+        component: CollectionTool,
       },
       {
         path: '/my-ai/learning-center',

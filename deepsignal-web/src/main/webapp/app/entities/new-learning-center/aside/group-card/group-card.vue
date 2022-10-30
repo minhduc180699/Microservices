@@ -6,14 +6,8 @@
   <!--    </b-card>-->
   <div class="group-wrap">
     <div class="content-top">
-      <div class="lc-check">
-        <button
-          type="button"
-          class="btn btn-check"
-          data-toggle="button"
-          aria-pressed="false"
-          @click="handleClickGroupCard(collection)"
-        ></button>
+      <div class="lc-check" id="customInput">
+        <input type="checkbox" name="selected-items" @change="selectGroupCard" @click="selectGroupCard(collection)" />
       </div>
       <div class="media-info">
         <a class="info-item info-title" @click.prevent="toggleGroupCollection(collection)"
@@ -42,9 +36,9 @@
         <div class="media-body"></div>
       </div>
     </div>
-    <div class="tag-box" v-if="collection.tags" :key="collection.id">
+    <div class="tag-box" v-if="collection.tags && collection.tags.length">
       <div class="scroll-area">
-        <div class="tag-list" v-for="item in collection.tags" :key="item.id">
+        <div class="tag-list" v-for="item in collection.tags" :key="item">
           <a class="tag-item" href="#">{{ item }}</a>
         </div>
       </div>

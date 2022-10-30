@@ -3,6 +3,7 @@ import PublicService from '@/service/public.service';
 import singleCard from '@/entities/new-learning-center/aside/single-card/single-card.vue';
 import vueCustomScrollbar from 'vue-custom-scrollbar';
 import { documentCard } from '@/shared/model/document-card.model';
+import { getDomainFromUrl, onlyInLeft, timeDifference } from '@/util/ds-util';
 
 @Component({
   components: {
@@ -38,15 +39,18 @@ export default class web extends Vue {
         }
 
         const obj = new documentCard();
-        obj.author = res.data.author;
+        if (res.data.author) obj.author = res.data.author;
+        else obj.author = getDomainFromUrl(res.data.url);
         obj.title = res.data.title;
         obj.content = res.data.desc;
         obj.keyword = res.data.keyword;
         obj.type = 'URL';
-        obj.addedAt = res.data.publicTime;
-        obj.url = res.data.link;
+        obj.searchType = 'WEB';
+        obj.addedAt = timeDifference(new Date(), new Date(res.data.publicTime));
+        obj.url = res.data.url;
         obj.images = [res.data.image ? res.data.image : res.data.imageAlt ? res.data.imageAlt : null];
         obj.favicon = res.data.favicon;
+        obj.noConvertTime = true;
 
         this.previewModels.push(obj);
         this.resetPreview();
@@ -98,24 +102,8 @@ export default class web extends Vue {
   }
 
   checkArraySelected(arg?) {
-    function onlyInLeft(leftValue, rightValue) {
-      const res = [];
-      for (let i = 0; i < leftValue.length; i++) {
-        let j = 0;
-        let isSame = false;
-        while (j < rightValue.length) {
-          if (rightValue[j].link == leftValue[i].link) {
-            isSame = true;
-            break;
-          }
-          j++;
-        }
-        if (!isSame) res.push(leftValue[i]);
-      }
-      return res;
-    }
-    if (arg) return onlyInLeft(this.selectedItems, this.previewModels);
-    return onlyInLeft(this.previewModels, this.selectedItems);
+    if (arg) return onlyInLeft(this.selectedItems, this.previewModels, ['url']);
+    return onlyInLeft(this.previewModels, this.selectedItems, ['url']);
   }
 
   setSelectedItems(newData) {
@@ -127,5 +115,10 @@ export default class web extends Vue {
 
   insertToMemory() {
     this.$root.$emit('cart-to-conlection', this.selectedItems, 'web');
+  }
+
+  deleteAll() {
+    this.selectedItems = this.selectedItems.splice(0, 0);
+    $('#btnSelect').removeClass('active');
   }
 }

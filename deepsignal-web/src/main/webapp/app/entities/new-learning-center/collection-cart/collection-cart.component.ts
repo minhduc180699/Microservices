@@ -3,6 +3,8 @@ import vueCustomScrollbar from 'vue-custom-scrollbar';
 import singleCard from '@/entities/new-learning-center/aside/single-card/single-card.vue';
 import { namespace } from 'vuex-class';
 import { CmCollection } from '@/shared/model/cm-collection.model';
+import { ReqestModel } from '@/shared/model/request-savecollection.model';
+import axios from 'axios';
 
 const collectionsManagerStore = namespace('collectionsManagerStore');
 
@@ -21,6 +23,10 @@ export default class CollectionCart extends Vue {
 
   @collectionsManagerStore.Action
   public saveCurrentDraftCollection: () => Promise<{ status: string; message: string; result: any }>;
+  @collectionsManagerStore.Action
+  public addBookmarksToCurrentCollection: (payload: {
+    docIds: Array<string>;
+  }) => Promise<{ status: string; message: string; result: CmCollection }>;
 
   private scrollSettings = {
     wheelPropagation: false,
@@ -33,7 +39,7 @@ export default class CollectionCart extends Vue {
 
   @Watch('currentCollection')
   setCurrentCollection() {
-    this.isChild = false;
+    // this.isChild = false;
   }
 
   created() {
@@ -45,19 +51,60 @@ export default class CollectionCart extends Vue {
   }
 
   saveCollection() {
-    this.saveCurrentDraftCollection().then(res => {
-      if (!res) {
-        return;
-      }
+    console.log('this.newCollection', this.newCollection);
+    let trainedDocumentIds = [];
+    const arrReq = [];
+    let connectomeId;
+    if (localStorage.getItem('ds-connectome')) {
+      connectomeId = JSON.parse(localStorage.getItem('ds-connectome')).connectomeId;
+    }
+    if (connectomeId && this.newCollection && this.newCollection.length > 0) {
+      console.log('this.newCollection2', this.newCollection);
+      this.newCollection.forEach(element => {
+        if (element?.type) {
+          const objectTmp = new ReqestModel();
+          objectTmp.id = Date.now();
+          objectTmp.name = element.title;
+          objectTmp.path = element.url;
+          objectTmp.description = element.content;
+          objectTmp.type = element.type;
+          objectTmp.connectomeId = connectomeId;
+          objectTmp.author = element.author;
+          objectTmp.searchType = element.searchType;
+          objectTmp.favicon = element.favicon;
+          objectTmp.lang = this.$store.getters.currentLanguage;
+          objectTmp.keyword = element.keyword;
+          objectTmp.originDate = element.addedAt;
+          objectTmp.docId = element.docId;
+          objectTmp.img = element?.images?.[0] ? element.images[0] : '';
+          arrReq.push(objectTmp);
+        }
+      });
 
-      if (res.status === 'NOK') {
-        return;
-      }
+      if (arrReq.length > 0) {
+        axios.post('/api/personal-documents/urlconvert', arrReq).then(res => {
+          console.log('res', res);
+          if (res.data?.data?.[0]) {
+            trainedDocumentIds = this.newCollection.filter(item => !item.type).map(x => x.id);
+            this.addBookmarksToCurrentCollection({ docIds: [...res.data.data, ...trainedDocumentIds] }).then(res => {
+              console.log('addBookmarksToCurrentCollection', res);
+              if (!res || res.status === 'NOK' || !res.result) {
+                return;
+              }
 
-      if (!res.result) {
-        return;
+              this.saveCurrentDraftCollection().then(res => {
+                if (!res || res.status === 'NOK' || !res.result) {
+                  return;
+                }
+                console.log('res', res);
+                // @ts-ignore
+                // this.$router.go();
+              });
+            });
+          }
+        });
       }
-    });
+    }
   }
 
   getDocDetail(docId: any) {
@@ -71,17 +118,42 @@ export default class CollectionCart extends Vue {
     { type: 'doc', arr: [] },
   ];
 
-  setCollection(arrDoc, type) {
+  setCollection(arrDoc, type, remove?) {
     this.isChild = true;
     for (let i = 0; i < this.arrCollection.length; i++) {
       if (this.arrCollection[i].type === type) {
-        this.arrCollection[i].arr = arrDoc;
+        if (type === 'text' && !remove) this.arrCollection[i].arr = this.arrCollection[i].arr.concat([...arrDoc]);
+        else this.arrCollection[i].arr = [...arrDoc];
         break;
       }
     }
+
     this.newCollection = this.newCollection.splice(0, 0);
     this.arrCollection.forEach(item => {
       this.newCollection = this.newCollection.concat(item.arr);
     });
+  }
+
+  removeCardReq(arr, item) {
+    let type;
+    switch (item.searchType) {
+      case 'WEB': {
+        type = 'web';
+        break;
+      }
+      case 'USERNOTE': {
+        type = 'text';
+        break;
+      }
+      default: {
+        type = 'search';
+        break;
+      }
+    }
+    const arrTmp = this.arrCollection.find(item => item.type === type).arr;
+
+    const index = arrTmp.indexOf(item);
+    if (index !== -1) arrTmp.splice(index, 1);
+    this.setCollection(arrTmp, type, true);
   }
 }

@@ -14,9 +14,9 @@ export class ConnectomeNode {
     if (element) {
       this.id = element.id;
       this.label = element.label;
-      this.relatedDocuments = element.relatedDocuments?.map(x => x);
-      if (element.keywordList) this.keywordList = element.keywordList?.map(x => x);
-      this.linkedNodes = element.linkedNodes?.map(x => x);
+      this.relatedDocuments = element.relatedDocuments ? element.relatedDocuments.map(x => x) : new Array<string>();
+      this.keywordList = element.keywordList ? element.keywordList.map(x => x) : new Array<string>();
+      this.linkedNodes = element.linkedNodes ? element.linkedNodes.map(x => x) : new Array<string>();
       this.weight = element.weight;
     }
   }

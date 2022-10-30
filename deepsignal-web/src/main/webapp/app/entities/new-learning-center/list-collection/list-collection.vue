@@ -208,16 +208,22 @@
                 <ul class="lc-card-list">
                   <li
                     :class="item.totalDocuments > 1 ? 'lc-card-group' : 'lc-card-item'"
-                    v-for="item in collectionCardItems"
+                    v-for="item in documentOrGroupDocumentsCardItems"
                     :aria-selected="currentCollection.documentIdList.indexOf(item.id) > -1 ? 'true' : 'false'"
                     :key="item.id"
                   >
                     <group-card
-                      v-if="item.totalDocuments > 1"
+                      v-if="item.totalDocuments && item.totalDocuments > 1"
                       :collection="item"
                       @toggleGroupCollection="handleGroupCollectionActive"
+                      @selectAllInGroup="selectAllInGroup"
                     ></group-card>
-                    <single-card :document="item.docDetail[0]" v-else></single-card>
+                    <single-card
+                      v-else
+                      :selectedItems="selectedItems"
+                      @setSelectedItems="setSelectedItems"
+                      :document="item.docDetail ? item.docDetail[0] : item"
+                    ></single-card>
                   </li>
                 </ul>
               </vue-custom-scrollbar>
@@ -330,7 +336,7 @@
               <vue-custom-scrollbar class="overflow-yx-scroll csScrollPositon h-100" :settings="scrollSettings">
                 <ul class="lc-card-list">
                   <li v-for="item in chosenCollection.docDetail" :key="item.id" class="lc-card-item" aria-selected="false">
-                    <single-card :document="item"></single-card>
+                    <single-card :selectedItems="selectedItems" :document="item" @setSelectedItems="setSelectedItems"></single-card>
                   </li>
                 </ul>
               </vue-custom-scrollbar>
