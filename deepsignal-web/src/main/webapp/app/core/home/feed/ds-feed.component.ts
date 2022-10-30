@@ -255,7 +255,7 @@ export default class DsFeed extends mixins(ShowMoreMixin) {
         this.size,
         this.search_type,
         null,
-        null,
+        "Feed",
         null
       )
       .then(res => {
@@ -263,13 +263,10 @@ export default class DsFeed extends mixins(ShowMoreMixin) {
         this.isNoResult = res.data.body.totalItems <= 0;
         // this.loaderDisable = res.data.body.data.length < this.size;
         this.loaderDisable = res.data.body.totalItems == this.totalDataSearch;
-        console.log('res.data.body.totalItems: ', res.data.body.totalItems, 'totalDataSearch: ', this.totalDataSearch);
         if (this.loaderDisable) {
           this.goToLearningCenter = true;
         }
-        console.log('JAJAJAJA');
         this.setTimeoutFeed();
-        console.log('KAKAKAKA');
         this.processResponseConnectomeFeed(res);
       })
       .catch(() => this.setTimeoutFeed());
@@ -431,7 +428,7 @@ export default class DsFeed extends mixins(ShowMoreMixin) {
         this.size,
         this.search_type,
         null,
-        null,
+        "Feed",
         null
       )
       .then(res => {
@@ -552,7 +549,7 @@ export default class DsFeed extends mixins(ShowMoreMixin) {
             { description: item.description },
             { docId_content: item.docId_content },
             { imageLinks: item.og_image_base64 ? item.og_image_base64 : item.og_image_url },
-            { writer_search: item.writer_search },
+            { writer: item.writer },
             { url: item.url },
             { created_date: item.created_date },
           ]
@@ -651,7 +648,6 @@ export default class DsFeed extends mixins(ShowMoreMixin) {
       };
       currentCard.push(cardTodayTopic);
     }
-    console.log('currentCard: ', currentCard);
     return currentCard;
   }
 

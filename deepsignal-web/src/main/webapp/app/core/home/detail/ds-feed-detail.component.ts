@@ -143,7 +143,9 @@ export default class DsFeedDetail extends Vue {
     const connectomeId = this.$route.params.connectomeId;
     // this.cardData = this.item ? this.item : JSON.parse(localStorage.getItem('card-data'));
     if (!this.connectomeFeed) {
-      const connnectomeUserId = JSON.parse(localStorage.getItem('ds-connectome')).connectomeId;
+      const connnectomeUserId = localStorage.getItem('ds-connectome')
+        ? JSON.parse(localStorage.getItem('ds-connectome')).connectomeId
+        : JSON.parse(sessionStorage.getItem('ds-connectome')).connectomeId;
       if (connectomeId !== connnectomeUserId) {
         axios
           .get('/api/connectome-feed/checkPermissionShare', {
@@ -156,52 +158,69 @@ export default class DsFeedDetail extends Vue {
           .then(res => {
             if (res.data) {
               this.permission = true;
-              this.getFeedById(connectomeId, this.feedId);
+              this.findFeedById(connectomeId,null, this.feedId)
             } else {
               this.permission = false;
             }
           });
       } else {
-        this.getFeedById(connectomeId, this.feedId);
+        this.findFeedById(connectomeId,null, this.feedId)
       }
     } else {
-      this.getFeedById(connectomeId, this.feedId);
+      this.findFeedById(connectomeId,null, this.feedId)
     }
   }
 
-  public getFeedById(connectomeId: string, id: string) {
-    if (this.item) {
-      this.feedService()
-        .getFeedById(connectomeId, id)
-        .then(res => {
-          this.connectomeFeed = res.data;
-          this.loading = false;
-          this.convertPersonalToFeed();
-          this.getTitles(this.connectomeFeed.relatedPeople, 'PEOPLE');
-          this.getTitles(this.connectomeFeed.relatedCompany, 'COMPANY');
-          this.getPeopleAndCompany();
-        })
+  public findFeedById(connecttomeId: string, requestId: string, docId: string){
+      this.feedService().
+      getDetailFeed(connecttomeId, requestId, docId).
+      then(res => {
+        this.connectomeFeed = res.data.body.data;
+        this.loading = false;
+        this.convertPersonalToFeed();
+        this.getTitles(this.connectomeFeed.relatedPeople, 'PEOPLE');
+        this.getTitles(this.connectomeFeed.relatedCompany, 'COMPANY');
+        this.getPeopleAndCompany();
+      })
         .catch(err => {
           this.loading = false;
           this.isShowDetailSidePeople = false;
-        });
-    } else {
-      this.feedService()
-        .getFeedById(connectomeId, id)
-        .then(res => {
-          this.connectomeFeed = res.data;
-          this.convertPersonalToFeed();
-          this.loading = false;
-          this.getTitles(this.connectomeFeed.relatedPeople, 'PEOPLE');
-          this.getTitles(this.connectomeFeed.relatedCompany, 'COMPANY');
-          this.getPeopleAndCompany();
         })
-        .catch(err => {
-          this.loading = false;
-          this.isShowDetailSidePeople = false;
-        });
-    }
   }
+
+  // public getFeedById(connectomeId: string, id: string) {
+  //   if (this.item) {
+  //     this.feedService()
+  //       .getFeedById(connectomeId, id)
+  //       .then(res => {
+  //         this.connectomeFeed = res.data;
+  //         this.loading = false;
+  //         this.convertPersonalToFeed();
+  //         this.getTitles(this.connectomeFeed.relatedPeople, 'PEOPLE');
+  //         this.getTitles(this.connectomeFeed.relatedCompany, 'COMPANY');
+  //         this.getPeopleAndCompany();
+  //       })
+  //       .catch(err => {
+  //         this.loading = false;
+  //         this.isShowDetailSidePeople = false;
+  //       });
+  //   } else {
+  //     this.feedService()
+  //       .getFeedById(connectomeId, id)
+  //       .then(res => {
+  //         this.connectomeFeed = res.data;
+  //         this.convertPersonalToFeed();
+  //         this.loading = false;
+  //         this.getTitles(this.connectomeFeed.relatedPeople, 'PEOPLE');
+  //         this.getTitles(this.connectomeFeed.relatedCompany, 'COMPANY');
+  //         this.getPeopleAndCompany();
+  //       })
+  //       .catch(err => {
+  //         this.loading = false;
+  //         this.isShowDetailSidePeople = false;
+  //       });
+  //   }
+  // }
 
   public onSlideChange() {
     // @ts-ignore
@@ -360,7 +379,7 @@ export default class DsFeedDetail extends Vue {
 
     const externalUrl = {
       url: this.$route.path,
-      originalUrl: this.connectomeFeed.sourceId ? this.connectomeFeed.sourceId : '',
+      originalUrl: this.connectomeFeed.url ? this.connectomeFeed.url : '',
       title: this.connectomeFeed.title ? this.connectomeFeed.title : '',
     };
 
