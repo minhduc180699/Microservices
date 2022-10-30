@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.Objects;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -52,6 +53,24 @@ public class FeedResource {
                 dsFeedClient.searchFeed(connectomeId, request_id, keyword, from, until, page, size, searchType, channels, type, lang)
             );
         } catch (Exception e) {
+            log.error(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/getDetailFeed/{connectomeId}")
+    @Operation(summary = "Search card by docId", tags = { "Connectome Feed Management" }, security = @SecurityRequirement(name = "bearerAuth"))
+    public ResponseEntity<?> getDetailCard(
+        @PathVariable(value = "connectomeId") String connectomeId,
+        @RequestParam(value = "requestId",required = false) String requestId,
+        @RequestParam(value = "docId") String docId){
+
+        if (StringUtils.isEmpty(connectomeId) || StringUtils.isEmpty(docId)){
+                return ResponseEntity.badRequest().body("ConncetomeId or docId is null");
+        }
+        try {
+            return ResponseEntity.ok(dsFeedClient.getFeed(connectomeId, requestId, docId));
+        }catch (Exception e){
             log.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }

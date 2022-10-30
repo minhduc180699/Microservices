@@ -1,4 +1,4 @@
-import { PostModel } from '@/shared/model/post.model';
+import {PostModel} from '@/shared/model/post.model';
 import {
   CARD_CLASS_LOGO,
   CARD_SIZE,
@@ -8,9 +8,13 @@ import {
   SERVICE_TYPE,
   SOURCE_URI,
 } from '@/shared/constants/feed-constants';
-import { getImageSizeByUrl } from '@/util/ds-util';
-import { buildCardSizeByImageSize, checkNewsCardTypeWithoutSwipers, isFitContentGroupsCardType } from '@/util/ds-feed-util';
-import { randomEleInArray, separateArr } from '@/util/array-util';
+import {getImageSizeByUrl} from '@/util/ds-util';
+import {
+  buildCardSizeByImageSize,
+  checkNewsCardTypeWithoutSwipers,
+  isFitContentGroupsCardType
+} from '@/util/ds-feed-util';
+import {randomEleInArray, separateArr} from '@/util/array-util';
 
 export class CardModel extends PostModel {
   id: string;
@@ -21,7 +25,7 @@ export class CardModel extends PostModel {
   og_image_base64: string;
   og_image_url: any;
   swipers: any;
-  writer_search: string;
+  writer: string;
   favicon_url: string;
   favicon_base64: string;
   search_type: string;
@@ -106,21 +110,15 @@ export class CardModel extends PostModel {
     if (component === 'people') {
       return CARD_SIZE._1_2;
     }
-
-    // component = feed
-    if (this.writer_search && this.writer_search.toLowerCase().includes('youtube')) {
+    //component = feed
+    if (this.writer.toLowerCase().includes("youtube") && this.url.includes("youtube") && this.url.includes('watch')) {
       return randomEleInArray([CARD_SIZE._2_2, CARD_SIZE._1_2]);
     } else {
-      if ((this.og_image_base64 && this.og_image_base64?.length > 0) || (this.og_image_url && this.og_image_url?.length > 0)) {
-        if (this.isImageBase64(this?.og_image_base64) || this.isImageBase64(this?.og_image_url)) {
-          console.log(this.og_image_base64, this.og_image_url);
-          return CARD_SIZE._1_1;
-        }
-        if (this.search_type && this.search_type === 'VIDEO') {
+      if ((this.og_image_base64?.length > 0) || (this.og_image_url?.length > 0)) {
+        if (this.isImageBase64(this.og_image_base64) || this.isImageBase64(this.og_image_url)) {
           return CARD_SIZE._1_1;
         } else {
-          console.log(this.og_image_url);
-          return this.og_image_base64 || this.og_image_url ? randomEleInArray([CARD_SIZE._2_2, CARD_SIZE._1_2]) : CARD_SIZE._1_2;
+          return CARD_SIZE._1_2;
         }
       } else {
         return CARD_SIZE._1_1;

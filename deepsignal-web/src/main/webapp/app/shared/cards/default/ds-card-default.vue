@@ -3,12 +3,12 @@
     <div class="ds-card">
       <div class="ds-card-body" v-if="tab !== 'myai'">
         <router-link
-          :to="{ name: 'Detail', params: { connectomeId: connectomeId, feedId: item.id, item: item } }"
+          :to="{ name: 'Detail', params: { connectomeId: connectomeId, feedId: item.docId, item: item } }"
           custom
           v-if="item.dataSize === cardSide._1_2"
         >
           <a @click="saveToLocalStorage()" v-if="tab === 'feed'">
-            <div class="img" v-if="item.search_type == 'VIDEO' && item.url.indexOf('youtube') > -1">
+            <div class="img" v-if="item.url.includes('youtube')">
               <!--            <iframe :src="item.sourceId" width='100%' height='100%'></iframe>-->
               <iframe width="100%" height="100%" :src="item.url.replace('watch?v=', 'embed/')" allowfullscreen></iframe>
             </div>
@@ -21,19 +21,20 @@
                 item.og_image_base64 || item.og_image_url || (!imageFull && item.og_image_base64 ? item.og_image_base64 : item.og_image_url)
               "
             >
-              <img
-                v-for="(banner, index) in item.og_image_base64 ? item.og_image_base64 : item.og_image_url"
-                :key="index"
-                :src="banner"
-                alt=""
-                @error="item.og_image_base64 ? item.og_image_base64 : (item.og_image_url = ['content/images/empty-image.png'])"
-              />
+              <img :src="(item.og_image_base64 ? item.og_image_base64 : item.og_image_url)" alt=""  @error="item.og_image_url = ['content/images/empty-image.png']" />
+              <!--              <img-->
+<!--                v-for="(banner, index) in item.og_image_base64 ? item.og_image_base64 : item.og_image_url"-->
+<!--                :key="index"-->
+<!--                :src="banner"-->
+<!--                alt=""-->
+<!--                @error="item.og_image_url = ['content/images/empty-image.png']"-->
+<!--              />-->
             </div>
             <div class="source">
               <div class="source-img">
                 <i v-bind:style="{ 'background-image': 'url(' + (item.favicon_url ? item.favicon_url : item.favicon_base64) + ')' }"></i>
               </div>
-              <div class="source-text">{{ item.writer_search }}</div>
+              <div class="source-text">{{ item.writer }}</div>
             </div>
             <div :class="item.description ? 'title max-line-2' : 'title max-line-3'">
               <text-highlight :queries="highlightedWord" highlightStyle="padding: 0 0.2em">
@@ -62,7 +63,7 @@
                 :key="index"
                 :src="banner"
                 alt=""
-                @error="item.og_image_base64 ? item.og_image_base64 : (item.og_image_url = ['content/images/empty-image.png'])"
+                @error="item.og_image_url = ['content/images/empty-image.png']"
               />
             </div>
             <div class="source">
@@ -81,7 +82,7 @@
           </a>
         </router-link>
         <router-link
-          :to="{ name: 'Detail', params: { connectomeId: connectomeId, feedId: item.id, item: item } }"
+          :to="{ name: 'Detail', params: { connectomeId: connectomeId, feedId: item.docId, item: item } }"
           custom
           v-if="item.dataSize === cardSide._1_1"
         >
@@ -90,11 +91,11 @@
               <div class="source-img">
                 <img
                   :src="item.favicon_base64 ? item.favicon_base64 : item.favicon_url"
-                  @error="item.favicon_base64 ? item.favicon_base64 : (item.favicon_url = '/content/images/icon-resources-web.png')"
+                  @error="item.favicon_url = '/content/images/icon-resources-web.png'"
                 />
                 <!--                <i :style="{backgroundImage: 'url(' + item.favicon + ')'}"></i>-->
               </div>
-              <div class="source-text">{{ item.writer_search | lmTo(30) }}</div>
+              <div class="source-text">{{ item.writer | lmTo(30) }}</div>
             </div>
             <template v-if="isFile">
               <div class="row-wrap">
@@ -130,7 +131,7 @@
                     <img
                       :src="item.og_image_base64 ? item.og_image_base64 : item.og_image_url"
                       alt=""
-                      @error="item.og_image_base64 ? item.og_image_base64 : (item.og_image_url = ['/content/images/empty-image.png'])"
+                      @error="item.og_image_url = ['/content/images/empty-image.png']"
                     />
                   </div>
                 </div>
@@ -153,7 +154,7 @@
           </a>
         </router-link>
         <router-link
-          :to="{ name: 'Detail', params: { connectomeId: connectomeId, feedId: item.id, item: item } }"
+          :to="{ name: 'Detail', params: { connectomeId: connectomeId, feedId: item.docId, item: item } }"
           custom
           v-if="item.dataSize !== cardSide._1_1 && item.dataSize !== cardSide._1_2"
         >
@@ -162,7 +163,7 @@
               <div class="source-img">
                 <i v-bind:style="{ 'background-image': 'url(' + (item.favicon_base64 ? item.favicon_base64 : item.favicon_url) + ')' }"></i>
               </div>
-              <div class="source-text">{{ item.writer_search }}</div>
+              <div class="source-text">{{ item.writer }}</div>
             </div>
             <div :class="item.description ? 'title max-line-2' : 'title max-line-3'">
               <text-highlight :queries="highlightedWord" highlightStyle="padding: 0 0.2em">
@@ -219,7 +220,7 @@
             <iframe width="100%" height="100%" :src="item.url.replace('watch?v=', 'embed/')" allowfullscreen></iframe>
           </div>
           <div class="img" v-else-if="image">
-            <img :src="item.og_image_base ? item.og_image_base64 : item.og_image_url" alt="" @error="onErrorImage" />
+            <img :src="item.og_image_base64 ? item.og_image_base64 : item.og_image_url" alt="" @error="onErrorImage" />
           </div>
           <div
             class="img"
@@ -234,14 +235,14 @@
               :key="index"
               :src="banner"
               alt=""
-              @error="item.og_image_base64 ? item.og_image_base64 : (item.og_image_url = ['content/images/empty-image.png'])"
+              @error="item.og_image_url = ['content/images/empty-image.png']"
             />
           </div>
           <div class="source">
             <div class="source-img">
               <i v-bind:style="{ 'background-image': 'url(' + item.favicon_base64 ? item.favicon_base64 : item.favicon_url + ')' }"></i>
             </div>
-            <div class="source-text">{{ item.writer_search }}</div>
+            <div class="source-text">{{ item.writer }}</div>
           </div>
           <div :class="item.description ? 'title max-line-2' : 'title max-line-3'">
             {{ item.title }}
@@ -256,10 +257,10 @@
             <div class="source-img">
               <img
                 :src="item.favicon_base64 ? item.favicon_base64 : item.favicon_url"
-                @error="item.favicon_base64 ? item.favicon_base64 : (item.favicon_url = '/content/images/icon-resources-web.png')"
+                @error="item.favicon_url = '/content/images/icon-resources-web.png'"
               />
             </div>
-            <div class="source-text">{{ item.writer_search | lmTo(30) }}</div>
+            <div class="source-text">{{ item.writer | lmTo(30) }}</div>
           </div>
           <div class="title" v-if="item.title">
             {{ item.title | lmTo(20) }}
@@ -294,7 +295,7 @@
             <div class="source-img">
               <i v-bind:style="{ 'background-image': 'url(' + item.favicon_base64 ? item.favicon_base64 : item.favicon_url + ')' }"></i>
             </div>
-            <div class="source-text">{{ item.writer_search }}</div>
+            <div class="source-text">{{ item.writer }}</div>
           </div>
           <div :class="item.description ? 'title max-line-2' : 'title max-line-3'">
             {{ item.title }}
@@ -314,7 +315,7 @@
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowfullscreen
             ></iframe>
-            <img v-else :src="item.og_image_base ? item.og_image_base64 : item.og_image_url" alt="" @error="onErrorImage" />
+            <img v-else :src="item.og_image_base64 ? item.og_image_base64 : item.og_image_url" alt="" @error="onErrorImage" />
           </div>
           <div
             class="img"

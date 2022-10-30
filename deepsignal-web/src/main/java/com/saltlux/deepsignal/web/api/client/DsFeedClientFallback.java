@@ -34,4 +34,11 @@ public class DsFeedClientFallback implements DsFeedClient {
         response.put("totalPages", 0);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+    @Override
+    public ResponseEntity<?> getFeed(String connectomeId, String requestId, String docId) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("Card", -1);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 }

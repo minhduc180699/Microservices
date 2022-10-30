@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.*;
 @Qualifier
 @FeignClient(name = "deepsignal-feed-cache", fallback = DsFeedClientFallback.class)
 public interface DsFeedClient {
-    String API_CONNECTOME_FEED = "/deepsignalFeedCache";
+    String API_CONNECTOME_FEED = "/goCache";
 
-    @GetMapping(API_CONNECTOME_FEED + "/searchFeed")
+    @GetMapping(API_CONNECTOME_FEED + "/searchDoc")
     ResponseEntity<?> searchFeed(
         @RequestParam(value = "connectomeId", required = true) String connectomeId,
         @RequestParam(value = "requestId", required = false) String request_id,
@@ -23,5 +23,12 @@ public interface DsFeedClient {
         @RequestParam(value = "channels", required = false) String channels,
         @RequestParam(value = "type", required = false) String type,
         @RequestParam(value = "lang", required = true, defaultValue = "en") String lang
+    );
+
+    @GetMapping(API_CONNECTOME_FEED + "/getDoc")
+     ResponseEntity<?> getFeed(
+        @RequestParam(value = "connectomeId") String connectomeId,
+        @RequestParam(value = "requestId",required = false) String requestId,
+        @RequestParam(value = "docId") String docId
     );
 }
