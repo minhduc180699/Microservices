@@ -3,7 +3,7 @@ import vueCustomScrollbar from 'vue-custom-scrollbar';
 import axios from 'axios';
 import singleCard from '@/entities/new-learning-center/aside/single-card/single-card.vue';
 import { documentCard } from '@/shared/model/document-card.model';
-import { getDomainFromUrl, onlyInLeft } from '@/util/ds-util';
+import { getDomainFromUrl, onlyInLeft, toDataURL } from '@/util/ds-util';
 
 @Component({
   components: {
@@ -263,7 +263,14 @@ export default class Search extends Vue {
       objectTmp.addedAt = item.org_date;
       objectTmp.url = item.link;
       objectTmp.images = [item.img ? item.img : item.imgBase64 ? item.imgBase64 : ''];
-      objectTmp.favicon = item.favicon;
+      if (item.favicon)
+        toDataURL(item.favicon)
+          .then(res => {
+            objectTmp.favicon = res;
+          })
+          .catch(err => {
+            objectTmp.favicon = null;
+          });
       objectTmp.docId = item.docId;
       objectTmp.noConvertTime = true;
       return objectTmp;

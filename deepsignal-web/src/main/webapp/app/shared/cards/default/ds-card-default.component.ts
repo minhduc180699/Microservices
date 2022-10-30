@@ -66,21 +66,21 @@ export default class DsCardDefault extends Vue {
 
   mounted() {
     this.randomImageOrFullImage();
-    if (!this.item || !this.item.searchType) {
+    if (!this.item || !this.item.search_type) {
       return;
     }
-    if (this.item.searchType.includes('searchFileType')) {
+    if (this.item.search_type === "PDF" || this.item.search_type === "PPT") {
       let iconUrl;
-      const extension = getExtensionFileBySearchType(this.item.searchType);
+      const extension = getExtensionFileBySearchType(this.item.search_type);
       if (FILE_TYPE.EXCEL.some(v => extension.includes(v))) {
         iconUrl = 'file-excel-fill.svg';
-      } else if (FILE_TYPE.COMPRESSED.some(v => extension.includes(v))) {
+      } else if (FILE_TYPE.COMPRESSED.some(v => extension.toLowerCase().includes(v))) {
         iconUrl = 'file-zip-fill.svg';
-      } else if (FILE_TYPE.PPT.some(v => extension.includes(v))) {
+      } else if (FILE_TYPE.PPT.some(v => extension.toLowerCase().includes(v))) {
         iconUrl = 'file-ppt-fill.svg';
-      } else if (FILE_TYPE.PDF.some(v => extension.includes(v))) {
+      } else if (FILE_TYPE.PDF.some(v => extension.toLowerCase().includes(v))) {
         iconUrl = 'file-pdf-fill.svg';
-      } else if (FILE_TYPE.DOC.some(v => extension.includes(v))) {
+      } else if (FILE_TYPE.DOC.some(v => extension.toLowerCase().includes(v))) {
         iconUrl = 'file-word-fill.svg';
       } else {
         return ['/content/images/empty-image.png'];

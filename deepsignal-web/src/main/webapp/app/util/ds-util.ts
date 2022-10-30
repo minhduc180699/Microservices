@@ -165,3 +165,17 @@ export function getDomainFromUrl(url) {
     return '';
   }
 }
+
+export async function toDataURL(url) {
+  return fetch('https://mycorsproxy-custom.herokuapp.com/'.concat(url))
+    .then(response => response.blob())
+    .then(
+      blob =>
+        new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result);
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        })
+    );
+}
