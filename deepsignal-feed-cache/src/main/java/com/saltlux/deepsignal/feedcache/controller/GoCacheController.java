@@ -1,6 +1,7 @@
 package com.saltlux.deepsignal.feedcache.controller;
 
 import com.saltlux.deepsignal.feedcache.config.Appconfig;
+import com.saltlux.deepsignal.feedcache.model.DocCreateModel;
 import com.saltlux.deepsignal.feedcache.model.DocDataModel;
 import com.saltlux.deepsignal.feedcache.model.FeedInputModel;
 import com.saltlux.deepsignal.feedcache.model.FeedUpdateModel;
@@ -66,8 +67,8 @@ public class GoCacheController {
         return ResponseEntity.ok(iFeedService.updateFeed(data));
     }
     @PostMapping("/createDoc")
-    private ResponseEntity<?> createFeed(@RequestBody DocDataModel data){
-        return ResponseEntity.ok(iFeedService.createFeed(data));
+    private ResponseEntity<?> createFeed(@RequestBody DocCreateModel data){
+         return ResponseEntity.ok(iFeedService.createFeed(data));
     }
     @PutMapping("/likeDoc")
     private ResponseEntity<?> likeFeed(@RequestBody FeedInputModel feedModel){

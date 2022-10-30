@@ -54,7 +54,7 @@ public class FeedService implements IFeedService {
                 for (DocModel docModel : docModelList) {
 
                     // Save in Redis
-                    redisConnection.saveValueToFeedAsSync(connectomeId + docModel.getDocId(), GUtil.gson.toJson(docModel));
+                    redisConnection.saveValueToFeedAsSync(connectomeId + "_" + docModel.getDocId(), GUtil.gson.toJson(docModel));
 
                 }
                 logger.info(String.format("[getListFeedData] requestId: %s DONE success", request_id));
@@ -78,7 +78,7 @@ public class FeedService implements IFeedService {
             response = searcherClient.searchFeed(connectomeId, keyword, from, until, page, size, searchType, channels, lang, type);
             List<DocModel> docModelList = response.getData();
             for (DocModel docModel : docModelList) {
-                redisConnection.saveValueToFeedAsSync(docModel.getConnectomeId() + docModel.getDocId(), GUtil.gson.toJson(docModel));
+                redisConnection.saveValueToFeedAsSync(docModel.getConnectomeId() + "_" + docModel.getDocId(), GUtil.gson.toJson(docModel));
             }
             logger.info(String.format("[searchFeedData] requestId: %s DONE success", request_id));
         } catch (Exception e) {
@@ -95,7 +95,7 @@ public class FeedService implements IFeedService {
 
         try {
             // Get feed from redis
-            DocModel docModel = redisConnection.getValueOfFeed(connectomeId + docId);
+            DocModel docModel = redisConnection.getValueOfFeed(connectomeId + "_" + docId);
             DocContentModel docContentModel = null;
             // Has feed
             if (docModel != null) {
@@ -115,7 +115,7 @@ public class FeedService implements IFeedService {
                 docContentModel = searcherClient.getFeedContent(docId).getData();
                 // Execute task save feed into Redis
                 if (docModel != null) {
-                    redisConnection.saveValueToFeedAsSync(docModel.getConnectomeId() + docModel.getDocId(), GUtil.gson.toJson(docModel));
+                    redisConnection.saveValueToFeedAsSync(docModel.getConnectomeId() + "_" + docModel.getDocId(), GUtil.gson.toJson(docModel));
                 }
                 if (docContentModel != null) {
                     redisConnection.saveValueToFeedContentAsSync(docContentModel.getDocId(), GUtil.gson.toJson(docContentModel));
@@ -146,7 +146,7 @@ public class FeedService implements IFeedService {
                 for (DocModel docModel : docModelList) {
 
                     // Save in Redis
-                    redisConnection.saveValueToFeedAsSync(connectomeId + docModel.getDocId(), GUtil.gson.toJson(docModel));
+                    redisConnection.saveValueToFeedAsSync(connectomeId + "_" + docModel.getDocId(), GUtil.gson.toJson(docModel));
 
                 }
                 logger.info(String.format("[getListFilterFeed] requestId: %s DONE success", request_id));
@@ -162,7 +162,7 @@ public class FeedService implements IFeedService {
     }
 
     @Override
-    public ResultResponse createFeed(DocDataModel data) {
+    public ResultResponse createFeed(DocCreateModel data) {
         ResultResponse response = new ResultResponse(0, "success", data.getRequestId());
         try {
             LinkedHashMap<String, Object> saveRecord = new LinkedHashMap<>();
@@ -170,13 +170,13 @@ public class FeedService implements IFeedService {
             String sourceId = null;
 
             if (data.getComment_id() != null && data.getReply_id() != null) {
-                sourceId = data.getSource_uri() + "-" + data.getComment_id() + "-" + data.getReply_id();
+                sourceId = data.getUrl() + "-" + data.getComment_id() + "-" + data.getReply_id();
             } else if (data.getComment_id() == null) {
-                sourceId = data.getSource_uri() + "-0-" + data.getReply_id();
+                sourceId = data.getUrl() + "-0-" + data.getReply_id();
             } else if (data.getReply_id() == null) {
-                sourceId = data.getSource_uri() + "-" + data.getComment_id() + "-0";
+                sourceId = data.getUrl() + "-" + data.getComment_id() + "-0";
             } else {
-                sourceId = data.getSource_uri() + "-0-0";
+                sourceId = data.getUrl() + "-0-0";
             }
 
             saveRecord.put("source_id", sourceId);
@@ -186,8 +186,12 @@ public class FeedService implements IFeedService {
             data.setCollector("RECOMMENDATION");
             producer.send(KafkaConstant.FEED_CREATE_TOPIC, GUtil.gson.toJson(data));
             producer.send(KafkaConstant.FEED_CREATE_TOPIC_TEST, GUtil.gson.toJson(data));
-            if ((data.getContent() == null || data.getContent().isEmpty()) && !data.getSource_uri().contains("youtube")) {
-                realtimeCrawlerClient.postRealtimeCrawler(Collections.singletonList(data.toFeedRealtimeCrawlerModel()));
+            try{
+                if ((data.getContent() == null || data.getContent().isEmpty()) && !data.getUrl().contains("youtube")) {
+                    realtimeCrawlerClient.postRealtimeCrawler(Collections.singletonList(data.toFeedRealtimeCrawlerModel()));
+                }
+            } catch (NullPointerException e){
+                // todo nothing
             }
             logger.info(String.format("[createFeed] requestId: %s DONE success", data.getRequestId()));
             logger.info(String.format("FeedModel pushed to Kafka: %s", GUtil.gson.toJson(data)));
@@ -244,6 +248,8 @@ public class FeedService implements IFeedService {
 
             data.remove(Constant.DocumentFieldName.FEED_PARTITION_FIELD);
             data.add("feed_partition", feedJsonObject.get("feed_partition"));
+            data.remove(Constant.DocumentFieldName.IS_DELETED_FIELD);
+            data.remove(Constant.DocumentFieldName.IS_BOOKMARK_FIELD);
             producer.send(KafkaConstant.FEED_UPDATE_TOPIC, GUtil.gson.toJson(data));
             logger.error(String.format("[likeFeed] requestId: %s DONE success", feedModel.getRequestId()));
         } catch (Exception e) {
@@ -270,6 +276,9 @@ public class FeedService implements IFeedService {
 
             data.remove(Constant.DocumentFieldName.FEED_PARTITION_FIELD);
             data.add(Constant.DocumentFieldName.FEED_PARTITION_FIELD, feedJsonObject.get(Constant.DocumentFieldName.FEED_PARTITION_FIELD));
+
+            data.remove(Constant.DocumentFieldName.LIKED_FIELD);
+            data.remove(Constant.DocumentFieldName.IS_BOOKMARK_FIELD);
             producer.send(KafkaConstant.FEED_UPDATE_TOPIC, GUtil.gson.toJson(data));
             logger.info(String.format("[hideFeed] requestId: %s DONE success", feedModel.getRequestId()));
         } catch (Exception e) {
@@ -297,6 +306,9 @@ public class FeedService implements IFeedService {
 
             data.remove(Constant.DocumentFieldName.FEED_PARTITION_FIELD);
             data.add(Constant.DocumentFieldName.FEED_PARTITION_FIELD, feedJsonObject.get(Constant.DocumentFieldName.FEED_PARTITION_FIELD));
+
+            data.remove(Constant.DocumentFieldName.IS_DELETED_FIELD);
+            data.remove(Constant.DocumentFieldName.LIKED_FIELD);
 
             producer.send(KafkaConstant.FEED_UPDATE_TOPIC, GUtil.gson.toJson(data));
             logger.info(String.format("[bookmarkFeed] requestId: %s DONE success", feedModel.getRequestId()));
@@ -376,10 +388,10 @@ public class FeedService implements IFeedService {
 
             // no connectomeId => data is List Doc content
             if (Objects.equals(requestBody.getConnectomeId(), "")) {
-                DataListResponse<DocContentModel> response = new DataListResponse<>(0,"success", requestBody.getRequestId());
+                DataListResponse<DocContentModel> response = new DataListResponse<>("success", 0, requestBody.getRequestId(), searcherResponse.getCurrentPage(), searcherResponse.getTotalItems(), searcherResponse.getTotalPages(), null);
                 Map<String, DocContentModel> docContentModelMap = new HashMap<>();
 
-                for(Object data : searcherResponse.getData()){
+                for (Object data : searcherResponse.getData()) {
                     DocContentModel docContentModel = GUtil.gson.fromJson(GUtil.gson.toJson(data), DocContentModel.class);
                     docContentModelMap.put(docContentModel.getDocId(), docContentModel);
                 }
@@ -387,7 +399,7 @@ public class FeedService implements IFeedService {
                 List<String> keys = new ArrayList<>(docContentModelMap.keySet());
                 List<DocContentModel> docContentModelList = redisConnection.getListValueOfDocContent(keys);
 
-                for(DocContentModel docContentModel : docContentModelList){
+                for (DocContentModel docContentModel : docContentModelList) {
                     docContentModelMap.put(docContentModel.getDocId(), docContentModel);
                 }
 
@@ -396,15 +408,69 @@ public class FeedService implements IFeedService {
             } else {
                 // require content = false => data is only List Document (Not content)
                 if (!requestBody.getRequire_content()) {
+                    DataListResponse<DocModel> response = new DataListResponse<>("success", 0, requestBody.getRequestId(), searcherResponse.getCurrentPage(), searcherResponse.getTotalItems(), searcherResponse.getTotalPages(), null);
+                    Map<String, DocModel> docModelHashMap = new HashMap<>();
 
+                    for (Object data : searcherResponse.getData()) {
+                        DocModel docModel = GUtil.gson.fromJson(GUtil.gson.toJson(data), DocModel.class);
+                        docModelHashMap.put(docModel.getConnectomeId() + "_" + docModel.getDocId(), docModel);
+                    }
+
+                    List<String> keys = new ArrayList<>(docModelHashMap.keySet());
+                    List<DocModel> docContentModelList = redisConnection.getListValueOfDoc(keys);
+
+                    for (DocModel docModel : docContentModelList) {
+                        docModelHashMap.put(docModel.getConnectomeId() + "_" + docModel.getDocId(), docModel);
+                    }
+
+                    response.setData(new ArrayList<DocModel>(docModelHashMap.values()));
+                    return response;
 
                 }
                 // require content = true => data is Document and Content
                 else {
+                    DataListResponse<DocDataModel> response = new DataListResponse<>("success", 0, requestBody.getRequestId(), searcherResponse.getCurrentPage(), searcherResponse.getTotalItems(), searcherResponse.getTotalPages(), null);
+                    Map<String, DocModel> docModelHashMap = new HashMap<>();
+                    Map<String, DocContentModel> docContentModelMap = new HashMap<>();
 
+                    for (Object data : searcherResponse.getData()) {
+                        DocModel docModel = GUtil.gson.fromJson(GUtil.gson.toJson(data), DocModel.class);
+                        DocContentModel docContentModel = GUtil.gson.fromJson(GUtil.gson.toJson(data), DocContentModel.class);
+                        docModelHashMap.put(docModel.getConnectomeId() + "_" + docModel.getDocId(), docModel);
+                        docContentModelMap.put(docContentModel.getDocId(), docContentModel);
+                    }
+
+                    List<String> keys = new ArrayList<>(docModelHashMap.keySet());
+                    List<DocModel> docModelList = redisConnection.getListValueOfDoc(keys);
+                    List<String> contentKeys = new ArrayList<>(docContentModelMap.keySet());
+                    List<DocContentModel> docContentModelList = redisConnection.getListValueOfDocContent(contentKeys);
+
+                    if (docModelList != null && docModelList.size() > 0) {
+                        for (DocModel docModel : docModelList) {
+                            docModelHashMap.put(docModel.getConnectomeId() + "_" + docModel.getDocId(), docModel);
+                        }
+                    }
+                    if (docContentModelList != null && docContentModelList.size() > 0) {
+                        for (DocContentModel docContentModel : docContentModelList) {
+                            docContentModelMap.put(docContentModel.getDocId(), docContentModel);
+                        }
+                    }
+
+                    List<DocModel> docModels = new ArrayList<DocModel>(docModelHashMap.values());
+
+                    List<DocDataModel> docDataModels = new ArrayList<DocDataModel>();
+
+                    for (DocModel docModel : docModels) {
+                        DocDataModel docDataModel = new DocDataModel();
+                        docDataModel.buildFeedDataModel(docModel, docContentModelMap.get(docModel.getDocId()));
+                        docDataModels.add(docDataModel);
+                    }
+
+                    response.setData(docDataModels);
+                    return response;
                 }
+
             }
-            return searcherClient.getListDocumentByIds(requestBody);
         } catch (Exception e) {
             searcherResponse.setStatus(-1, "failed");
             logger.error(String.format("[getListDocumentByIds] requestId: %s error unknown" + e.getMessage(), requestBody.getRequestId()), e);

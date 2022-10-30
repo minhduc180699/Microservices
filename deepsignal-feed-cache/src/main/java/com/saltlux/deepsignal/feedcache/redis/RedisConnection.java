@@ -12,14 +12,13 @@ import io.lettuce.core.cluster.RedisClusterClient;
 import io.lettuce.core.cluster.api.StatefulRedisClusterConnection;
 import io.lettuce.core.cluster.api.async.RedisClusterAsyncCommands;
 import io.lettuce.core.cluster.api.sync.RedisAdvancedClusterCommands;
+import org.checkerframework.checker.units.qual.N;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 @Component
 public class RedisConnection {
@@ -93,7 +92,11 @@ public class RedisConnection {
             if (values == null || values.isEmpty()) return null;
             List<DocModel> docModels = new ArrayList<>();
             for (KeyValue<String, String> value : values){
-                docModels.add(GUtil.gson.fromJson(value.getValue(), DocModel.class));
+                try {
+                    docModels.add(GUtil.gson.fromJson(value.getValue(), DocModel.class));
+                } catch (NoSuchElementException e){
+                    //todo nothing
+                }
             }
             return docModels;
         }catch (Exception e){
@@ -144,7 +147,11 @@ public class RedisConnection {
             if (values == null || values.isEmpty()) return null;
             List<DocContentModel> docContentModels = new ArrayList<>();
             for (KeyValue<String, String> value : values){
-                docContentModels.add(GUtil.gson.fromJson(value.getValue(), DocContentModel.class));
+                try {
+                    docContentModels.add(GUtil.gson.fromJson(value.getValue(), DocContentModel.class));
+                } catch (NoSuchElementException e){
+                    //todo nothing
+                }
             }
             return docContentModels;
         }catch (Exception e){

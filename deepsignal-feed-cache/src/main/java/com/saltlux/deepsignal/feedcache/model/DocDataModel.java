@@ -71,7 +71,7 @@ public class DocDataModel {
     private String reply_id;
     private String source_id;
     private String category;
-    private String writer_search;
+//    private String writer_search;
     @JsonIgnore
     private Long __unique__key__summary;
     @JsonIgnore
@@ -135,7 +135,7 @@ public class DocDataModel {
 //        this.reply_id = feedContentModel.getReply_id();
         this.source_id = docContentModel.getSource_id();
         this.category = docContentModel.getCategory();
-        this.writer_search = docContentModel.getWriter_search();
+//        this.writer_search = docContentModel.getWriter_search();
         this.feed_partition = docModel.getFeed_partition();
         this.content_partition = docModel.getContent_partition();
         this.url = docModel.getUrl();

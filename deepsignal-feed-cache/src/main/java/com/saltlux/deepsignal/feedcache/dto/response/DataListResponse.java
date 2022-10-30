@@ -1,5 +1,6 @@
 package com.saltlux.deepsignal.feedcache.dto.response;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,6 +10,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class DataListResponse<T>{
     private String result;
     private int result_code;
