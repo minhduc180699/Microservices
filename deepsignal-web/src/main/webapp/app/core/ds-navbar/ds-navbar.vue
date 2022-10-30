@@ -21,7 +21,7 @@
             <!--              </router-link>-->
             <!--            </li>-->
             <li class="nav-item">
-              <router-link to="/new-learning-center" v-slot="{ href, navigate, isActive, isExactActive }" custom>
+              <router-link to="/collection" v-slot="{ href, navigate, isActive, isExactActive }" custom>
                 <a :href="href" @click="navigate" :class="[isActive ? 'nav-link active' : 'nav-link', isExactActive && 'nav-link active']">
                   <div class="animation-myai"></div>
                   <span class="text">Collection</span>
