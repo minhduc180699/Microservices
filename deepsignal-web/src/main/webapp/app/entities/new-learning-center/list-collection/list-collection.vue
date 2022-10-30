@@ -208,7 +208,7 @@
                 <ul class="lc-card-list">
                   <li
                     :class="item.totalDocuments > 1 ? 'lc-card-group' : 'lc-card-item'"
-                    v-for="item in collectionCardItems"
+                    v-for="item in documentOrGroupDocumentsCardItems"
                     :aria-selected="currentCollection.documentIdList.indexOf(item.id) > -1 ? 'true' : 'false'"
                     :key="item.id"
                   >

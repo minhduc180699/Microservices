@@ -135,11 +135,11 @@ export default class ListCollection extends Vue {
           size: 30,
           requestId: Date.now().toString(),
           lang: this.lang,
-          type: '',
+          type: 'PERSONAL_DOCUMENT',
         },
       })
       .then(res => {
-        res.data.body.data.length < this.size ? (this.loaderDisable = true) : (this.page += 1);
+        res.data?.body?.data.length < this.size ? (this.loaderDisable = true) : (this.page += 1);
         // if (this.totalItems != res.data.totalItems) {
         //   this.totalFeeds = res.data.totalItems;
         // }
@@ -235,7 +235,7 @@ export default class ListCollection extends Vue {
                   }
                 })
                 .finally(() => {
-                  // this.processDocumentsSelectorList();
+                  this.processDocumentsSelectorList();
                 });
             });
 
