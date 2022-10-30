@@ -3,7 +3,7 @@ import PublicService from '@/service/public.service';
 import singleCard from '@/entities/new-learning-center/aside/single-card/single-card.vue';
 import vueCustomScrollbar from 'vue-custom-scrollbar';
 import { documentCard } from '@/shared/model/document-card.model';
-import { getDomainFromUrl, onlyInLeft, timeDifference } from '@/util/ds-util';
+import { getDomainFromUrl, onlyInLeft, timeDifference, toDataURL } from '@/util/ds-util';
 
 @Component({
   components: {
@@ -49,7 +49,14 @@ export default class web extends Vue {
         obj.addedAt = timeDifference(new Date(), new Date(res.data.publicTime));
         obj.url = res.data.url;
         obj.images = [res.data.image ? res.data.image : res.data.imageAlt ? res.data.imageAlt : null];
-        obj.favicon = res.data.favicon;
+        if (res.data.favicon)
+          toDataURL(res.data.favicon)
+            .then(res => {
+              obj.favicon = res;
+            })
+            .catch(err => {
+              obj.favicon = null;
+            });
         obj.noConvertTime = true;
 
         this.previewModels.push(obj);

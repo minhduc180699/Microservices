@@ -18,7 +18,7 @@ export class documentCard {
   style = null;
   totalDocuments: number = null;
   images: Array<string> = new Array<string>();
-  favicon: string;
+  favicon: any;
   constructor() {
     this.content = '';
     this.title = '';
