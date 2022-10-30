@@ -234,6 +234,7 @@ export default class Search extends Vue {
   }
 
   insertToMemory() {
+    console.log(this.selectedItems);
     this.$root.$emit('cart-to-conlection', this.selectedItems, 'search');
   }
 
@@ -253,9 +254,9 @@ export default class Search extends Vue {
       if (objectTmp.author) objectTmp.author = item.author;
       else objectTmp.author = getDomainFromUrl(item.link);
       console.log(' objectTmp.author', objectTmp.author);
-      objectTmp.title = decodeURI(item.title);
-      objectTmp.content = decodeURI(item.description);
-      objectTmp.keyword = decodeURI(item.keyword);
+      objectTmp.title = item.title;
+      objectTmp.content = item.description;
+      objectTmp.keyword = item.keyword;
       objectTmp.type = 'URL';
       objectTmp.searchType = item.searchType;
       objectTmp.addedAt = item.org_date;

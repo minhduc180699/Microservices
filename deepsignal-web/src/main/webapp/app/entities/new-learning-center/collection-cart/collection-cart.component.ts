@@ -58,6 +58,7 @@ export default class CollectionCart extends Vue {
       connectomeId = JSON.parse(localStorage.getItem('ds-connectome')).connectomeId;
     }
     if (connectomeId && this.newCollection && this.newCollection.length > 0) {
+      console.log('this.newCollection2', this.newCollection);
       this.newCollection.forEach(element => {
         const objectTmp = new ReqestModel();
         objectTmp.id = Date.now();
@@ -71,7 +72,8 @@ export default class CollectionCart extends Vue {
         objectTmp.favicon = element.favicon;
         objectTmp.lang = this.$store.getters.currentLanguage;
         objectTmp.keyword = element.keyword;
-        objectTmp.originDate = element.type === 'URL' ? '' : element.addedAt;
+        objectTmp.originDate = element.addedAt;
+        objectTmp.docId = element.docId;
         arrReq.push(objectTmp);
       });
 
@@ -89,7 +91,7 @@ export default class CollectionCart extends Vue {
                 return;
               }
               console.log('res', res);
-              this.$router.push('/new-learning-center');
+              this.$router.go();
             });
           });
         }

@@ -3,7 +3,7 @@ import PublicService from '@/service/public.service';
 import singleCard from '@/entities/new-learning-center/aside/single-card/single-card.vue';
 import vueCustomScrollbar from 'vue-custom-scrollbar';
 import { documentCard } from '@/shared/model/document-card.model';
-import { onlyInLeft } from '@/util/ds-util';
+import { getDomainFromUrl, onlyInLeft, timeDifference } from '@/util/ds-util';
 
 @Component({
   components: {
@@ -39,16 +39,18 @@ export default class web extends Vue {
         }
 
         const obj = new documentCard();
-        obj.author = res.data.author;
+        if (res.data.author) obj.author = res.data.author;
+        else obj.author = getDomainFromUrl(res.data.url);
         obj.title = res.data.title;
         obj.content = res.data.desc;
         obj.keyword = res.data.keyword;
         obj.type = 'URL';
         obj.searchType = 'WEB';
-        obj.addedAt = res.data.publicTime;
+        obj.addedAt = timeDifference(new Date(), new Date(res.data.publicTime));
         obj.url = res.data.url;
         obj.images = [res.data.image ? res.data.image : res.data.imageAlt ? res.data.imageAlt : null];
         obj.favicon = res.data.favicon;
+        obj.noConvertTime = true;
 
         this.previewModels.push(obj);
         this.resetPreview();

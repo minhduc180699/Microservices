@@ -14,7 +14,8 @@
             {{ document.author + '' }}
           </div>
         </div>
-        <div class="info-item">{{ document.noConvertTime ? document.addedAt : checkRegexDate(document.addedAt) | formatDate }}</div>
+        <div class="info-item" v-if="document.addedAt && !document.noConvertTime">{{ checkRegexDate(document.addedAt) | formatDate }}</div>
+        <div class="info-item" v-if="document.addedAt && document.noConvertTime">{{ document.addedAt }}</div>
       </div>
       <div class="lc-btn" v-show="isHideCheck">
         <a class="btn-close" @click="removeCard(document)"><i class="icon-common icon-close"></i></a>
