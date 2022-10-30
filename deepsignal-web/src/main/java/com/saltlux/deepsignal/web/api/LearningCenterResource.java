@@ -21,6 +21,7 @@ import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -180,18 +181,18 @@ public class LearningCenterResource {
 
         if (isGoogleRealtime) {
             //            urlSearch.append(APIMetaSearch).append(Constants.META_SEARCH);
-            urlSearch
-                .append(APIMetaSearch)
-                .append("/deepsignal/realtime/metasearch/getMetaSearch")
-                .append("?keyword=" + metaSearchDTO.getKeyword())
-                .append("&searchType=" + metaSearchDTO.getSearchType())
-                .append("&lang=" + metaSearchDTO.getLang())
-                .append("&session=[ { 'session_page':" + metaSearchDTO.getPage() + "}]")
-                .append("&connectomeId=" + metaSearchDTO.getConnectomeId())
-                .append("&channel=" + metaSearchDTO.getChannel());
+            urlSearch.append(APIMetaSearch).append("/deepsignal/realtime/metasearch/getMetaSearch");
             log.warn("Calling api /getMetaSearch...");
-            UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(urlSearch.toString());
-            return restTemplate.getForEntity(builder.toUriString(), JSONObject.class);
+            UriComponentsBuilder builder = UriComponentsBuilder
+                .fromHttpUrl(urlSearch.toString())
+                .queryParam("keyword", metaSearchDTO.getKeyword())
+                .queryParam("searchType", metaSearchDTO.getSearchType())
+                .queryParam("lang", metaSearchDTO.getLang())
+                .queryParam("session", "[ { session_page:" + metaSearchDTO.getPage() + "}]")
+                .queryParam("connectomeId", metaSearchDTO.getConnectomeId())
+                .queryParam("channel", metaSearchDTO.getChannel());
+            System.out.println(builder.build().encode().toString());
+            return restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.GET, null, JSONObject.class);
         } else {
             urlSearch.append(metasearchDatapterAPI).append(Constants.META_SEARCH_CACHE);
             HttpEntity<MetaSearchDTO> request = new HttpEntity<>(metaSearchDTO);
