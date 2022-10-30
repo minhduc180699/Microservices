@@ -109,13 +109,20 @@ export function getExtensionFileBySearchType(searchType: string) {
   return fileType;
 }
 
-export function onlyInLeft(leftValue, rightValue) {
+export function onlyInLeft(leftValue, rightValue, keyCompare: string[]) {
   const res = [];
+
   for (let i = 0; i < leftValue.length; i++) {
     let j = 0;
     let isSame = false;
     while (j < rightValue.length) {
-      if (rightValue[j].url == leftValue[i].url) {
+      let m = 0;
+      for (let n = 0; n < keyCompare.length; n++) {
+        if (rightValue[j][keyCompare[n]] == leftValue[i][keyCompare[n]]) {
+          m++;
+        }
+      }
+      if (m == keyCompare.length) {
         isSame = true;
         break;
       }

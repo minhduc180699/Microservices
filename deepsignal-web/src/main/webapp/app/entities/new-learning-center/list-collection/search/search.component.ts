@@ -34,7 +34,7 @@ export default class Search extends Vue {
   tabs = [
     { name: 'All', searchType: 'WEB', value: 1 },
     { name: 'News', searchType: 'NEWS', value: 2 },
-    { name: 'Videos', searchType: 'VIDEOS', value: 3 },
+    { name: 'Videos', searchType: 'VIDEO', value: 3 },
     { name: 'Documents', searchType: 'searchFileType', value: 4 },
   ];
   tabActive = 1;
@@ -87,22 +87,29 @@ export default class Search extends Vue {
             this.dataSearch = this.internalSearch.documents;
           }
           if (res.data.metaSearch) {
-            this.externalSearch = res.data.metaSearch.body.data[0];
-            // @ts-ignore
-            this.metaSearch = this.externalSearch.search_result;
-            this.isMoreResults = true;
-
-            // @ts-ignore
-            if (this.metaSearch.length <= 0) {
-              this.isMoreResults = false;
-              return;
+            if (this.tabActive === 1) {
+              this.externalSearch = res.data.metaSearch.body.data[0];
+              // @ts-ignore
+              this.metaSearch = this.externalSearch.search_result;
+              if (this.metaSearch.length <= 0) {
+                this.isMoreResults = false;
+                return;
+              }
+            } else {
+              this.externalSearch = res.data.metaSearch.body;
+              // @ts-ignore
+              this.metaSearch = this.externalSearch.data;
+              // @ts-ignore
+              if (this.externalSearch.result.includes('NO_MORE_DATA')) {
+                this.isMoreResults = false;
+                return;
+              }
             }
+            this.isMoreResults = true;
           }
           if (this.allData.length > 0) {
-            console.log(1);
-            this.allData = this.allData.concat(this.badArrToGoodArr(this.dataSearch), this.badArrToGoodArr(this.metaSearch));
+            this.allData = this.allData.concat(this.badArrToGoodArr(this.dataSearch)).concat(this.badArrToGoodArr(this.metaSearch));
           } else {
-            console.log(2);
             this.dataSearch.forEach((item, index) => {
               this.allData.push(item);
               this.metaSearch.forEach((val, ind) => {
@@ -176,7 +183,7 @@ export default class Search extends Vue {
       for (let i = 0; i < this.allData.length; i++) {
         let j = 0;
         while (j < this.selectedItems.length) {
-          if (this.allData[i].url == this.selectedItems[j].url) {
+          if (this.allData[i].docId == this.selectedItems[j].docId && this.allData[i].searchType == this.selectedItems[j].searchType) {
             this.selectedItems.splice(j, 1);
             break;
           }
@@ -198,7 +205,7 @@ export default class Search extends Vue {
     for (const item of this.selectedItems) {
       let i = 0;
       while (i < this.allData.length) {
-        if (this.allData[i].url == item.url) {
+        if (this.allData[i].docId == item.docId && this.allData[i].searchType == item.searchType) {
           arrItem.push(this.allData[i]);
           break;
         }
@@ -208,11 +215,13 @@ export default class Search extends Vue {
 
     arrItem.length === this.allData.length ? $('#btnSelect').addClass('active') : $('#btnSelect').removeClass('active');
     this.totalSelected = arrItem.length;
+
+    console.log(this.selectedItems);
   }
 
   checkArraySelected(arg?) {
-    if (arg) return onlyInLeft(this.selectedItems, this.allData);
-    return onlyInLeft(this.allData, this.selectedItems);
+    if (arg) return onlyInLeft(this.selectedItems, this.allData, ['docId', 'searchType']);
+    return onlyInLeft(this.allData, this.selectedItems, ['docId', 'searchType']);
   }
 
   setSelectedItems(newData) {

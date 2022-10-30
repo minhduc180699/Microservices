@@ -100,8 +100,8 @@ export default class web extends Vue {
   }
 
   checkArraySelected(arg?) {
-    if (arg) return onlyInLeft(this.selectedItems, this.previewModels);
-    return onlyInLeft(this.previewModels, this.selectedItems);
+    if (arg) return onlyInLeft(this.selectedItems, this.previewModels, ['url']);
+    return onlyInLeft(this.previewModels, this.selectedItems, ['url']);
   }
 
   setSelectedItems(newData) {
