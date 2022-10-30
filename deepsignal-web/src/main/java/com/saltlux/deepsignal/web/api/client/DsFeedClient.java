@@ -26,6 +26,13 @@ public interface DsFeedClient {
         @RequestParam(value = "lang", required = true, defaultValue = "en") String lang
     );
 
+    @GetMapping(API_CONNECTOME_FEED + "/getDoc")
+     ResponseEntity<?> getFeed(
+        @RequestParam(value = "connectomeId") String connectomeId,
+        @RequestParam(value = "requestId",required = false) String requestId,
+        @RequestParam(value = "docId") String docId
+    );
+
     @PostMapping(API_CONNECTOME_FEED + "/getListDocumentByIds")
     ResponseEntity<?> getListDocumentByIds(@RequestBody JSONObject bodyJSON);
 }

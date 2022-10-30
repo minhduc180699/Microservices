@@ -37,6 +37,13 @@ public class DsFeedClientFallback implements DsFeedClient {
     }
 
     @Override
+    public ResponseEntity<?> getFeed(String connectomeId, String requestId, String docId) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("Card", -1);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @Override
     public ResponseEntity<?> getListDocumentByIds(JSONObject body) {
         Map<String, Object> response = new HashMap<>();
         response.put("connectomeFeeds", new ArrayList<Feed>());

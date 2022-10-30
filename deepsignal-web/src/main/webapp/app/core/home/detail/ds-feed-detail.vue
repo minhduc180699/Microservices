@@ -16,28 +16,28 @@
                 <div class="source-img">
                   <img
                     style="max-width: 40px; max-height: 40px; min-height: 20px; min-width: 20px"
-                    v-if="connectomeFeed.favicon"
-                    :src="connectomeFeed.favicon"
+                    v-if="connectomeFeed.favicon_url || connectomeFeed.favicon_base64"
+                    :src="connectomeFeed.favicon_url ? connectomeFeed.favicon_url : connectomeFeed.favicon_base64"
                     alt=""
                   />
                 </div>
-                <div class="source-text">{{ connectomeFeed.writerName }}</div>
+                <div class="source-text">{{ connectomeFeed.writer }}</div>
               </div>
               <h1 class="title" v-text="connectomeFeed.title"></h1>
               <div class="info info-list">
-                <span class="date">{{ new Date(connectomeFeed.recommendDate) | formatDate }}</span>
-                <span class="writer">{{ connectomeFeed.writerName }}</span>
+                <span class="date">{{ new Date(connectomeFeed.created_date) | formatDate }}</span>
+                <span class="writer">{{ connectomeFeed.writer }}</span>
               </div>
             </div>
             <div class="section-body">
               <div
-                v-if="isShowHtmlContent && connectomeFeed.htmlContent"
+                v-if="isShowHtmlContent && connectomeFeed.html_content"
                 class="html-content-area"
-                v-html="connectomeFeed.htmlContent"
+                v-html="connectomeFeed.html_content"
               ></div>
               <div v-else class="content-box">
-                <div v-if="connectomeFeed.imageLinks && connectomeFeed.imageLinks[0]" class="img-area mb-0 mr-3">
-                  <img :src="connectomeFeed.imageLinks[0].length > 0 ? connectomeFeed.imageLinks[0] : ''" alt="" class="w-100" />
+                <div v-if="connectomeFeed.og_image_url || connectomeFeed.og_image_base64" class="img-area mb-0 mr-3">
+                  <img :src="connectomeFeed.og_image_base64 ? connectomeFeed.og_image_base64 : connectomeFeed.og_image_url" alt="" class="w-100" />
                 </div>
                 <div class="text-area">
                   {{ connectomeFeed.content }}
@@ -46,8 +46,8 @@
               <iframe
                 ref="docsEmbed"
                 :onLoad="onIframeLoaded"
-                v-if="connectomeFeed.searchType && connectomeFeed.searchType.includes('searchFileType')"
-                :src="'https://docs.google.com/viewer?url=' + encodeURIComponent(connectomeFeed.sourceId) + '&embedded=true'"
+                v-if="connectomeFeed.search_type && connectomeFeed.search_type === 'PDF' || connectomeFeed.search_type && connectomeFeed.search_type === 'PPT'"
+                :src="'https://docs.google.com/viewer?url=' + encodeURIComponent(connectomeFeed.url) + '&embedded=true'"
                 embedded="true"
                 width="100%"
                 height="800px"
@@ -56,11 +56,11 @@
               </iframe>
               <div class="img">
                 <iframe
-                  v-if="connectomeFeed.sourceId && isYoutube(connectomeFeed.sourceId)"
+                  v-if="connectomeFeed.url && isYoutube(connectomeFeed.url)"
                   style="min-height: 500px"
                   width="100%"
                   height="100%"
-                  :src="getEmbedLink(connectomeFeed.sourceId)"
+                  :src="getEmbedLink(connectomeFeed.url)"
                   title="YouTube video player"
                   frameborder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -71,11 +71,11 @@
                 <mini-connectome-map :propFeedIds="[connectomeFeed.id]"></mini-connectome-map>
               </div> -->
               <div class="content-more">
-                <button type="button" class="btn-link" @click="viewPost(connectomeFeed.sourceId)">
+                <button type="button" class="btn-link" @click="viewPost(connectomeFeed.url)">
                   {{ $t('feed.detail.view-original-text') }}
                 </button>
                 <button
-                  v-if="connectomeFeed.htmlContent && connectomeFeed.htmlContent.length > 0"
+                  v-if="connectomeFeed.html_content && connectomeFeed.html_content.length > 0"
                   type="button"
                   class="btn-more"
                   @click="isShowHtmlContent = !isShowHtmlContent"

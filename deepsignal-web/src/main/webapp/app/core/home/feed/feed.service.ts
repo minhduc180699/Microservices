@@ -19,12 +19,13 @@ export default class FeedService {
     });
   }
 
-  getListFeed(connectomeId: string, request_id, keyword, from, until, page, size, search_type, channels, type, lang: string) {
+  getListFeed(connectomeId: string, request_id, keyword, from, until, page, size, search_type, channels, type: string, lang: string) {
     const Language = localStorage.getItem('currentLanguage') || 'en';
     const params = {
       page: page,
       size: size,
       lang: Language,
+      type: type
     };
     if (keyword) {
       Object.assign(params, { keyword: keyword });
@@ -109,6 +110,10 @@ export default class FeedService {
 
   getFeedById(connectomeId: string, id: string) {
     return axios.get('/api/connectome-feed/getDetailCard/' + connectomeId, { params: { id: id } });
+  }
+
+  getDetailFeed(connectomeId: string, requestId: string, docId: string){
+    return axios.get('/api/connectome-feeds/getDetailFeed/' + connectomeId, {params: { requestId: requestId, docId: docId }})
   }
 
   getFeedByRecommendDate(connectomeId, recommendDate) {
