@@ -80,12 +80,16 @@ public class CollectionResource {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(content);
         }
 
-        if (Objects.isNull(headers.get("lang")) || headers.get("lang").isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(content);
+        if (Objects.isNull(headers.get("lang")) || headers.get("lang").size() < 1 || headers.get("lang").get(0).isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(headers);
         }
 
-        if (Objects.isNull(headers.get("connectomeId")) || headers.get("connectomeId").isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(content);
+        if (
+            Objects.isNull(headers.get("connectomeId")) ||
+            headers.get("connectomeId").size() < 1 ||
+            headers.get("connectomeId").get(0).isEmpty()
+        ) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(headers);
         }
 
         StringBuilder url = new StringBuilder();
@@ -141,12 +145,16 @@ public class CollectionResource {
         @RequestHeader HttpHeaders headers,
         @RequestBody CollectionCreateRequestBody content
     ) {
-        if (Objects.isNull(headers.get("lang")) || headers.get("lang").isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(content);
+        if (Objects.isNull(headers.get("lang")) || headers.get("lang").size() < 1 || headers.get("lang").get(0).isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(headers);
         }
 
-        if (Objects.isNull(headers.get("connectomeId")) || headers.get("connectomeId").isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(content);
+        if (
+            Objects.isNull(headers.get("connectomeId")) ||
+            headers.get("connectomeId").size() < 1 ||
+            headers.get("connectomeId").get(0).isEmpty()
+        ) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(headers);
         }
 
         StringBuilder url = new StringBuilder();
@@ -195,12 +203,16 @@ public class CollectionResource {
         @RequestHeader HttpHeaders headers,
         @RequestBody CollectionCreateRequestBody content
     ) {
-        if (Objects.isNull(headers.get("lang")) || headers.get("lang").isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(content);
+        if (Objects.isNull(headers.get("lang")) || headers.get("lang").size() < 1 || headers.get("lang").get(0).isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(headers);
         }
 
-        if (Objects.isNull(headers.get("connectomeId")) || headers.get("connectomeId").isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(content);
+        if (
+            Objects.isNull(headers.get("connectomeId")) ||
+            headers.get("connectomeId").size() < 1 ||
+            headers.get("connectomeId").get(0).isEmpty()
+        ) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(headers);
         }
 
         StringBuilder url = new StringBuilder();
@@ -250,7 +262,11 @@ public class CollectionResource {
     @GetMapping("/get/all")
     @Operation(summary = "get collections from connectomeId and language", tags = { "Collections manager" })
     public ResponseEntity<?> getCollectionsByConnectomeIdAndLanguage(@RequestHeader HttpHeaders headers) {
-        if (Objects.isNull(headers) || Objects.isNull(headers.get("connectomeId")) || headers.get("connectomeId").isEmpty()) {
+        if (
+            Objects.isNull(headers.get("connectomeId")) ||
+            headers.get("connectomeId").size() < 1 ||
+            headers.get("connectomeId").get(0).isEmpty()
+        ) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(headers);
         }
 
@@ -290,6 +306,8 @@ public class CollectionResource {
             }
             System.out.println(headers.get("lang"));
             System.out.println(headers.get("connectomeId"));
+            System.out.println(headers.get("lang").get(0));
+            System.out.println(headers.get("connectomeId").get(0));
             System.out.println(e.getMessage());
             return new ResponseEntity<ApiResponse>(
                 new ApiResponse(
@@ -304,11 +322,19 @@ public class CollectionResource {
     @GetMapping("/get")
     @Operation(summary = "get a collection with collectionId", tags = { "Collections manager" })
     public ResponseEntity<?> getCollectionsByCollectionId(@RequestHeader HttpHeaders headers) {
-        if (Objects.isNull(headers) || Objects.isNull(headers.get("connectomeId")) || headers.get("connectomeId").isEmpty()) {
+        if (
+            Objects.isNull(headers.get("connectomeId")) ||
+            headers.get("connectomeId").size() < 1 ||
+            headers.get("connectomeId").get(0).isEmpty()
+        ) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(headers);
         }
 
-        if (Objects.isNull(headers) || Objects.isNull(headers.get("collectionId")) || headers.get("collectionId").isEmpty()) {
+        if (
+            Objects.isNull(headers.get("collectionId")) ||
+            Objects.isNull(headers.get("collectionId").size() < 1) ||
+            headers.get("collectionId").get(0).isEmpty()
+        ) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(headers);
         }
 
@@ -363,7 +389,12 @@ public class CollectionResource {
     @PostMapping("/update")
     @Operation(summary = "update document list of a collection", tags = { "Collections manager" })
     public ResponseEntity<?> updateCollection(@RequestHeader HttpHeaders headers, @RequestBody CollectionResponseDTO content) {
-        if (Objects.isNull(headers) || Objects.isNull(headers.get("connectomeId")) || headers.get("connectomeId").isEmpty()) {
+        if (
+            Objects.isNull(headers) ||
+            Objects.isNull(headers.get("connectomeId")) ||
+            headers.get("connectomeId").size() < 1 ||
+            headers.get("connectomeId").get(0).isEmpty()
+        ) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(headers);
         }
 
@@ -400,6 +431,10 @@ public class CollectionResource {
                 .body(new ResponseEntity<CollectionResponseDTO>(collectionResponse, response.getHeaders(), HttpStatus.OK));
         } catch (Exception e) {
             System.out.println("Error");
+            System.out.println(headers.get("lang"));
+            System.out.println(headers.get("connectomeId"));
+            System.out.println(headers.get("lang").get(0));
+            System.out.println(headers.get("connectomeId").get(0));
             System.out.println(e.getMessage());
             return new ResponseEntity<ApiResponse>(
                 new ApiResponse(false, "call of external api [" + Constants.POST_CONTEXTUAL_MEMORY_UPDATE_URI + "]" + e.getMessage()),
@@ -411,11 +446,20 @@ public class CollectionResource {
     @DeleteMapping("/delete")
     @Operation(summary = "delete a collection", tags = { "Collections manager" })
     public ResponseEntity<?> deleteCollection(@RequestHeader HttpHeaders headers) {
-        if (Objects.isNull(headers) || Objects.isNull(headers.get("connectomeId")) || headers.get("connectomeId").isEmpty()) {
+        if (
+            Objects.isNull(headers) ||
+            Objects.isNull(headers.get("connectomeId")) ||
+            headers.get("connectomeId").size() < 1 ||
+            headers.get("connectomeId").get(0).isEmpty()
+        ) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(headers);
         }
 
-        if (Objects.isNull(headers) || Objects.isNull(headers.get("collectionId")) || headers.get("collectionId").isEmpty()) {
+        if (
+            Objects.isNull(headers.get("collectionId")) ||
+            Objects.isNull(headers.get("collectionId").size() < 1) ||
+            headers.get("collectionId").get(0).isEmpty()
+        ) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(headers);
         }
 
@@ -427,12 +471,20 @@ public class CollectionResource {
             headers.set("lang", "en");
         }
 
+        System.out.println(headers.get("lang"));
+        System.out.println(headers.get("connectomeId"));
+        System.out.println(headers.get("lang").get(0));
+        System.out.println(headers.get("connectomeId").get(0));
+        System.out.println(headers.get("collectionId"));
+        System.out.println(headers.get("collectionId").get(0));
+        System.out.println(headers.get("collectionId").get(0).toString());
+
         StringBuilder url = new StringBuilder();
         url.append(APIContextualMemory).append(Constants.DELETE_CONTEXTUAL_MEMORY_DELETE_URI);
 
         String urlTemplate = UriComponentsBuilder.fromHttpUrl(url.toString()).toUriString();
         try {
-            HttpEntity<String> request = new HttpEntity<>(headers);
+            HttpEntity<String> request = new HttpEntity<String>(headers);
             HttpEntity<String> response = restTemplate.exchange(urlTemplate, HttpMethod.DELETE, request, String.class);
 
             String collectionResponse = response.getBody();
@@ -440,6 +492,13 @@ public class CollectionResource {
             return ResponseEntity.ok().body(new ResponseEntity<String>(collectionResponse, response.getHeaders(), HttpStatus.OK));
         } catch (Exception e) {
             System.out.println("Error");
+            System.out.println(headers.get("lang"));
+            System.out.println(headers.get("connectomeId"));
+            System.out.println(headers.get("lang").get(0));
+            System.out.println(headers.get("connectomeId").get(0));
+
+            System.out.println(headers.get("collectionId"));
+            System.out.println(headers.get("collectionId").get(0));
             System.out.println(e.getMessage());
             return new ResponseEntity<ApiResponse>(
                 new ApiResponse(
@@ -458,11 +517,21 @@ public class CollectionResource {
     @GetMapping("/getRequestList")
     @Operation(summary = "get a collection with collectionId", tags = { "Collections manager" })
     public ResponseEntity<?> getRequestListByCollectionId(@RequestHeader HttpHeaders headers) {
-        if (Objects.isNull(headers) || Objects.isNull(headers.get("connectomeId")) || headers.get("connectomeId").isEmpty()) {
+        if (
+            Objects.isNull(headers) ||
+            Objects.isNull(headers.get("connectomeId")) ||
+            headers.get("connectomeId").size() < 1 ||
+            headers.get("connectomeId").get(0).isEmpty()
+        ) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(headers);
         }
 
-        if (Objects.isNull(headers) || Objects.isNull(headers.get("collectionId")) || headers.get("collectionId").isEmpty()) {
+        if (
+            Objects.isNull(headers) ||
+            Objects.isNull(headers.get("collectionId")) ||
+            headers.get("collectionId").size() < 1 ||
+            headers.get("collectionId").get(0).isEmpty()
+        ) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(headers);
         }
 

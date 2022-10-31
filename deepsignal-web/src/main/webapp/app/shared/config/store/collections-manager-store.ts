@@ -1074,7 +1074,7 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
         context.commit('setCurrentCollection', { collection: new CmCollection(null) });
       }
       context.commit('removeFromCollections', { collections: [collectionToDelete] });
-      context.dispatch('deleteCollectionFromDB', { collectionId: collectionToDelete }).then(res => {
+      context.dispatch('deleteCollectionFromDB', { collectionId: collectionToDelete.collectionId }).then(res => {
         console.log('delete collection', res);
 
         return { status: 'OK', message: 'collection deleted', result: res };
