@@ -19,6 +19,7 @@
 		<module>gateway-service</module>
 		<module>deepsignal-web</module>
 		<module>deepsignal-adapter</module>
+		<module>deepsignal-feed-cache</module>
 	</modules>
 	
 </project>
