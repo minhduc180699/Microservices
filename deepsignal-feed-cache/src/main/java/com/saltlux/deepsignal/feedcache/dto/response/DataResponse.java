@@ -34,4 +34,10 @@ public class DataResponse<T> {
         this.result_code = result_code;
         this.requestId = requestId;
     }
+    public DataResponse failResponse(String requestId) {
+        this.result = "failed";
+        this.result_code = -1;
+        this.requestId = requestId;
+        return this;
+    }
 }

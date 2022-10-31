@@ -9,6 +9,8 @@ import com.saltlux.deepsignal.feedcache.model.request.RequestBodyGetDocument;
 import com.saltlux.deepsignal.feedcache.model.request.RequestBodyGetListDoc;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class SearcherClientFallback implements SearcherClient{
 
@@ -39,7 +41,7 @@ public class SearcherClientFallback implements SearcherClient{
     }
 
     @Override
-    public DataListResponse<DocModel> searchFeed(String connectomeId, String keyword, String from, String until, Integer page, Integer size, String searchType, String channels, String lang, String type) {
+    public DataListResponse<DocModel> searchFeed(String connectomeId, String keyword, String from, String until, Integer page, Integer size, String searchType, String channels, String lang, String type, String sortBy, Float score, List<String> writer) {
         return null;
     }
 
