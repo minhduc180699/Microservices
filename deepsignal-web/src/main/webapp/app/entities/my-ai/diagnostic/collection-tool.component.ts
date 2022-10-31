@@ -194,7 +194,7 @@ export default class CollectionTool extends Vue {
   public editCollection: (payload: { collectionId: string }) => Promise<{ status: string; message: string; result: CmCollection }>;
 
   @collectionsManagerStore.Action
-  public deleteCollection: (payload: { collectionId: string }) => Promise<{ status: string; message: string; result: string }>;
+  public deleteCollection: (payload: { collectionId: string }) => Promise<{ status: string; message: string; result: any }>;
 
   onBtnAddCollectionToCurrentCollectionClick(card: documentCard) {
     console.log('onBtnAddCollectionToCurrentCollectionClick', card);
