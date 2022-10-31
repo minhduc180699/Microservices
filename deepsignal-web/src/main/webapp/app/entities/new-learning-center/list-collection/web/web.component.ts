@@ -31,7 +31,7 @@ export default class web extends Vue {
     }
     this.publicService()
       .previewInfoByUrl(this.searchValue, JSON.parse(localStorage.getItem('ds-connectome')).connectomeId)
-      .then(res => {
+      .then(async res => {
         this.isShowSpinner = false;
         if (this.previewModels.length > 0 && res.data.url && this.previewModels.find(item => item.url == res.data.url)) {
           this.resetPreview();
@@ -49,14 +49,7 @@ export default class web extends Vue {
         obj.addedAt = timeDifference(new Date(), new Date(res.data.publicTime));
         obj.url = res.data.url;
         obj.images = [res.data.image ? res.data.image : res.data.imageAlt ? res.data.imageAlt : null];
-        if (res.data.favicon)
-          toDataURL(res.data.favicon)
-            .then(res => {
-              obj.favicon = res;
-            })
-            .catch(err => {
-              obj.favicon = null;
-            });
+        if (res.data.favicon) obj.favicon = await toDataURL(res.data.favicon);
         obj.noConvertTime = true;
 
         this.previewModels.push(obj);

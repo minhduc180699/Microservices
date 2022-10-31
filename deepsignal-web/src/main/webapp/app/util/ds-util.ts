@@ -168,7 +168,10 @@ export function getDomainFromUrl(url) {
 
 export async function toDataURL(url) {
   return fetch('https://mycorsproxy-custom.herokuapp.com/'.concat(url))
-    .then(response => response.blob())
+    .then(response => {
+      if (response.status === 200) return response.blob();
+      return null;
+    })
     .then(
       blob =>
         new Promise((resolve, reject) => {
@@ -177,5 +180,8 @@ export async function toDataURL(url) {
           reader.onerror = reject;
           reader.readAsDataURL(blob);
         })
-    );
+    )
+    .catch(err => {
+      return null;
+    });
 }

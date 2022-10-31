@@ -78,7 +78,7 @@ export default class Search extends Vue {
             searchType: this.tabTypeActive,
           },
         })
-        .then(res => {
+        .then(async res => {
           this.isShowSpinner = false;
           console.log('res', res);
           if (res.data.internalSearch) {
@@ -109,8 +109,8 @@ export default class Search extends Vue {
           }
           if (this.allData.length > 0) {
             this.allData = this.allData
-              .concat(this.badArrToGoodArr(this.dataSearch, this.tabActive === 4 ? true : false))
-              .concat(this.badArrToGoodArr(this.metaSearch, this.tabActive === 4 ? true : false));
+              .concat(await this.badArrToGoodArr(this.dataSearch, this.tabActive === 4 ? true : false))
+              .concat(await this.badArrToGoodArr(this.metaSearch, this.tabActive === 4 ? true : false));
           } else {
             this.dataSearch.forEach((item, index) => {
               this.allData.push(item);
@@ -125,7 +125,7 @@ export default class Search extends Vue {
                 this.allData.push(this.metaSearch[i]);
               }
             }
-            this.allData = this.badArrToGoodArr(this.allData, this.tabActive === 4 ? true : false);
+            this.allData = await this.badArrToGoodArr(this.allData, this.tabActive === 4 ? true : false);
           }
 
           this.isShowMore = false;
@@ -249,31 +249,32 @@ export default class Search extends Vue {
     this.searching();
   }
 
-  badArrToGoodArr(arr, typeDownload?) {
-    return arr.map(item => {
-      const objectTmp = new documentCard();
-      if (objectTmp.author) objectTmp.author = item.author;
-      else objectTmp.author = getDomainFromUrl(item.link);
-      console.log(' objectTmp.author', objectTmp.author);
-      objectTmp.title = item.title;
-      objectTmp.content = item.description;
-      objectTmp.keyword = item.keyword;
-      objectTmp.type = typeDownload ? 'DOWNLOAD' : 'URL';
-      objectTmp.searchType = item.searchType;
-      objectTmp.addedAt = item.org_date;
-      objectTmp.url = item.link;
-      objectTmp.images = [item.img ? item.img : item.imgBase64 ? item.imgBase64 : ''];
-      if (item.favicon)
-        toDataURL(item.favicon)
-          .then(res => {
-            objectTmp.favicon = res;
-          })
-          .catch(err => {
-            objectTmp.favicon = null;
-          });
-      objectTmp.docId = item.docId;
-      objectTmp.noConvertTime = true;
-      return objectTmp;
-    });
+  async badArrToGoodArr(arr, typeDownload?) {
+    const results: documentCard[] = await Promise.all(
+      arr.map(async item => {
+        await this.test(item);
+        const objectTmp = new documentCard();
+        if (objectTmp.author) objectTmp.author = item.author;
+        else objectTmp.author = getDomainFromUrl(item.link);
+        objectTmp.title = item.title;
+        objectTmp.content = item.description;
+        objectTmp.keyword = item.keyword;
+        objectTmp.type = typeDownload ? 'DOWNLOAD' : 'URL';
+        objectTmp.searchType = item.searchType;
+        objectTmp.addedAt = item.org_date;
+        objectTmp.url = item.link;
+        objectTmp.images = [item.img ? item.img : item.imgBase64 ? item.imgBase64 : ''];
+        objectTmp.favicon = item.favicon;
+        objectTmp.docId = item.docId;
+        objectTmp.noConvertTime = true;
+        return objectTmp;
+      })
+    );
+    return results;
+  }
+
+  async test(item) {
+    if (item.favicon && item.favicon.includes('/favicon.ico')) item.favicon = await toDataURL(item.favicon);
+    else item.favicon = null;
   }
 }
