@@ -46,7 +46,7 @@ export default class web extends Vue {
         obj.keyword = res.data.keyword;
         obj.type = 'URL';
         obj.searchType = 'WEB';
-        obj.addedAt = timeDifference(new Date(), new Date(res.data.publicTime));
+        if (obj.addedAt) obj.addedAt = timeDifference(new Date(), new Date(res.data.publicTime));
         obj.url = res.data.url;
         obj.images = [res.data.image ? res.data.image : res.data.imageAlt ? res.data.imageAlt : null];
         if (res.data.favicon) obj.favicon = await toDataURL(res.data.favicon);

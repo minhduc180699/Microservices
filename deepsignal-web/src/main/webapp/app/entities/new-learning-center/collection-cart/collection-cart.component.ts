@@ -64,9 +64,9 @@ export default class CollectionCart extends Vue {
         if (element?.type) {
           const objectTmp = new ReqestModel();
           objectTmp.id = Date.now();
-          objectTmp.name = element.title;
+          objectTmp.title = element.title;
           objectTmp.path = element.url;
-          objectTmp.description = element.content;
+          objectTmp.content = element.content;
           objectTmp.type = element.type;
           objectTmp.connectomeId = connectomeId;
           objectTmp.author = element.author;
@@ -167,7 +167,7 @@ export default class CollectionCart extends Vue {
         return;
       }
       // @ts-ignore
-      this.$router.go();
+      // this.$router.go();
     });
   }
 }

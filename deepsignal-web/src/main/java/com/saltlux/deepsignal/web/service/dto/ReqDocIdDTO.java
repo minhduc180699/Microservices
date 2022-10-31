@@ -12,9 +12,9 @@ import lombok.Setter;
 public class ReqDocIdDTO {
 
     private String id;
-    private String name;
+    private String title;
     private String path;
-    private String description;
+    private String content;
     private String type;
     private String connectomeId;
     private String author;
@@ -24,4 +24,5 @@ public class ReqDocIdDTO {
     private String keyword;
     private String originDate;
     private String img;
+    private String docId;
 }

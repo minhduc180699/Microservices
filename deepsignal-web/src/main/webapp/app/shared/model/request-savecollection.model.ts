@@ -1,8 +1,8 @@
 export class ReqestModel {
   id: any;
-  name: any;
+  title: any;
   path: any;
-  description: any;
+  content: any;
   type: any;
   connectomeId: any;
   author: any;
