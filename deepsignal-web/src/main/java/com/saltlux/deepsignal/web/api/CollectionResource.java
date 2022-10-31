@@ -25,6 +25,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -381,7 +382,7 @@ public class CollectionResource {
         StringBuilder url = new StringBuilder();
         url.append(APIContextualMemory).append(Constants.POST_CONTEXTUAL_MEMORY_UPDATE_URI);
         try {
-            //restTemplate.put(url.toString(), content);
+            // restTemplate.put(url.toString(), content);
             Map<String, Object> requestBody = new HashMap<>();
             requestBody.put("collectionId", content.getCollectionId());
             requestBody.put("documentIdList", content.getDocumentIdList());
@@ -407,19 +408,15 @@ public class CollectionResource {
         }
     }
 
-    @PostMapping("/delete")
+    @DeleteMapping("/delete")
     @Operation(summary = "delete a collection", tags = { "Collections manager" })
-    public ResponseEntity<?> deleteCollection(@RequestHeader HttpHeaders headers, @RequestBody CollectionResponseDTO content) {
+    public ResponseEntity<?> deleteCollection(@RequestHeader HttpHeaders headers) {
         if (Objects.isNull(headers) || Objects.isNull(headers.get("connectomeId")) || headers.get("connectomeId").isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(headers);
         }
 
         if (Objects.isNull(headers) || Objects.isNull(headers.get("collectionId")) || headers.get("collectionId").isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(headers);
-        }
-
-        if (Objects.isNull(content.getCollectionId()) || content.getCollectionId().isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(content);
         }
 
         if (Objects.isNull(headers.get("lang"))) {
@@ -433,14 +430,8 @@ public class CollectionResource {
         StringBuilder url = new StringBuilder();
         url.append(APIContextualMemory).append(Constants.DELETE_CONTEXTUAL_MEMORY_DELETE_URI);
 
-        String urlTemplate = UriComponentsBuilder
-            .fromHttpUrl(url.toString())
-            .queryParam("collectionId", headers.get("collectionId"))
-            .build()
-            .toUriString();
+        String urlTemplate = UriComponentsBuilder.fromHttpUrl(url.toString()).toUriString();
         try {
-            // restTemplate.put(url.toString(), content);
-
             HttpEntity<String> request = new HttpEntity<>(headers);
             HttpEntity<String> response = restTemplate.exchange(urlTemplate, HttpMethod.DELETE, request, String.class);
 
@@ -451,7 +442,14 @@ public class CollectionResource {
             System.out.println("Error");
             System.out.println(e.getMessage());
             return new ResponseEntity<ApiResponse>(
-                new ApiResponse(false, "call of external api [" + Constants.POST_CONTEXTUAL_MEMORY_UPDATE_URI + "]" + e.getMessage()),
+                new ApiResponse(
+                    false,
+                    "call of external api [" +
+                    Constants.DELETE_CONTEXTUAL_MEMORY_DELETE_URI +
+                    "] collectionId=" +
+                    headers.get("collectionId") +
+                    e.getMessage()
+                ),
                 HttpStatus.BAD_REQUEST
             );
         }

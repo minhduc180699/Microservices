@@ -15,6 +15,7 @@ const postCreateCollectionURL = baseCollectionsApiUrl + '/create';
 const postCreateTmpCollectionURL = baseCollectionsApiUrl + '/tmp/create';
 const postUpdateCollectionURL = baseCollectionsApiUrl + '/update';
 const getDocGraphUrl = baseCollectionsApiUrl + '/document-map';
+const deleteCollectionURL = baseCollectionsApiUrl + '/delete';
 
 const basePersonalDocumentsApiUrl = '/api/personal-documents';
 const getPersonalDocumentsByDocIdsUrl = basePersonalDocumentsApiUrl + '/getByDocIds';
@@ -818,6 +819,50 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
         })
         .finally(() => {});
     },
+    deleteCollectionFromDB: async (
+      context,
+      payload: {
+        collectionId: string;
+      }
+    ) => {
+      if (!context.getters.getConnectomeId || !context.getters.getLang) {
+        return;
+      }
+
+      if (!payload.collectionId) {
+        return;
+      }
+      axios.defaults.headers.common['connectomeId'] = context.getters.getConnectomeId;
+      axios.defaults.headers.common['lang'] = context.getters.getLang;
+      axios.defaults.headers.common['collectionId'] = payload.collectionId;
+
+      const apiCallConnectomeData = new Promise<any>((resolve, reject) => {
+        axios
+          .delete(deleteCollectionURL)
+          .then(res => resolve(res))
+          .catch(err => reject(err));
+      });
+
+      return apiCallConnectomeData
+        .then(res => {
+          console.log('deleteCollectionFromDB', res);
+          if (!res) {
+            return;
+          }
+
+          if (!res.data) {
+            return;
+          }
+          const response = res.data.connectomePersonalDocuments;
+          console.log('loadDocumentsFromCollection', response);
+
+          return response;
+        })
+        .catch(reason => {
+          console.log('Reason', reason);
+        })
+        .finally(() => {});
+    },
     logout(context) {},
 
     //#region Interface with SLT
@@ -1022,7 +1067,21 @@ export const collectionsManagerStore: Module<CollectionsManagerStorable, any> = 
       payload: {
         collectionId: string;
       }
-    ) => {},
+    ) => {
+      const collectionToDelete = new CmCollection(null);
+      collectionToDelete.collectionId = payload.collectionId;
+      if (context.getters.getCurrentCollection?.collectionId === payload.collectionId) {
+        context.commit('setCurrentCollection', { collection: new CmCollection(null) });
+      }
+      context.commit('removeFromCollections', { collections: [collectionToDelete] });
+      context.dispatch('deleteCollectionFromDB', { collections: [collectionToDelete] }).then(res => {
+        console.log('delete collection', res);
+
+        return { status: 'OK', message: 'collection deleted', result: res };
+      });
+
+      return { status: 'OK', message: 'collection deleted', result: payload.collectionId };
+    },
     //#endregion
   },
 };

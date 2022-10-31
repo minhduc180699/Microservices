@@ -193,11 +193,17 @@ export default class CollectionTool extends Vue {
   @collectionsManagerStore.Action
   public editCollection: (payload: { collectionId: string }) => Promise<{ status: string; message: string; result: CmCollection }>;
 
+  @collectionsManagerStore.Action
+  public deleteCollection: (payload: { collectionId: string }) => Promise<{ status: string; message: string; result: string }>;
+
   onBtnAddCollectionToCurrentCollectionClick(card: documentCard) {
     console.log('onBtnAddCollectionToCurrentCollectionClick', card);
     if (!card) return;
 
     if (!card.id) return;
+
+    if (!card.isGroup) return;
+
     this.getCollectionDetails({ collectionId: card.id }).then(res => {
       console.log('getCollectionDetails', res);
       if (!res) {
@@ -242,6 +248,9 @@ export default class CollectionTool extends Vue {
     if (!card) return;
 
     if (!card.id) return;
+
+    if (!card.isGroup) return;
+
     this.editCollection({ collectionId: card.id }).then(res => {
       console.log('editCollection', res);
       if (!res) {
@@ -261,6 +270,30 @@ export default class CollectionTool extends Vue {
       }
 
       if (res.result.documentIdList.length == 0) {
+        return;
+      }
+    });
+  }
+
+  onBtnDeleteCollectionClick(card: documentCard) {
+    console.log('onBtnAddCollectionToCurrentCollectionClick', card);
+    if (!card) return;
+
+    if (!card.id) return;
+
+    if (!card.isGroup) return;
+
+    this.deleteCollection({ collectionId: card.id }).then(res => {
+      console.log('deleteCollection', res);
+      if (!res) {
+        return;
+      }
+
+      if (res.status === 'NOK') {
+        return;
+      }
+
+      if (!res.result) {
         return;
       }
     });

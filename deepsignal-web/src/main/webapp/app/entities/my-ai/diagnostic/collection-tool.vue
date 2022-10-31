@@ -18,7 +18,9 @@
                   ></b-button>
                   <b-button v-on:click="onBtnAddCollectionToCurrentCollectionClick(document)" variant="primary"
                     ><b-icon icon="arrow-right"></b-icon
-                  ></b-button> </b-card-body
+                  ></b-button>
+                  <b-button v-on:click="onBtnDeleteCollectionClick(document)" variant="primary"
+                    ><b-icon icon="x-square"></b-icon></b-button></b-card-body
               ></template>
               <template v-else>
                 <b-card-body>
