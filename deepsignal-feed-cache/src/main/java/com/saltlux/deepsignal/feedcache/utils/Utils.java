@@ -5,6 +5,7 @@ import com.google.common.io.Resources;
 import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.ObjectUtils;
 
 import java.io.*;
 import java.net.URL;
@@ -13,8 +14,6 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
-
-import static org.springframework.util.ObjectUtils.isArray;
 
 public class Utils {
 	/////////////////////////////////////////////////////////////////////////////////////////////////
