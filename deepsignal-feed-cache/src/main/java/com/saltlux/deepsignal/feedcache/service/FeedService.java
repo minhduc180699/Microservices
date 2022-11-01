@@ -43,7 +43,7 @@ public class FeedService implements IFeedService {
     @Autowired
     private RealtimeCrawlerClient realtimeCrawlerClient;
 
-    private static ExecutorService executorService = Executors.newFixedThreadPool(20);
+    private static final ExecutorService executorService = Executors.newFixedThreadPool(50);
 
     @Override
     public DataListResponse<DocModel> getListFeed(String connectomeId, String request_id, Integer page, Integer size) {
@@ -100,86 +100,9 @@ public class FeedService implements IFeedService {
     public DataResponse<DocDataModel> getFeed(String connectomeId, String request_id, String docId) {
         DataResponse<DocDataModel> response = new DataResponse<>(0, "success", request_id);
 
-
         try {
-//            // Get feed from redis
-//            DocModel docModel = redisConnection.getValueOfFeed(connectomeId + "_" + docId);
-//            DocContentModel docContentModel = null;
-//            // Has feed
-//            if (docModel != null) {
-//                DocModel docModelFromSearcher = searcherClient.getFeed(connectomeId, docId).getData();
-//                docModel = docModelFromSearcher.mergeDoc(docModel);
-//                redisConnection.saveValueToFeedAsSync(docModel.getConnectomeId() + "_" + docModel.getDocId(), GUtil.gson.toJson(docModel));
-//                // Check feed content in redis
-//                docContentModel = redisConnection.getValueOfFeedContent(docId);
-//                // Has not feed content: get feed content from Elasticsearch
-//                if (docContentModel == null) {
-//                    docContentModel = searcherClient.getFeedContent(docModel.getDocId()).getData();
-//                    if (docContentModel != null) {
-//                        redisConnection.saveValueToFeedContentAsSync(docContentModel.getDocId(), GUtil.gson.toJson(docContentModel));
-//                    }
-//                } else {
-//                    DocContentModel docContentModelFromSearcher = searcherClient.getFeedContent(docId).getData();
-//                    docContentModel = docContentModelFromSearcher.mergeDocContent(docContentModel);
-//                    redisConnection.saveValueToFeedContentAsSync(docContentModel.getDocId(), GUtil.gson.toJson(docContentModel));
-//                }
-//            }
-//            // Has not feed: Get feed & feed content from Elasticsearch
-//            else {
-//                docModel = searcherClient.getFeed(connectomeId, docId).getData();
-//                docContentModel = searcherClient.getFeedContent(docId).getData();
-//                // Execute task save feed into Redis
-//                if (docModel != null) {
-//                    redisConnection.saveValueToFeedAsSync(docModel.getConnectomeId() + "_" + docModel.getDocId(), GUtil.gson.toJson(docModel));
-//                }
-//                if (docContentModel != null) {
-//                    redisConnection.saveValueToFeedContentAsSync(docContentModel.getDocId(), GUtil.gson.toJson(docContentModel));
-//                }
-//
-//            }
 
-
-//            feedDataResponse.buildFeedDataModel(docModel, docContentModel);
-//            List<Callable<DocModel>> callables = new LinkedList<>();
-//
-//            GetDocFromRedis getDocFromRedis = new GetDocFromRedis(connectomeId + "_" + docId, redisConnection);
-//
-//            GetDocFromES getDocFromES = new GetDocFromES(connectomeId, docId,searcherClient);
-//
-//            callables.add(getDocFromRedis);
-//            callables.add(getDocFromES);
-//
-//            List<Future<DocModel>> docModels = new LinkedList<>();
-//
-//            try {
-//                docModels = executorService.invokeAll(callables);
-//            }catch (InterruptedException e){
-//                logger.error(String.format("api get Doc connectomeId: %s, docId: %s executor error : "+e.getMessage(), connectomeId, docId));
-//                response.failResponse(request_id);
-//                return response;
-//            }
-//
-//            List<DocModel> docModelList = new LinkedList<>();
-//
-//            for (Future<DocModel> docModelFuture : docModels){
-//                DocModel docModel = docModelFuture.get();
-//                if(docModel != null){
-//                    docModelList.add(docModelFuture.get());
-//                }
-//            }
-//
-//            DocModel docModel = new DocModel();
-//            if(docModelList.size() > 1){
-//                docModel = docModelList.get(0).mergeDoc(docModelList.get(1));
-//            } else if(docModelList.size() < 1){
-//                // todo nothing
-//            } else {
-//                docModel = docModelList.get(0);
-//            }
-//
-//            DocContentModel docContentModel = searcherClient.getFeedContent(docId).getData();
-//            feedDataResponse.buildFeedDataModel(docModel,docContentModel);
-
+            // call get doc and content from ES
             GetDocDataFromES getDocDataFromES = new GetDocDataFromES(connectomeId, docId, searcherClient);
             Future<DocDataModel> docDataModelFromESFuture = executorService.submit(getDocDataFromES);
 
@@ -189,6 +112,7 @@ public class FeedService implements IFeedService {
 //            redisConnection.saveValueToFeedAsSync(connectomeId + "_" + docId, GUtil.gson.toJson(docModel));
 //            redisConnection.saveValueToFeedContentAsSync(docId, GUtil.gson.toJson(docContentModel));
 
+            // call doc and content from redis
             GetDocDataFromRedis getDocDataFromRedis = new GetDocDataFromRedis(connectomeId, docId, redisConnection);
             DocDataModel docDataModelFromRedis = executorService.submit(getDocDataFromRedis).get(5, TimeUnit.SECONDS);
 
@@ -396,6 +320,20 @@ public class FeedService implements IFeedService {
     @Override
     public ResponseDocument getDocumentById(RequestBodyGetDocument requestBody) {
         ResponseDocument response = new ResponseDocument();
+
+        Callable<ResponseDocument> callES = new Callable<ResponseDocument>() {
+            @Override
+            public ResponseDocument call() throws Exception {
+                DataListResponse<?> response = new DataListResponse<>();
+                try {
+                    return searcherClient.getDocumentById(requestBody);
+                } catch (Exception e) {
+                    logger.error(String.format("requestId: %s, connectomeId: %s, docId : %s error search ES: %s", requestBody.getRequestId(), requestBody.getConnectomeId(), requestBody.getDocId(), e.getMessage()));
+                }
+                return new ResponseDocument().getFailResponse(requestBody);
+            }
+        };
+
         try {
             // no connectomeId => data is Doc content
             if (Objects.equals(requestBody.getConnectomeId(), "")) {
@@ -461,94 +399,7 @@ public class FeedService implements IFeedService {
 
         DataListResponse<?> searcherResponse = new DataListResponse<>(0, "success", requestBody.getRequestId());
 
-//        DataListResponse<?> searcherResponse = searcherClient.getListDocumentByIds(requestBody);
         try {
-//            // no connectomeId => data is List Doc content
-//            if (Objects.equals(requestBody.getConnectomeId(), "")) {
-//                DataListResponse<DocContentModel> response = new DataListResponse<>("success", 0, requestBody.getRequestId(), searcherResponse.getCurrentPage(), searcherResponse.getTotalItems(), searcherResponse.getTotalPages(), null);
-//                Map<String, DocContentModel> docContentModelMap = new HashMap<>();
-//
-//                for (Object data : searcherResponse.getData()) {
-//                    DocContentModel docContentModel = GUtil.gson.fromJson(GUtil.gson.toJson(data), DocContentModel.class);
-//                    docContentModelMap.put(docContentModel.getDocId(), docContentModel);
-//                }
-//
-//                List<String> keys = new ArrayList<>(docContentModelMap.keySet());
-//                List<DocContentModel> docContentModelList = redisConnection.getListValueOfDocContent(keys);
-//
-//                for (DocContentModel docContentModel : docContentModelList) {
-//                    docContentModelMap.put(docContentModel.getDocId(), docContentModel);
-//                }
-//
-//                response.setData(new ArrayList<DocContentModel>(docContentModelMap.values()));
-//                return response;
-//            } else {
-//                // require content = false => data is only List Document (Not content)
-//                if (!requestBody.getRequire_content()) {
-//                    DataListResponse<DocModel> response = new DataListResponse<>("success", 0, requestBody.getRequestId(), searcherResponse.getCurrentPage(), searcherResponse.getTotalItems(), searcherResponse.getTotalPages(), null);
-//                    Map<String, DocModel> docModelHashMap = new HashMap<>();
-//
-//                    for (Object data : searcherResponse.getData()) {
-//                        DocModel docModel = GUtil.gson.fromJson(GUtil.gson.toJson(data), DocModel.class);
-//                        docModelHashMap.put(docModel.getConnectomeId() + "_" + docModel.getDocId(), docModel);
-//                    }
-//
-//                    List<String> keys = new ArrayList<>(docModelHashMap.keySet());
-//                    List<DocModel> docContentModelList = redisConnection.getListValueOfDoc(keys);
-//
-//                    for (DocModel docModel : docContentModelList) {
-//                        docModelHashMap.put(docModel.getConnectomeId() + "_" + docModel.getDocId(), docModel);
-//                    }
-//
-//                    response.setData(new ArrayList<DocModel>(docModelHashMap.values()));
-//                    return response;
-//
-//                }
-//                // require content = true => data is Document and Content
-//                else {
-//                    DataListResponse<DocDataModel> response = new DataListResponse<>("success", 0, requestBody.getRequestId(), searcherResponse.getCurrentPage(), searcherResponse.getTotalItems(), searcherResponse.getTotalPages(), null);
-//                    Map<String, DocModel> docModelHashMap = new HashMap<>();
-//                    Map<String, DocContentModel> docContentModelMap = new HashMap<>();
-//
-//                    for (Object data : searcherResponse.getData()) {
-//                        DocModel docModel = GUtil.gson.fromJson(GUtil.gson.toJson(data), DocModel.class);
-//                        DocContentModel docContentModel = GUtil.gson.fromJson(GUtil.gson.toJson(data), DocContentModel.class);
-//                        docModelHashMap.put(docModel.getConnectomeId() + "_" + docModel.getDocId(), docModel);
-//                        docContentModelMap.put(docContentModel.getDocId(), docContentModel);
-//                    }
-//
-//                    List<String> keys = new ArrayList<>(docModelHashMap.keySet());
-//                    List<DocModel> docModelList = redisConnection.getListValueOfDoc(keys);
-//                    List<String> contentKeys = new ArrayList<>(docContentModelMap.keySet());
-//                    List<DocContentModel> docContentModelList = redisConnection.getListValueOfDocContent(contentKeys);
-//
-//                    if (docModelList != null && docModelList.size() > 0) {
-//                        for (DocModel docModel : docModelList) {
-//                            docModelHashMap.put(docModel.getConnectomeId() + "_" + docModel.getDocId(), docModel);
-//                        }
-//                    }
-//                    if (docContentModelList != null && docContentModelList.size() > 0) {
-//                        for (DocContentModel docContentModel : docContentModelList) {
-//                            docContentModelMap.put(docContentModel.getDocId(), docContentModel);
-//                        }
-//                    }
-//
-//                    List<DocModel> docModels = new ArrayList<DocModel>(docModelHashMap.values());
-//
-//                    List<DocDataModel> docDataModels = new ArrayList<DocDataModel>();
-//
-//                    for (DocModel docModel : docModels) {
-//                        DocDataModel docDataModel = new DocDataModel();
-//                        docDataModel.buildFeedDataModel(docModel, docContentModelMap.get(docModel.getDocId()));
-//                        docDataModels.add(docDataModel);
-//                    }
-//
-//                    response.setData(docDataModels);
-//                    return response;
-//                }
-//
-//            }
-
             Callable<DataListResponse<?>> callES = new Callable<DataListResponse<?>>() {
                 @Override
                 public DataListResponse<?> call() throws Exception {
@@ -562,7 +413,10 @@ public class FeedService implements IFeedService {
                 }
             };
 
-            if (requestBody.getSize() == null || requestBody.getPage() == null || requestBody.getDocIds().size() < 2 * requestBody.getSize()) {
+            // not have size or page or size of dosIds > 2*size => use mutil thread to get datas
+            if (requestBody.getSize() == null || requestBody.getPage() == null || requestBody.getDocIds().size() <= 2 * requestBody.getSize()) {
+
+                // not have connectomeId => return data as list Content of doc
                 if (Objects.equals(requestBody.getConnectomeId(), "")) {
                     Future<DataListResponse<?>> dataFromESFuture = executorService.submit(callES);
 
@@ -601,6 +455,8 @@ public class FeedService implements IFeedService {
                     response.setData(resultData);
                     response.setStatus(0, "success", requestBody.getRequestId());
                     return response;
+
+                    // not require content => return data as list Doc
                 } else if (!requestBody.getRequire_content()) {
                     Future<DataListResponse<?>> dataFromESFuture = executorService.submit(callES);
 
@@ -638,6 +494,8 @@ public class FeedService implements IFeedService {
                     response.setData(resultData);
                     response.setStatus(0, "success", requestBody.getRequestId());
                     return response;
+
+                    // return data as list Doc Data (Doc and content)
                 } else {
                     Future<DataListResponse<?>> dataFromESFuture = executorService.submit(callES);
                     DataListResponse<DocDataModel> response = new DataListResponse<>();
@@ -686,8 +544,12 @@ public class FeedService implements IFeedService {
                     return response;
 
                 }
+
+                // page, size != null and docIds > 2*size => not mutil thread
             } else {
-                if (requestBody.getConnectomeId() == null) {
+
+                // not have connectomeId => return data as list Content of doc
+                if (Objects.equals(requestBody.getConnectomeId(), "")) {
                     DataListResponse<?> responseFromES = searcherClient.getListDocumentByIds(requestBody);
 
                     Map<String, DocContentModel> docContentModelMap = new HashMap<>();
@@ -710,6 +572,8 @@ public class FeedService implements IFeedService {
                     response.mergeResponse(responseFromES);
 
                     return response;
+
+                    // not require content => return data as list Doc
                 } else if (!requestBody.getRequire_content()) {
                     DataListResponse<?> responseFromES = searcherClient.getListDocumentByIds(requestBody);
 
@@ -733,6 +597,8 @@ public class FeedService implements IFeedService {
                     response.mergeResponse(responseFromES);
 
                     return response;
+
+                    // return data as List doc and content
                 } else {
                     DataListResponse<?> responseFromES = searcherClient.getListDocumentByIds(requestBody);
 
