@@ -744,11 +744,12 @@ export default class DsFeed extends mixins(ShowMoreMixin) {
 
   handleActivity(item, activity) {
     if (activity.activity == ACTIVITY.delete) {
-      this.cardItems.forEach((value, index) => {
-        if (item.id === value.id) {
-          value.deleted = true;
-        }
-      });
+      // this.cardItems.forEach((value, index) => {
+      //   if (item.docId === value.docId) {
+      //     value.isDeleted = true;
+      //   }
+      // });
+      this.cardItems = this.cardItems.filter(card => card.docId !== item.docId)
     }
   }
 

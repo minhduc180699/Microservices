@@ -19,7 +19,7 @@ export default class ShowMore extends Vue {
   // variables
   private xCoordinate = 500;
   private yCoordinate = 500;
-  private post = { sourceId: '', title: '', writer: '', id: '' };
+  private post = { url: '', title: '', writer: '', docId: '' };
   private textShare = '';
   private isSharingLink = false;
   private selected = '';
@@ -85,13 +85,13 @@ export default class ShowMore extends Vue {
   }
 
   public shareOnTwitter() {
-    const url = encodeURIComponent(this.post.sourceId);
+    const url = encodeURIComponent(this.post.url);
     const tweet = 'https://twitter.com/intent/tweet?url=' + url + '&via=DeepSignal';
     window.open(tweet, '_blank');
   }
 
   public shareOnLinkedIn() {
-    const url = encodeURIComponent(this.post.sourceId);
+    const url = encodeURIComponent(this.post.url);
     const linkedIn = 'https://www.linkedin.com/shareArticle?mini=true&url=' + url;
     window.open(linkedIn, '_blank');
   }
@@ -104,10 +104,14 @@ export default class ShowMore extends Vue {
       this.textSearchEmail = '';
       const domain = location.href.split('/');
       for (let i = 0; i < domain.length - 1; i++) {
-        this.linkPublic = this.linkPublic + domain[i] + '/';
+        if (domain[i].toLowerCase().includes("detail-feed")){
+          return this.linkPublic = location.href;
+        }else {
+          this.linkPublic += domain[i] + '/';
+        }
       }
       const connectomeId = JSON.parse(localStorage.getItem('ds-connectome')).connectomeId;
-      this.linkPublic = this.linkPublic + 'detail-feed/' + connectomeId + '/' + this.post.id;
+      this.linkPublic = this.linkPublic + 'detail-feed/' + connectomeId + '/' + this.post.docId;
     }
   }
 
@@ -190,7 +194,7 @@ export default class ShowMore extends Vue {
       .post('/api/connectome-feed/saveAndSendEmail', mailParams, {
         params: {
           connectomeId: connectomeId,
-          cardId: this.post.id,
+          cardId: this.post.docId,
         },
       })
       .then(res => {

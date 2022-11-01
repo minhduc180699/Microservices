@@ -35,4 +35,13 @@ public interface DsFeedClient {
 
     @PostMapping(API_CONNECTOME_FEED + "/getListDocumentByIds")
     ResponseEntity<?> getListDocumentByIds(@RequestBody JSONObject bodyJSON);
+
+    @PutMapping(API_CONNECTOME_FEED + "/likeDoc")
+    ResponseEntity<?>handleActivityLike(@RequestBody JSONObject bodyJSON);
+
+    @PutMapping(API_CONNECTOME_FEED + "/bookmarkDoc")
+    ResponseEntity<?>handleActivityBookmark(@RequestBody JSONObject bodyJSON);
+
+    @PutMapping(API_CONNECTOME_FEED + "/deleteDoc")
+    ResponseEntity<?>handleHideDoc(@RequestBody JSONObject bodyJSON);
 }

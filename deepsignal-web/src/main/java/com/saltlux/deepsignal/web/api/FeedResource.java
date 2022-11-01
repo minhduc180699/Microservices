@@ -87,4 +87,37 @@ public class FeedResource {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
+
+    @PutMapping("/activityLike")
+    @Operation(summary = "handle interaction", tags = { "Connectome Feed Management" }, security = @SecurityRequirement(name = "bearerAuth"))
+        public ResponseEntity<?> handleActivityLike(@RequestBody JSONObject bodyJSON){
+        try {
+            return ResponseEntity.ok(dsFeedClient.handleActivityLike(bodyJSON));
+        }catch (Exception e) {
+            log.error(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/activityBookmark")
+    @Operation(summary = "handle interaction", tags = { "Connectome Feed Management" }, security = @SecurityRequirement(name = "bearerAuth"))
+    public ResponseEntity<?> handleActivityBookmark(@RequestBody JSONObject bodyJSON){
+        try {
+            return ResponseEntity.ok(dsFeedClient.handleActivityBookmark(bodyJSON));
+        }catch (Exception e) {
+            log.error(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/hideFeed")
+    @Operation(summary = "handle interaction", tags = { "Connectome Feed Management" }, security = @SecurityRequirement(name = "bearerAuth"))
+    public ResponseEntity<?> handleHideDoc(@RequestBody JSONObject bodyJSON){
+        try {
+            return ResponseEntity.ok(dsFeedClient.handleHideDoc(bodyJSON));
+        }catch (Exception e) {
+            log.error(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
 }

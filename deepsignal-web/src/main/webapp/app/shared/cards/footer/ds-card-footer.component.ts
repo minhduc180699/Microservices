@@ -1,11 +1,13 @@
-import { Component, Inject, Prop, Vue, Watch } from 'vue-property-decorator';
+import {Component, Inject, Prop, Vue, Watch} from 'vue-property-decorator';
 import axios from 'axios';
-import { InteractionUserService } from '@/service/interaction-user.service';
-import { computed } from '@vue/composition-api';
-import { ACTIVITY, PLATFORM } from '@/shared/constants/feed-constants';
-import { namespace } from 'vuex-class';
+import {InteractionUserService} from '@/service/interaction-user.service';
+import {computed} from '@vue/composition-api';
+import {ACTIVITY, PLATFORM} from '@/shared/constants/feed-constants';
+import {namespace} from 'vuex-class';
+import FeedService from "@/core/home/feed/feed.service";
+import {doc} from "prettier";
 
-export const interactionLike = { noAction: 0, like: 1, dislike: 2 };
+export const interactionLike = {noAction: 0, like: 1, dislike: 2};
 
 const networkStore = namespace('connectomeNetworkStore');
 @Component({
@@ -47,12 +49,14 @@ const networkStore = namespace('connectomeNetworkStore');
 export default class DsCardFooter extends Vue {
   @Prop(Object) readonly item: any | undefined;
   @Inject('interactionUserService') private interactionUserService: () => InteractionUserService;
+  @Inject('feedService')
+  private feedService: () => FeedService;
   isLike = false;
   isDislike = false;
   private isShow = false;
   private isBookmark = false;
   private page = 'feed';
-
+  private isDelete = false;
   @networkStore.Getter
   public connectomeId!: string;
 
@@ -70,7 +74,7 @@ export default class DsCardFooter extends Vue {
       this.isLike = false;
       this.isDislike = true;
     }
-    if (this.item.bookmarked) {
+    if (this.item.isBookmarked) {
       this.isBookmark = true;
     }
   }
@@ -101,7 +105,8 @@ export default class DsCardFooter extends Vue {
     if (!this.isLike && this.isDislike) {
       return;
     }
-    this.callApiActivity(true, ACTIVITY.like, interaction);
+    // this.callApiActivity(true, ACTIVITY.like, interaction);
+    this.handleActivityLike(ACTIVITY.like, interaction)
   }
 
   handleDislike() {
@@ -116,7 +121,8 @@ export default class DsCardFooter extends Vue {
     if (!this.isDislike && this.isLike) {
       return;
     }
-    this.callApiActivity(true, ACTIVITY.like, interaction);
+    // this.callApiActivity(true, ACTIVITY.like, interaction);
+    this.handleActivityLike(ACTIVITY.like, interaction)
   }
 
   // handleMore() {
@@ -155,7 +161,8 @@ export default class DsCardFooter extends Vue {
 
   handleBookmark() {
     this.isBookmark = !this.isBookmark;
-    this.callApiActivity(this.isBookmark, ACTIVITY.bookmark, interactionLike.noAction);
+    // this.callApiActivity(this.isBookmark, ACTIVITY.bookmark, interactionLike.noAction);
+    this.handleActivityBookmark(this.isBookmark, ACTIVITY.bookmark)
   }
 
   // handleBookmarkFromMore(isBookmark) {
@@ -176,17 +183,18 @@ export default class DsCardFooter extends Vue {
   // }
 
   handleShare() {
-    const post = { sourceId: this.item.sourceId, title: this.item.title, writer: this.item.writerName, id: this.item.id };
+    const post = {url: this.item.url, title: this.item.title, writer: this.item.write, docId: this.item.docId};
     this.$store.commit('setPost', post);
   }
 
   handleHidden() {
-    this.$store.commit('setId', this.item.id);
+    this.$store.commit('setId', this.item._id);
     let checkMyAi = false;
     if (location.href.includes('my-ai') || location.href.includes('people')) {
       checkMyAi = true;
     }
     this.$emit('handleHiddenCard', ACTIVITY.delete, checkMyAi);
+    // this.HIDEFEED(ACTIVITY.delete)
   }
 
   handleLikeFromDetail(value) {
@@ -214,40 +222,95 @@ export default class DsCardFooter extends Vue {
   }
 
   handleHiddenFromDetail(value) {
-    if (value.id == this.item.id) {
-      const activity = { like: 0, bookmark: false, activity: ACTIVITY.delete };
+    if (value.id == this.item._id) {
+      const activity = {like: 0, bookmark: false, activity: ACTIVITY.delete};
       this.$emit('handleActivity', this.item, activity);
     }
   }
 
-  callApiActivity(value, type, interaction, feedback?) {
-    let like = 0;
+  // callApiActivity(value, type, interaction, feedback?) {
+  //   let like = 0;
+  //
+  //   if (this.isLike) {
+  //     like = 1;
+  //   }
+  //   if (this.isDislike) {
+  //     like = 2;
+  //   }
+  //   const activity = { like: like, bookmark: value, activity: type };
+  //   axios
+  //     .get('/api/connectome-feed/activity/' + this.item.connectomeId, {
+  //       params: {
+  //         state: value,
+  //         activity: type,
+  //         page: this.item.collectionType,
+  //         docId: this.item.id,
+  //         likeState: interaction,
+  //         feedback: feedback,
+  //       },
+  //       headers: {
+  //         Title: btoa(unescape(encodeURIComponent(this.item.title))),
+  //         'Original-Url': btoa(unescape(encodeURIComponent(this.item.sourceId))),
+  //       },
+  //     })
+  //     .then(res => {
+  //       this.$emit('handleActivity', this.item, activity);
+  //     })
+  //     .catch(res => {
+  //       this.$emit('handleActivity', this.item, activity);
+  //     });
+  // }
 
+  handleActivityLike(type, interaction) {
+    let like = 0;
     if (this.isLike) {
       like = 1;
     }
     if (this.isDislike) {
       like = 2;
     }
-    const activity = { like: like, bookmark: value, activity: type };
-    axios
-      .get('/api/connectome-feed/activity/' + this.item.connectomeId, {
-        params: {
-          state: value,
-          activity: type,
-          page: this.item.collectionType,
-          docId: this.item.id,
-          likeState: interaction,
-          feedback: feedback,
-        },
-        headers: {
-          Title: btoa(unescape(encodeURIComponent(this.item.title))),
-          'Original-Url': btoa(unescape(encodeURIComponent(this.item.sourceId))),
-        },
-      })
+    const activity = {like: like, activity: type};
+    this.feedService().handleActivityLike(
+      null,
+      this.item.connectomeId,
+      this.item.docId,
+      interaction,
+      null,
+      null
+    )
+  }
+
+  handleActivityBookmark(value, type) {
+    const activity = {bookmark: value, activity: type};
+    this.feedService().handleActivityBookmark(
+      null,
+      this.item.connectomeId,
+      this.item.docId,
+      0,
+      value,
+      null
+    )
       .then(res => {
-        this.$emit('handleActivity', this.item, activity);
+        // this.$emit('handleActivity', this.item, activity);
       })
+      // .catch(res => {
+      //   this.$emit('handleActivity', this.item, activity);
+      // });
+  }
+
+  handleHideFeed(type) {
+    this.isDelete = true
+    const activity = { activity: type};
+    this.feedService().handleHideFeed(
+      null,
+      this.item.connectomeId,
+      this.item.docId,
+      0,
+      null,
+      this.isDelete
+    ).then(res => {
+      this.$emit('handleActivity', this.item, activity);
+    })
       .catch(res => {
         this.$emit('handleActivity', this.item, activity);
       });
