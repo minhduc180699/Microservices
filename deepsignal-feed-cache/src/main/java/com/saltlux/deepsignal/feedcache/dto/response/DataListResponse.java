@@ -39,4 +39,10 @@ public class DataListResponse<T>{
         this.result_code = result_code;
         this.requestId = requestId;
     }
+    public void mergeResponse(DataListResponse response){
+        this.setStatus(response.result_code, response.result,response.requestId);
+        this.currentPage = response.currentPage;
+        this.totalItems = response.totalItems;
+        this.totalPages = response.totalPages;
+    }
 }

@@ -10,7 +10,7 @@ import java.util.List;
 public class DocContentModel {
     private String docId;
     private String title;
-    private String source_uri;
+    private String url;
     private String content;
     private String collector;
     private String feed_id;
@@ -57,8 +57,8 @@ public class DocContentModel {
         if (docContentModel.title != null) {
             this.title = docContentModel.title;
         }
-        if (docContentModel.source_uri != null) {
-            this.source_uri = docContentModel.source_uri;
+        if (docContentModel.url != null) {
+            this.url = docContentModel.url;
         }
         if (docContentModel.content != null) {
             this.content = docContentModel.content;

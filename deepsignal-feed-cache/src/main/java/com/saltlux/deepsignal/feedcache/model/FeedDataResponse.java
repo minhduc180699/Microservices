@@ -115,7 +115,7 @@ public class FeedDataResponse {
 //        this.web_source_category = feedContentModel.getWeb_source_category();
 //        this.category_url = feedContentModel.getCategory_url();
         this.description = docContentModel.getDescription();
-        this.source_uri = docContentModel.getSource_uri();
+        this.source_uri = docContentModel.getUrl();
 //        this.subdomain_url = feedContentModel.getSubdomain_url();
         this.content = docContentModel.getContent();
         this.feed_id = docContentModel.getFeed_id();
