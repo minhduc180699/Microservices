@@ -12,7 +12,7 @@
             <input
               class="form-control"
               type="url"
-              placeholder="URL을 입력하거나 복사한 URL을 붙여 넣으세요."
+              :placeholder="$t('learningCenter.insertUrlKeyword')"
               v-model="searchValue"
               v-on:keydown.enter.prevent="preview"
             />
@@ -33,7 +33,7 @@
                 aria-pressed="false"
                 @click="selectAll"
               ></button>
-              <label for="list-check-all5">전체 선택</label>
+              <label for="list-check-all5" v-text="$t('newLearningCenter.selectAll')">전체 선택</label>
             </div>
             <div class="list-info">
               (<strong>{{ totalSelected }}</strong
@@ -41,7 +41,9 @@
             </div>
           </div>
           <div class="elements-right">
-            <button type="button" class="btn btn-default btn-sm" @click="deleteAll"><i class="icon-common icon-close"></i>선택 삭제</button>
+            <button type="button" class="btn btn-default btn-sm" @click="deleteAll">
+              <i class="icon-common icon-close"></i> {{ $t('newLearningCenter.deleteSelection') }}
+            </button>
           </div>
         </div>
         <div class="lc-list-wrap">
@@ -56,7 +58,9 @@
       </div>
       <div class="panel-footer">
         <div class="elements-right">
-          <button type="button" class="btn btn-secondary" @click="insertToMemory">Add to current collection</button>
+          <button type="button" class="btn btn-secondary" @click="insertToMemory" v-text="$t('newLearningCenter.addToStorage')">
+            Add to current collection
+          </button>
         </div>
       </div>
     </div>

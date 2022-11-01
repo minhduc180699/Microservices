@@ -63,7 +63,7 @@
           <div class="elements-left">
             <div class="check-group">
               <!-- <button type="button" class="btn btn-check" id="list-check-all" data-toggle="button" aria-pressed="false"></button> -->
-              <label for="list-check-all">전체 선택</label>
+              <label for="list-check-all" v-text="$t('newLearningCenter.totalSelection')">전체 선택</label>
             </div>
             <div class="list-info">
               (<strong>{{ newCollection.length }}</strong

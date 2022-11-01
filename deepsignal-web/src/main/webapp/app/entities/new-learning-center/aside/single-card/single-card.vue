@@ -24,7 +24,7 @@
     <div class="content-box">
       <div class="lc-media">
         <div class="media-body">
-          <a class="media-title" href="#"><p v-html="document.title"></p></a>
+          <a class="media-title" href="#"><p v-html="document.title" style="max-width: 170px"></p></a>
           <p class="media-desc" v-html="document.content"></p>
         </div>
         <a class="media-img" href="#" id="image">
@@ -40,9 +40,12 @@
         </a>
       </div>
     </div>
-    <div class="tag-box" v-if="document.keyword">
+    <div class="tag-box" v-if="document.keyword || (document.tags && document.tags.length > 0)">
       <div class="scroll-area">
-        <div class="tag-list">
+        <div class="tag-list" v-if="document.tags && document.tags.length > 0">
+          <a class="tag-item" v-for="(element, index) in document.tags" :key="index" :href="element.tag_link">{{ element.tag_name }}</a>
+        </div>
+        <div class="tag-list" v-else>
           <a class="tag-item" v-for="(element, index) in document.keyword.split(',')" :key="index">{{ element }}</a>
         </div>
       </div>
