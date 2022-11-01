@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 //@RefreshScope
 @RestController
 @RequestMapping("/goCache")
@@ -44,17 +46,20 @@ public class GoCacheController {
     }
     @GetMapping("/searchDoc")
     private ResponseEntity<?> searchFeed(@RequestParam(value = "connectomeId", required = true) String connectomeId,
-                                          @RequestParam(value = "requestId", required = false) String request_id,
-                                          @RequestParam(value = "keyword", required = false) String keyword,
-                                          @RequestParam(value = "from", required = false) String from,
-                                          @RequestParam(value = "until", required = false) String until,
-                                          @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
-                                          @RequestParam(value = "size", required = false, defaultValue = "10") Integer size,
-                                          @RequestParam(value = "search_type", required = false) String searchType,
-                                          @RequestParam(value = "channels", required = false) String channels,
-                                          @RequestParam(value = "type", required = false) String type,
-                                          @RequestParam(value = "lang", required = true) String lang){
-        return ResponseEntity.ok(iFeedService.searchFeed(connectomeId, request_id, keyword, from, until, page, size, searchType, channels, lang, type));
+                                         @RequestParam(value = "requestId", required = false) String request_id,
+                                         @RequestParam(value = "keyword", required = false) String keyword,
+                                         @RequestParam(value = "from", required = false) String from,
+                                         @RequestParam(value = "until", required = false) String until,
+                                         @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
+                                         @RequestParam(value = "size", required = false, defaultValue = "10") Integer size,
+                                         @RequestParam(value = "search_type", required = false) String searchType,
+                                         @RequestParam(value = "channels", required = false) String channels,
+                                         @RequestParam(value = "type", required = false) String type,
+                                         @RequestParam(value = "lang", required = true) String lang,
+                                         @RequestParam(value = "sortBy", required = false, defaultValue = "date") String sortBy,
+                                         @RequestParam(value = "score", required = false) Float score,
+                                         @RequestParam(value = "writer", required = false) List<String> writer){
+        return ResponseEntity.ok(iFeedService.searchFeed(connectomeId, request_id, keyword, from, until, page, size, searchType, channels, lang, type, sortBy, score, writer));
     }
     @GetMapping("/getDoc")
     private ResponseEntity<?> getFeed(@RequestParam(value = "connectomeId") String connectomeId,
