@@ -6,8 +6,14 @@
   <!--    </b-card>-->
   <div class="group-wrap">
     <div class="content-top">
-      <div class="lc-check" id="customInput">
-        <input type="checkbox" name="selected-items" @change="selectGroupCard" @click="selectGroupCard(collection)" />
+      <div class="lc-check">
+        <button
+          class="btn btn-check"
+          :class="isChecked ? 'active' : null"
+          type="checkbox"
+          name="selected-items"
+          @click="handleGroupCard(collection)"
+        ></button>
       </div>
       <div class="media-info">
         <a class="info-item info-title" @click.prevent="toggleGroupCollection(collection)"
@@ -21,7 +27,9 @@
           <div class="dropdown-menu dropdown-menu-right">
             <a class="dropdown-item" href="#"><i class="icon-common icon-pin"></i>Top fixed</a>
             <a class="dropdown-item" href="#"><i class="icon-common icon-folder-edit"></i>Edit</a>
-            <a class="dropdown-item" href="#"><i class="icon-common icon-trash"></i>Delete</a>
+            <a class="dropdown-item" href="#" @click="handleDeleteCollection(collection.id)">
+              <i class="icon-common icon-trash"></i>Delete
+            </a>
           </div>
         </div>
       </div>

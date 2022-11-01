@@ -20,7 +20,8 @@ const collectionsManagerStore = namespace('collectionsManagerStore');
 export default class groupCard extends Vue {
   @Prop(Object) readonly collection: any;
   // @Prop(Array) readonly selectedItems: any | [];
-  private dataDocuments = [];
+  // private dataDocuments = [];
+  private isChecked = false;
   private images = [];
   private loading = true;
 
@@ -36,13 +37,35 @@ export default class groupCard extends Vue {
     docIds: Array<string>;
   }) => Promise<{ status: string; message: string; result: CmCollection }>;
 
+  @collectionsManagerStore.Action
+  public deleteCollection: (payload: { collectionId: string }) => Promise<any>;
+
   toggleGroupCollection(data: any) {
     this.$emit('toggleGroupCollection', this.collection);
   }
 
-  selectGroupCard(collection: documentCard) {
+  handleGroupCard(collection: documentCard) {
+    this.isChecked = !this.isChecked;
+    if (this.isChecked) {
+      this.selectAllInGroup(collection);
+    } else {
+      this.removeAllInGroup(collection);
+    }
+  }
+
+  selectAllInGroup(collection: documentCard) {
     if (collection['docDetail']) {
       this.$emit('selectAllInGroup', this.collection.docDetail);
     }
+  }
+
+  removeAllInGroup(collection: documentCard) {
+    if (collection?.docDetail) {
+      this.$emit('removeAllInGroup', this.collection.docDetail);
+    }
+  }
+
+  handleDeleteCollection(id: any) {
+    // this.deleteCollection({collectionId: "ctxmm_bf1fb7ae-b807-4c1e-9d4a-b9ba91e45a13"});
   }
 }

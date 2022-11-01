@@ -119,7 +119,10 @@ export default class ListCollection extends Vue {
   currentCollectiontCardItems: Array<documentCard> = new Array<documentCard>();
 
   mounted(): void {
-    this.onCurrentCollectionDataChange(0);
+    if (this.getCollections.length) {
+      this.getPDApi();
+    }
+    // this.onCurrentCollectionDataChange(0);
   }
   @Watch('getCollections')
   onCollectionsChange() {
@@ -160,8 +163,8 @@ export default class ListCollection extends Vue {
               if (card.tags.indexOf(item.keyword) > -1) {
                 card.tags.push(item.keyword);
               }
-              card.addedAt = new Date(item.published_at);
-              card.modifiedAt = new Date(item.published_at);
+              card.addedAt = new Date(item.created_date);
+              card.modifiedAt = new Date(item.created_date);
               card.totalDocuments = 1;
               card.favicon = item.favicon_url ? item.favicon_url : item.favicon_base64;
               card.images.push(item.og_image_url ? item.og_image_url : item.og_image_base64);
@@ -322,8 +325,8 @@ export default class ListCollection extends Vue {
           if (card.group.indexOf(item.keyword) > -1) {
             card.group.push(item.keyword);
           }
-          card.addedAt = new Date(item.published_at);
-          card.modifiedAt = new Date(item.published_at);
+          card.addedAt = new Date(item.created_date);
+          card.modifiedAt = new Date(item.created_date);
           card.totalDocuments = 1;
           card.favicon = item.favicon_url ? item.favicon_url : item.favicon_base64;
           card.images[0] = item.og_image_url ? item.og_image_url : item.og_image_base64;
@@ -351,96 +354,6 @@ export default class ListCollection extends Vue {
     }
   }
 
-  // getDocsDetailApi(docIds?: string[]) {
-  //   const connectomeId = JSON.parse(localStorage.getItem('ds-connectome')).connectomeId;
-  //   axios
-  //     .get(`api/feed-cache/getListFeed?connectomeId=${connectomeId}&page=0&size=100&requestId=${Date.now().toString()}`
-  //     )
-  //     .then(res => {
-  //       console.log(res, 25100000)
-  //       res.data.data.forEach(item => {
-  //         if (!this.bookmarkCardItems) {
-  //           this.bookmarkCardItems = new Array<documentCard>();
-  //         }
-  //         const card = new documentCard();
-  //
-  //         card.id = item.docId_content;
-  //         card.author = item.writer_search;
-  //         card.type = item.type;
-  //         card.title = item.title;
-  //         card.content = item.contentSummary ? item.contentSummary : item.content;
-  //         card.keyword = item.keyword;
-  //         card.tags.push(item.keyword);
-  //         card.addedAt = new Date(item.published_at);
-  //         card.modifiedAt = new Date(item.published_at);
-  //         card.favicon = item.favicon_base64 || '';
-  //         card.images[0] = item.og_image_base64 || '';
-  //
-  //         this.bookmarkCardItems.push(card);
-  //
-  //         if (item.docId_content == "ds-global-web-eng-N5679041210752547614-0-0"
-  //           || item.docId_content == "ds-global-web-eng-7125651114231972591-0-0") {
-  //           this.getCollectionsFromDocIds({docIds: [item.docId_content]}).then(res => {
-  //             console.log(item.docId_content,2510);
-  //             console.log(res,2510);
-  //             if (!res) {
-  //               return;
-  //             }
-  //
-  //             if (res.status === 'NOK') {
-  //               return;
-  //             }
-  //
-  //             if (!res.result) {
-  //               return;
-  //             }
-  //
-  //             if (!this.collectionCardItems) {
-  //               this.collectionCardItems = new Array<documentCard>();
-  //             }
-  //
-  //             res.result.forEach(collection => {
-  //               console.log(collection, 25100);
-  //               const card = new documentCard();
-  //               card.id = collection.collectionId;
-  //               card.author = 'me';
-  //               card.type = 'COLLECTION';
-  //               card.title = collection.collectionId;
-  //               card.content = collection.documentIdList.length + ' documents included';
-  //               card.modifiedAt = collection.modifiedDate;
-  //               card.totalDocuments = collection.documentIdList.length;
-  //               const indexcard = this.collectionCardItems.find(x => x.id == collection.collectionId);
-  //               if (!indexcard) {
-  //                 const docsDetail = [];
-  //                 collection.documentIdList.forEach(docId => {
-  //                   const item = this.bookmarkCardItems.find(item => item.id == docId);
-  //                   if (item) {
-  //                     // let l = [];
-  //                     docsDetail.push(item);
-  //                   }
-  //                   if (item.images[0]) {
-  //                     card.images.push(item.images[0]);
-  //                   }
-  //                   if (item.tags) {
-  //                     card.tags = item.tags;
-  //                   }
-  //                 });
-  //                 card['docDetail'] = docsDetail;
-  //                 console.log('card1233', card);
-  //                 this.collectionCardItems.push(card);
-  //               }
-  //             });
-  //           });
-  //         }
-  //       });
-  //       this.$emit('changeBookmarkItems', this.bookmarkCardItems);
-  //       console.log('bookmarkCardItems', this.bookmarkCardItems);
-  //     })
-  //     .catch(reason => {
-  //       console.log('catch get mini connectome', reason);
-  //     });
-  // }
-
   getShortContent(content: string) {
     if (!content) {
       return ' ';
@@ -453,9 +366,21 @@ export default class ListCollection extends Vue {
     return content.substring(0, 255) + '...';
   }
 
-  selectAllInGroup(items: any) {
-    items.forEach(item => {
-      this.selectedItems.push(item);
+  selectAllInGroup(newItems: any) {
+    newItems.forEach(newItem => {
+      if (!this.selectedItems.find(item => item.id == newItem.id)) {
+        this.selectedItems.push(newItem);
+      }
+    });
+    this.$root.$emit('cart-to-conlection', this.selectedItems, 'doc');
+  }
+
+  removeAllInGroup(removeItems: any) {
+    removeItems.forEach(removeItem => {
+      const item = this.selectedItems.findIndex(item => item.id == removeItem.id);
+      if (item > -1) {
+        this.selectedItems.splice(item, 1);
+      }
     });
     this.$root.$emit('cart-to-conlection', this.selectedItems, 'doc');
   }
