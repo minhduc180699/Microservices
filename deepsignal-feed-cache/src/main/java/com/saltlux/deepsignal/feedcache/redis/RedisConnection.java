@@ -7,6 +7,7 @@ import com.saltlux.deepsignal.feedcache.model.DocContentModel;
 import com.saltlux.deepsignal.feedcache.model.DocModel;
 import com.saltlux.deepsignal.feedcache.utils.GUtil;
 import io.lettuce.core.KeyValue;
+import io.lettuce.core.RedisFuture;
 import io.lettuce.core.RedisURI;
 import io.lettuce.core.cluster.RedisClusterClient;
 import io.lettuce.core.cluster.api.StatefulRedisClusterConnection;
@@ -19,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class RedisConnection {
@@ -104,6 +106,23 @@ public class RedisConnection {
             return null;
         }
     }
+
+    public RedisFuture<List<KeyValue<String, String>>> getListValueOfDocAsync(List<String> keys){
+        try{
+            List<String> tempList = new ArrayList<>();
+
+            for(String key : keys){
+                key = appconfig.getRedis().getFeedPrefixCache() + key;
+                tempList.add(key);
+            }
+            String[] redisKeys = tempList.toArray(new String[tempList.size()]);
+
+            return asSyncCmd.mget(redisKeys);
+        }catch (Exception e){
+            logger.error("[getListValueOfDoc] Redis error ", e);
+            return null;
+        }
+    }
     public JsonObject getValueOfFeedTypeJsonObject(String key){
         try{
             String value = syncCmd.get(appconfig.getRedis().getFeedPrefixCache() + key);
@@ -165,6 +184,44 @@ public class RedisConnection {
             asSyncCmd.setex(redisKey, appconfig.getRedis().getExpiredTime(), value);
         }catch (Exception e){
             logger.error("[saveValueToFeedContentAsSync] Redis error ", e);
+        }
+    }
+
+    public RedisFuture<String> getDocAsync(String key) {
+        try{
+            RedisFuture<String> valueFuture = asSyncCmd.get(appconfig.getRedis().getFeedPrefixCache() + key);
+            if (valueFuture == null) return null;
+            return valueFuture;
+        }catch (Exception e){
+            logger.error("[getDocAsync] Redis error ", e);
+            return null;
+        }
+    }
+    public RedisFuture<String> getDocContentAsync(String key) {
+        try{
+            RedisFuture<String> valueFuture = asSyncCmd.get(appconfig.getRedis().getFeedContentPrefixCache() + key);
+            if (valueFuture == null) return null;
+            return valueFuture;
+        }catch (Exception e){
+            logger.error("[getDocContentAsync] Redis error ", e);
+            return null;
+        }
+    }
+
+    public RedisFuture<List<KeyValue<String, String>>> getListValueOfDocContentAsync(List<String> docIds) {
+        try{
+            List<String> keys = new ArrayList<>();
+
+            for(String key : docIds){
+                key = appconfig.getRedis().getFeedContentPrefixCache() + key;
+                keys.add(key);
+            }
+            String[] redisKeys = keys.toArray(new String[keys.size()]);
+
+            return asSyncCmd.mget(redisKeys);
+        }catch (Exception e){
+            logger.error("[getValueOfListDocContent] Redis error ", e);
+            return null;
         }
     }
 }

@@ -32,7 +32,6 @@ public class DocDataModel {
     private Boolean isFeed;
     private String created_date;
     private String created_by = "SYSTEM";
-    private String service_language;
     private String keyword;
     private String search_type;
     private String published_at;
@@ -87,7 +86,7 @@ public class DocDataModel {
         this._id = docModel.get_id();
         this.connectomeId = docModel.getConnectomeId();
 //        this.requestId = feedModel.getRequestId();
-        this.docId = docModel.getDocId();
+        this.docId = docContentModel.getDocId();
         this.type = docModel.getType();
         this.feed_content_id = docModel.getFeed_content_id();
         this.liked = docModel.getLiked();
@@ -97,22 +96,22 @@ public class DocDataModel {
         this.isFeed = docModel.getIsFeed();
         this.created_date = docModel.getCreated_date();
         this.created_by = docModel.getCreated_by();
-        this.lang = docModel.getLang();
-        this.keyword = docModel.getKeyword();
-        this.search_type = docModel.getSearch_type();
-        this.published_at = docModel.getPublished_at();
+        this.lang = docContentModel.getLang();
+        this.keyword = docContentModel.getKeyword();
+        this.search_type = docContentModel.getSearch_type();
+        this.published_at = docContentModel.getPublished_at();
         this.channel = docModel.getChannel();
-        this.collector = docModel.getCollector();
-        this.title = docModel.getTitle();
-        this.writer = docModel.getWriter();
-        this.og_image_url = docModel.getOg_image_url();
-        this.og_image_base64 = docModel.getOg_image_base64();
+        this.collector = docContentModel.getCollector();
+        this.title = docContentModel.getTitle();
+        this.writer = docContentModel.getWriter();
+        this.og_image_url = docContentModel.getOg_image_url();
+        this.og_image_base64 = docContentModel.getOg_image_base64();
         this.favicon_url = docModel.getFavicon_url();
-        this.favicon_base64 = docModel.getFavicon_base64();
+        this.favicon_base64 = docContentModel.getFavicon_base64();
 //        this.web_source_category = feedContentModel.getWeb_source_category();
 //        this.category_url = feedContentModel.getCategory_url();
         this.description = docContentModel.getDescription();
-        this.source_uri = docContentModel.getSource_uri();
+        this.source_uri = docContentModel.getUrl();
 //        this.subdomain_url = feedContentModel.getSubdomain_url();
         this.content = docContentModel.getContent();
         this.feed_id = docContentModel.getFeed_id();
@@ -137,7 +136,7 @@ public class DocDataModel {
         this.category = docContentModel.getCategory();
 //        this.writer_search = docContentModel.getWriter_search();
         this.feed_partition = docModel.getFeed_partition();
-        this.content_partition = docModel.getContent_partition();
+        this.content_partition = docContentModel.getContent_partition();
         this.url = docModel.getUrl();
     }
     public FeedRealtimeCrawlerModel toFeedRealtimeCrawlerModel(){
@@ -167,5 +166,131 @@ public class DocDataModel {
         feedRealtimeCrawlerModel.setLang(this.lang);
         feedRealtimeCrawlerModel.setKeyword(this.keyword);
         return feedRealtimeCrawlerModel;
+    }
+
+    public void mergeDocData(DocDataModel docDataModel){
+        if (docDataModel == null){
+            return ;
+        }
+        if(docDataModel.type != null){
+            this.type = docDataModel.type;
+        }
+        if(docDataModel.url != null){
+            this.url = docDataModel.url;
+        }
+        if(docDataModel.feed_content_id != null){
+            this.feed_content_id = docDataModel.feed_content_id;
+        }
+        if(docDataModel.liked != null){
+            this.liked = docDataModel.liked;
+        }
+        if(docDataModel.isBookmarked != null){
+            this.isBookmarked = docDataModel.isBookmarked;
+        }
+        if(docDataModel.isRecommend != null){
+            this.isRecommend = docDataModel.isRecommend;
+        }
+        if(docDataModel.isDeleted != null){
+            this.isDeleted = docDataModel.isDeleted;
+        }
+        if(docDataModel.isFeed != null){
+            this.isFeed = docDataModel.isFeed;
+        }
+        if(docDataModel.created_date != null){
+            this.created_date = docDataModel.created_date;
+        }
+        if(docDataModel.created_by != null){
+            this.created_by = docDataModel.created_by;
+        }
+        if(docDataModel.lang != null){
+            this.lang = docDataModel.lang;
+        }
+        if(docDataModel.keyword != null){
+            this.keyword = docDataModel.keyword;
+        }
+        if(docDataModel.search_type != null){
+            this.search_type = docDataModel.search_type;
+        }
+        if(docDataModel.published_at != null){
+            this.published_at = docDataModel.published_at;
+        }
+        if(docDataModel.channel != null){
+            this.channel = docDataModel.channel;
+        }
+        if(docDataModel.collector != null){
+            this.collector = docDataModel.collector;
+        }
+        if(docDataModel.title != null){
+            this.title = docDataModel.title;
+        }
+        if(docDataModel.writer != null){
+            this.writer = docDataModel.writer;
+        }
+        if(docDataModel.og_image_url != null){
+            this.og_image_url = docDataModel.og_image_url;
+        }
+        if(docDataModel.og_image_base64 != null){
+            this.og_image_base64 = docDataModel.og_image_base64;
+        }
+        if(docDataModel.favicon_url != null){
+            this.favicon_url = docDataModel.favicon_url;
+        }
+        if(docDataModel.favicon_base64 != null){
+            this.favicon_base64 = docDataModel.favicon_base64;
+        }
+        if(docDataModel.description != null){
+            this.description = docDataModel.description;
+        }
+        if(docDataModel.feed_partition != null){
+            this.feed_partition = docDataModel.feed_partition;
+        }
+        if(docDataModel.content_partition != null){
+            this.content_partition = docDataModel.content_partition;
+        }
+        if(docDataModel.tags != null){
+            this.tags = docDataModel.tags;
+        }
+        if(docDataModel.feed_id != null){
+            this.feed_id = docDataModel.feed_id;
+        }
+        if(docDataModel.writer_id != null){
+            this.writer_id = docDataModel.writer_id;
+        }
+        if (docDataModel.source_uri != null) {
+            this.source_uri = docDataModel.source_uri;
+        }
+        if (docDataModel.content != null) {
+            this.content = docDataModel.content;
+        }
+        if (docDataModel.html_content != null) {
+            this.html_content = docDataModel.html_content;
+        }
+        if (docDataModel.video_url != null) {
+            this.video_url = docDataModel.video_url;
+        }
+        if (docDataModel.image_base64 != null) {
+            this.image_base64 = docDataModel.image_base64;
+        }
+        if (docDataModel.image_url != null) {
+            this.image_url = docDataModel.image_url;
+        }
+        if (docDataModel.video_base64 != null) {
+            this.video_base64 = docDataModel.video_base64;
+        }
+        if (docDataModel.collected_at != null) {
+            this.collected_at = docDataModel.collected_at;
+        }
+        if (docDataModel.service_type != null) {
+            this.service_type = docDataModel.service_type;
+        }
+        if (docDataModel.origin_date != null) {
+            this.origin_date = docDataModel.origin_date;
+        }
+        if (docDataModel.source_id != null) {
+            this.source_id = docDataModel.source_id;
+        }
+        if (docDataModel.category != null) {
+            this.category = docDataModel.category;
+        }
     }
 }

@@ -113,5 +113,12 @@
     "myActivity": "My Activity",
     "learnedDocument": "Trained Document",
     "choices": "Choices"
+  },
+  "newLearningCenter": {
+    "selectAll": "Select All",
+    "deleteSelection": "Delete Selection",
+    "enterYourKeywords": "Enter your keywords.",
+    "totalSelection": "Total Selection",
+    "addToStorage": "Add to storage"
   }
 }

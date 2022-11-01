@@ -113,5 +113,12 @@
     "myActivity": "내 활동",
     "learnedDocument": "학습한 Document",
     "choices": "건"
+  },
+  "newLearningCenter": {
+    "selectAll": "전체 선택",
+    "deleteSelection": "선택 삭제",
+    "enterYourKeywords": "키워드를 입력하세요.",
+    "totalSelection": "총 선택",
+    "addToStorage": "스토리지에 추가"
   }
 }

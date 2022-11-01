@@ -3,7 +3,7 @@ import vueCustomScrollbar from 'vue-custom-scrollbar';
 import axios from 'axios';
 import singleCard from '@/entities/new-learning-center/aside/single-card/single-card.vue';
 import { documentCard } from '@/shared/model/document-card.model';
-import { getDomainFromUrl, onlyInLeft, toDataURL } from '@/util/ds-util';
+import { getDomainFromUrl, onlyInLeft, timeDifference, toDataURL } from '@/util/ds-util';
 
 @Component({
   components: {
@@ -72,11 +72,14 @@ export default class Search extends Vue {
     if (this.dataSearch.length > 0 && this.getParam() == null) {
       this.loaderDisable = true;
     } else {
+      const param = new (class {
+        [x: string]: any;
+      })();
+      param.searchType = this.tabTypeActive;
+      if (this.tabActive === 1) param.channel = 'google,github,medium';
       await axios
         .get('api/learning/search' + this.getParam() + '/' + this.timeShowSpinner + '/' + this.queries, {
-          params: {
-            searchType: this.tabTypeActive,
-          },
+          params: param,
         })
         .then(async res => {
           this.isShowSpinner = false;
@@ -88,9 +91,20 @@ export default class Search extends Vue {
           }
           if (res.data.metaSearch) {
             if (this.tabActive === 1) {
-              this.externalSearch = res.data.metaSearch.body.data[0];
-              // @ts-ignore
-              this.metaSearch = this.externalSearch.search_result;
+              if (res.data.metaSearch.body.data && res.data.metaSearch.body.data.length > 0) {
+                const size = res.data.metaSearch.body.data.length;
+                const arrChannel = [
+                  { key: 'google', value: 'search_result' },
+                  { key: 'medium', value: 'stories' },
+                  { key: 'github', value: 'repositories' },
+                ];
+                for (let i = 0; i < size; i++) {
+                  const value = arrChannel.find(item => item.key == res.data.metaSearch.body.data[i].channel)?.value;
+                  this.metaSearch = this.metaSearch.concat(res.data.metaSearch.body.data[i][value]);
+                }
+                console.log('this.metaSearch', this.metaSearch);
+              }
+
               if (this.metaSearch.length <= 0) {
                 this.isMoreResults = false;
                 return;
@@ -261,12 +275,13 @@ export default class Search extends Vue {
         objectTmp.keyword = item.keyword;
         objectTmp.type = typeDownload ? 'DOWNLOAD' : 'URL';
         objectTmp.searchType = item.searchType;
-        objectTmp.addedAt = item.org_date;
+        objectTmp.addedAt = item.org_date ? item.org_date : item.datetime ? timeDifference(new Date(), new Date(item.datetime)) : '';
         objectTmp.url = item.link;
-        objectTmp.images = [item.img ? item.img : item.imgBase64 ? item.imgBase64 : ''];
+        objectTmp.images = [item.imgBase64 ? item.imgBase64 : item.img ? item.img : ''];
         objectTmp.favicon = item.favicon;
         objectTmp.docId = item.docId;
         objectTmp.noConvertTime = true;
+        objectTmp.tags = item.tags;
         return objectTmp;
       })
     );

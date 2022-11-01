@@ -69,8 +69,8 @@ public class LearningCenterResource {
         @PathVariable("language") String language,
         @PathVariable("page") int page,
         @PathVariable("keyword") String keyword,
-        @RequestParam(name = "searchType", defaultValue = "") String searchType,
-        @RequestParam(name = "channel", defaultValue = "google") String channel
+        @RequestParam(name = "searchType", defaultValue = "WEB") String searchType,
+        @RequestParam(name = "channel", required = false) String channel
     ) {
         //        dataTransfer.setLanguage(language);
         //        SearchResponse searchResponse = new SearchResponse();

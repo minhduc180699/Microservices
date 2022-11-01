@@ -6,7 +6,7 @@
         <div class="panel-header">
           <div class="filter-top">
             <div class="form-group search-group">
-              <input class="form-control" type="text" placeholder="키워드를 입력하세요." />
+              <input class="form-control" type="text" :placeholder="$t('newLearningCenter.enterYourKeywords')" />
               <button class="form-btn" type="button">
                 <i class="icon-common icon-search-pirmary"></i>
               </button>
@@ -194,12 +194,14 @@
             <div class="elements-left">
               <div class="check-group">
                 <button type="button" class="btn btn-check" id="list-check-all1" data-toggle="button" aria-pressed="false"></button>
-                <label for="list-check-all1">전체 선택</label>
+                <label for="list-check-all1" v-text="$t('newLearningCenter.selectAll')">전체 선택</label>
               </div>
               <div class="list-info">(<strong>0</strong>/20)</div>
             </div>
             <div class="elements-right">
-              <button type="button" class="btn btn-default btn-sm"><i class="icon-common icon-close"></i>선택 삭제</button>
+              <button type="button" class="btn btn-default btn-sm">
+                <i class="icon-common icon-close"></i>{{ $t('newLearningCenter.deleteSelection') }}
+              </button>
             </div>
           </div>
           <div class="lc-list-wrap">

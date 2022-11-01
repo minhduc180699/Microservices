@@ -12,7 +12,7 @@
             <input
               class="form-control"
               type="text"
-              placeholder="키워드를 입력하세요."
+              :placeholder="$t('newLearningCenter.enterYourKeywords')"
               v-model="queries"
               v-on:keydown.enter.prevent="onEnterSearch(), (isAddCondition = true)"
               maxlength="2048"
@@ -45,7 +45,7 @@
                 aria-pressed="false"
                 @click="selectAll"
               ></button>
-              <label for="list-check-all2">전체 선택</label>
+              <label for="list-check-all2" v-text="$t('newLearningCenter.selectAll')">전체 선택</label>
             </div>
             <div class="list-info">
               (<strong>{{ totalSelected }}</strong
@@ -53,7 +53,10 @@
             </div>
           </div>
           <div class="elements-right">
-            <button type="button" class="btn btn-default btn-sm" @click="deleteAll"><i class="icon-common icon-close"></i>선택 삭제</button>
+            <button type="button" class="btn btn-default btn-sm" @click="deleteAll">
+              <i class="icon-common icon-close"></i>
+              {{ $t('newLearningCenter.deleteSelection') }}
+            </button>
           </div>
         </div>
         <div class="lc-list-wrap">
@@ -83,7 +86,9 @@
       </div>
       <div class="panel-footer">
         <div class="elements-right">
-          <button type="button" class="btn btn-secondary" @click="insertToMemory">Add to current collection</button>
+          <button type="button" class="btn btn-secondary" @click="insertToMemory" v-text="$t('newLearningCenter.addToStorage')">
+            Add to current collection
+          </button>
         </div>
       </div>
     </div>
