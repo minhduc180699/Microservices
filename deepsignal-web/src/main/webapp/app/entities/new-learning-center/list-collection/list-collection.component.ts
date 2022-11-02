@@ -145,13 +145,13 @@ export default class ListCollection extends Vue {
         },
       })
       .then(res => {
-        res.data?.body?.connectomeFeeds?.length < this.size ? (this.loaderDisable = true) : (this.page += 1);
+        res.data?.body?.data?.length < this.size ? (this.loaderDisable = true) : (this.page += 1);
         // if (this.totalItems != res.data.totalItems) {
         //   this.totalFeeds = res.data.totalItems;
         // }
         this.getCurrentDraftCollection()
           .then(currentCollectionResult => {
-            res.data.body.connectomeFeeds.forEach(item => {
+            res.data.body.data.forEach(item => {
               if (!this.bookmarkCardItems) {
                 this.bookmarkCardItems = new Array<documentCard>();
               }
@@ -402,7 +402,6 @@ export default class ListCollection extends Vue {
   }
 
   deleteSingleCard(item: any) {
-    debugger;
     if (item?.docDetail?.length == 1) {
       this.deleteCollection({ collectionId: item.id }).then(res => console.log(res));
     } else {

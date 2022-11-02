@@ -210,13 +210,13 @@
               <!--                <search-main></search-main>-->
               <!--              </li>-->
 
-              <li class="nav-item">
-                <a class="nav-link link-notice new" data-toggle="dropdown" @click="closeShowNotification">
-                  <i class="icon-common-lg" :class="{ 'icon-noti-fill': isShowNotification }"></i>
-                  <span class="tooltip" v-text="$t('global.menu.notification')">Notification</span>
-                </a>
-                <notification @newNotification="checkShowNotification"></notification>
-              </li>
+              <!--              <li class="nav-item">-->
+              <!--                <a class="nav-link link-notice new" data-toggle="dropdown" @click="closeShowNotification">-->
+              <!--                  <i class="icon-common-lg" :class="{ 'icon-noti-fill': isShowNotification }"></i>-->
+              <!--                  <span class="tooltip" v-text="$t('global.menu.notification')">Notification</span>-->
+              <!--                </a>-->
+              <!--                <notification @newNotification="checkShowNotification"></notification>-->
+              <!--              </li>-->
 
               <li class="nav-item">
                 <a id="openUserMenu" class="nav-link link-my" @click="openUserMenu">
