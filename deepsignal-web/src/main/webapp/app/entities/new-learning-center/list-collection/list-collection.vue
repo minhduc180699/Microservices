@@ -224,6 +224,7 @@
                       v-else
                       :selectedItems="selectedItems"
                       @setSelectedItems="setSelectedItems"
+                      @deleteSingleCard="deleteSingleCard(item)"
                       :document="item.docDetail ? item.docDetail[0] : item"
                     ></single-card>
                   </li>

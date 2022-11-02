@@ -21,11 +21,25 @@
             {{ document.author + '' }}
           </div>
         </div>
-        <div class="info-item" v-if="document.addedAt && !document.noConvertTime">{{ checkRegexDate(document.addedAt) | formatDate }}</div>
+        <div class="info-item" v-if="document.addedAt && !document.noConvertTime">
+          {{ checkRegexDate(document.addedAt) | formatDate }}
+        </div>
         <div class="info-item" v-if="document.addedAt && document.noConvertTime">{{ document.addedAt }}</div>
       </div>
-      <div class="lc-btn" v-show="isHideCheck">
-        <a class="btn-close" @click="removeCard(document)"><i class="icon-common icon-close"></i></a>
+      <div class="lc-btn" v-if="isHideCheck">
+        <a class="btn-close" @click="removeCard(document)">
+          <i class="icon-common icon-close"></i>
+        </a>
+      </div>
+      <div v-else class="lc-btn">
+        <div class="more-area position-relative">
+          <a class="btn-more" href="#" role="button" data-toggle="dropdown" aria-expanded="false"><i class="icon-common icon-more"></i></a>
+          <div class="dropdown-menu dropdown-menu-right" style="">
+            <a class="dropdown-item" href="#"><i class="icon-common icon-pin"></i>Top fixed</a>
+            <a class="dropdown-item" @click="handleDelete"> <i class="icon-common icon-trash"></i>Delete </a>
+          </div>
+        </div>
+        dropdown-menu-right
       </div>
     </div>
     <div class="content-box">
@@ -50,7 +64,7 @@
     <div class="tag-box" v-if="document.keyword || (document.tags && document.tags.length > 0)">
       <div class="scroll-area">
         <div class="tag-list" v-if="document.tags && document.tags.length > 0">
-          <a class="tag-item" v-for="(element, index) in document.tags" :key="index" :href="element.tag_link">{{ element.tag_name }}</a>
+          <a class="tag-item" v-for="(element, index) in document.tags" :key="index" :href="element.tag_link"> {{ element.tag_name }}</a>
         </div>
         <div class="tag-list" v-else>
           <a class="tag-item" v-for="(element, index) in document.keyword.split(',')" :key="index">{{ element }}</a>

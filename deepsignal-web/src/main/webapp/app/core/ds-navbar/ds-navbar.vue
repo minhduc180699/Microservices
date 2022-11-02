@@ -36,7 +36,7 @@
                   :class="[isActive || isDetailFeed ? 'nav-link active' : 'nav-link', isExactActive && 'nav-link active']"
                 >
                   <i class="icon-mainmenu icon-feed"></i>
-                  <span class="text" v-text="$t('global.menu.feed')">Feed</span>
+                  <span class="text" v-text="$t('global.menu.discovery')">Discovery</span>
                 </a>
               </router-link>
             </li>

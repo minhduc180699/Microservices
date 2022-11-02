@@ -171,7 +171,7 @@ export default class CollectionCart extends Vue {
         return;
       }
       // @ts-ignore
-      // this.$router.go();
+      this.$router.go();
     });
   }
 }

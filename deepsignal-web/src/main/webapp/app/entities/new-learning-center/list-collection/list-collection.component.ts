@@ -96,6 +96,9 @@ export default class ListCollection extends Vue {
   @collectionsManagerStore.Action
   public addBookmarksToCurrentCollection: (payload: { docIds: Array<string> }) => Promise<any>;
 
+  @collectionsManagerStore.Action
+  public deleteCollection: (payload: { collectionId: string }) => Promise<{ status: string; message: string; result: any }>;
+
   private scrollSettings = {
     wheelPropagation: false,
   };
@@ -396,5 +399,14 @@ export default class ListCollection extends Vue {
   checkArraySelected(arg?) {
     // if (arg) return onlyInLeft(this.selectedItems, this.allData);
     // return onlyInLeft(this.allData, this.selectedItems);
+  }
+
+  deleteSingleCard(item: any) {
+    debugger;
+    if (item?.docDetail?.length == 1) {
+      this.deleteCollection({ collectionId: item.id }).then(res => console.log(res));
+    } else {
+      console.log('delete 1 document');
+    }
   }
 }

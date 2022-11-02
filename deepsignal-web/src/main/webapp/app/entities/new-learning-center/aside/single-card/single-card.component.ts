@@ -100,8 +100,13 @@ export default class singleCard extends Vue {
     if (regex.test(value)) return value;
     else return new Date(value);
   }
+  d;
 
   removeCard(item) {
     this.$emit('removeCardReq', this.internalSelectedItems, item);
+  }
+
+  handleDelete() {
+    this.$emit('deleteSingleCard');
   }
 }

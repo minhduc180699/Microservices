@@ -27,9 +27,7 @@
           <div class="dropdown-menu dropdown-menu-right">
             <a class="dropdown-item" href="#"><i class="icon-common icon-pin"></i>Top fixed</a>
             <a class="dropdown-item" href="#"><i class="icon-common icon-folder-edit"></i>Edit</a>
-            <a class="dropdown-item" href="#" @click="handleDeleteCollection(collection.id)">
-              <i class="icon-common icon-trash"></i>Delete
-            </a>
+            <a class="dropdown-item" @click="handleDeleteCollection"> <i class="icon-common icon-trash"></i>Delete </a>
           </div>
         </div>
       </div>

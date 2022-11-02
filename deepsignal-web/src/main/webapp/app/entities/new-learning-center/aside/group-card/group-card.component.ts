@@ -65,7 +65,7 @@ export default class groupCard extends Vue {
     }
   }
 
-  handleDeleteCollection(id: any) {
-    // this.deleteCollection({collectionId: "ctxmm_bf1fb7ae-b807-4c1e-9d4a-b9ba91e45a13"});
+  handleDeleteCollection() {
+    this.deleteCollection({ collectionId: this.collection.id }).then();
   }
 }
