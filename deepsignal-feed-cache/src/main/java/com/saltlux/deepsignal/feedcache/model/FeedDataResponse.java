@@ -115,7 +115,7 @@ public class FeedDataResponse {
 //        this.web_source_category = feedContentModel.getWeb_source_category();
 //        this.category_url = feedContentModel.getCategory_url();
         this.description = docContentModel.getDescription();
-        this.source_uri = docContentModel.getSource_uri();
+        this.source_uri = docContentModel.getUrl();
 //        this.subdomain_url = feedContentModel.getSubdomain_url();
         this.content = docContentModel.getContent();
         this.feed_id = docContentModel.getFeed_id();
@@ -138,7 +138,6 @@ public class FeedDataResponse {
 //        this.reply_id = feedContentModel.getReply_id();
         this.source_id = docContentModel.getSource_id();
         this.category = docContentModel.getCategory();
-        this.writer_search = docContentModel.getWriter_search();
         this.feed_partition = docModel.getFeed_partition();
         this.content_partition = docModel.getContent_partition();
         this.url = docModel.getUrl();

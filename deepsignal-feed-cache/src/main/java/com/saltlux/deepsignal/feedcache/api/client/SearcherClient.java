@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.List;
+
 @Component
 @FeignClient(name = "deepsignal-searcher", fallback = SearcherClientFallback.class)
 public interface SearcherClient {
@@ -47,7 +49,10 @@ public interface SearcherClient {
                                           @RequestParam("search_type") String searchType,
                                           @RequestParam("channels") String channels,
                                           @RequestParam("lang") String lang,
-                                          @RequestParam("type") String type);
+                                          @RequestParam("type") String type,
+                                          @RequestParam(value = "sortBy", required = false, defaultValue = "date") String sortBy,
+                                          @RequestParam(value = "score", required = false) Float score,
+                                          @RequestParam(value = "writer", required = false) List<String> writer);
 
 
     @GetMapping(API_SEARCHER + "/getListFilterDocument")

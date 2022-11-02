@@ -1,0 +1,20 @@
+<ESConfig>
+  <cluster>bigio-es7</cluster>
+  <numberOfShard>3</numberOfShard>
+  <numberOfReplica>1</numberOfReplica>
+  <nodes>
+    <ESNode>
+      <host>192.168.9.141</host>
+      <port>9200</port>
+    </ESNode>
+    <ESNode>
+      <host>192.168.9.142</host>
+      <port>9200</port>
+    </ESNode>
+    <ESNode>
+      <host>192.168.9.143</host>
+      <port>9200</port>
+    </ESNode>
+  </nodes>
+</ESConfig>
+

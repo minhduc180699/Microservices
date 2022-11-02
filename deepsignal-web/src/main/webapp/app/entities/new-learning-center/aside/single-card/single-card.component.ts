@@ -10,6 +10,9 @@ const collectionsManagerStore = namespace('collectionsManagerStore');
     currentCollectionDocIds() {
       return this.$store.getters['collectionsManagerStore/getCurrentCollection']?.documentIdList;
     },
+    isChecked() {
+      return this.selectedItems.findIndex(item => item.id == this.document['id']) > -1;
+    },
   },
 })
 export default class singleCard extends Vue {

@@ -52,4 +52,41 @@ public class DsFeedClientFallback implements DsFeedClient {
         response.put("totalPages", 0);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+    @Override
+    public ResponseEntity<?> handleActivityLike(JSONObject bodyJSON) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("requestId", -1);
+        response.put("connectomeId", -1);
+        response.put("docId", -1);
+        response.put("liked", -1);
+        response.put("isBookmarked", -1);
+        response.put("isDeleted", -1);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<?> handleActivityBookmark(JSONObject bodyJSON) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("requestId", -1);
+        response.put("connectomeId", -1);
+        response.put("docId", -1);
+        response.put("liked", -1);
+        response.put("isBookmarked", -1);
+        response.put("isDeleted", -1);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<?> handleHideDoc(JSONObject bodyJSON) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("requestId", -1);
+        response.put("connectomeId", -1);
+        response.put("docId", -1);
+        response.put("liked", -1);
+        response.put("isBookmarked", -1);
+        response.put("isDeleted", -1);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
 }

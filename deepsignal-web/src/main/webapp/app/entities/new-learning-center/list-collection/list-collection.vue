@@ -196,7 +196,7 @@
                 <button type="button" class="btn btn-check" id="list-check-all1" data-toggle="button" aria-pressed="false"></button>
                 <label for="list-check-all1" v-text="$t('newLearningCenter.selectAll')">전체 선택</label>
               </div>
-              <div class="list-info">(<strong>0</strong>/20)</div>
+              <div class="list-info">(<strong>0</strong>/{{ documentOrGroupDocumentsCardItems.length }})</div>
             </div>
             <div class="elements-right">
               <button type="button" class="btn btn-default btn-sm" style="display: flex">
@@ -210,15 +210,15 @@
                 <ul class="lc-card-list">
                   <li
                     :class="item.totalDocuments > 1 ? 'lc-card-group' : 'lc-card-item'"
-                    v-for="item in documentOrGroupDocumentsCardItems"
-                    :aria-selected="currentCollection.documentIdList.indexOf(item.id) > -1 ? 'true' : 'false'"
-                    :key="item.id"
+                    v-for="(item, index) in documentOrGroupDocumentsCardItems"
+                    :key="index"
                   >
                     <group-card
                       v-if="item.totalDocuments && item.totalDocuments > 1"
                       :collection="item"
                       @toggleGroupCollection="handleGroupCollectionActive"
                       @selectAllInGroup="selectAllInGroup"
+                      @removeAllInGroup="removeAllInGroup"
                     ></group-card>
                     <single-card
                       v-else
@@ -386,3 +386,18 @@
 </template>
 
 <script lang="ts" src="./list-collection.component.ts"></script>
+
+<style scoped lang="scss">
+li.lc-card-group:has(button.active),
+li.lc-card-item:has(input[aria-pressed='true']) {
+  .item-wrap {
+    border-color: #0097f6;
+  }
+  .group-wrap {
+    border-color: #0097f6;
+    &:after {
+      border-color: #0097f6 #0097f6 #e8f2ff #0097f6;
+    }
+  }
+}
+</style>

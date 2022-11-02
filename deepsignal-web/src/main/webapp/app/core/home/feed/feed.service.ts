@@ -130,4 +130,40 @@ export default class FeedService {
     };
     return axios.post('api/connectome-feed/getActivity/' + connectomeId, listFilter, { params: params });
   }
+
+  handleActivityLike(requestId, connectomeId, docId, liked, isBookmarked?, isDeleted?) {
+    const params = {
+      requestId   : "requestId",
+      connectomeId: connectomeId,
+      docId       : docId,
+      liked       : liked,
+      isBookmarked: null,
+      isDeleted   : null
+    };
+    return axios.put('api/connectome-feeds/activityLike', params);
+  }
+
+  handleActivityBookmark(requestId, connectomeId, docId, liked, isBookmarked, isDeleted?) {
+    const params = {
+      requestId   : "requestId",
+      connectomeId: connectomeId,
+      docId       : docId,
+      liked       : 0,
+      isBookmarked: isBookmarked,
+      isDeleted   : null
+    };
+    return axios.put('api/connectome-feeds/activityBookmark', params);
+  }
+
+  handleHideFeed(requestId, connectomeId, docId, liked, isBookmarked, isDeleted) {
+    const params = {
+      requestId: "requestId",
+      connectomeId: connectomeId,
+      docId       : docId,
+      liked       : 0,
+      isBookmarked: null,
+      isDeleted   : isDeleted
+    };
+    return axios.put('api/connectome-feeds/hideFeed', params)
+  }
 }

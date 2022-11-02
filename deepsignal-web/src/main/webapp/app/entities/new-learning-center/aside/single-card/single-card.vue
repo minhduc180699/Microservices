@@ -2,7 +2,14 @@
   <div class="item-wrap">
     <div class="content-top">
       <div class="lc-check" id="customInput" v-show="!isHideCheck">
-        <input type="checkbox" name="selected-items" v-model="internalSelectedItems" @change="internalItemsChange" :value="document" />
+        <input
+          type="checkbox"
+          name="selected-items"
+          :aria-pressed="isChecked ? 'true' : 'false'"
+          v-model="internalSelectedItems"
+          @change="internalItemsChange"
+          :value="document"
+        />
       </div>
       <div class="media-info">
         <div class="info-item">

@@ -135,6 +135,10 @@ export default class CollectionCart extends Vue {
     this.arrCollection.forEach(item => {
       this.newCollection = this.newCollection.concat(item.arr);
     });
+
+    if (this.newCollection.length > 0) {
+      this.isCartActive = true;
+    }
   }
 
   removeCardReq(arr, item) {

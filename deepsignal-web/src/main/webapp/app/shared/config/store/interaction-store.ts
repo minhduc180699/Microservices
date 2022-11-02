@@ -6,15 +6,15 @@ export const interactionStore: Module<any, any> = {
     coordinate: { x: 0, y: 0 },
     isLike: false,
     isDislike: false,
-    id: '',
+    _id: '',
     post: {
-      sourceId: '',
+      url: '',
       title: '',
       writer: '',
-      id: '',
+      docId: ''
     },
     isBookmark: false,
-    isDelete: false,
+    isDeleted: false,
     isLearning: false,
     isDetailFeed: false,
     learnMore: '',
@@ -24,10 +24,10 @@ export const interactionStore: Module<any, any> = {
     getCoordinate: state => state.coordinate,
     getLike: state => state.isLike,
     getDislike: state => state.isDislike,
-    getId: state => state.id,
+    getId: state => state._id,
     getPost: state => state.post,
     getBookmark: state => state.isBookmark,
-    getDelete: state => state.isDelete,
+    getDelete: state => state.isDeleted,
     getLearning: state => state.isLearning,
     getDetailFeed: state => state.isDetailFeed,
     getLearnMore: state => state.learnMore,
@@ -42,8 +42,8 @@ export const interactionStore: Module<any, any> = {
     setLike(state, isLike) {
       state.isLike = isLike;
     },
-    setId(state, id) {
-      state.id = id;
+    setId(state, _id) {
+      state._id = _id;
     },
     setPost(state, post) {
       state.post = post;

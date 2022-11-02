@@ -188,12 +188,13 @@ export default class DsCardDefault extends Vue {
     } else {
       this.isLoadingDelete = true;
       // @ts-ignore
-      this.$refs.handleHideCard.callApiActivity(true, ACTIVITY.delete, 0, feedback);
+      // this.$refs.handleHideCard.callApiActivity(true, ACTIVITY.delete, 0, feedback);
+      this.$refs.handleHideCard.handleHideFeed(ACTIVITY.delete);
     }
   }
 
   handleCloseDeleteCard(value) {
-    if (value === this.item.id) {
+    if (value === this.item._id) {
       this.stateDelete = true;
     } else {
       this.stateDelete = false;

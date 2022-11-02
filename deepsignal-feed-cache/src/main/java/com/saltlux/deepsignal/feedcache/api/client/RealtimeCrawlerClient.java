@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
-@FeignClient(name = "realtime-crawler", url = "http://localhost:8089")
+@FeignClient(name = "realtime-crawler", url = "http://35.223.12.7")
 public interface RealtimeCrawlerClient {
     @PostMapping("/deepsignalconverter/documentconverter/urlconvert")
     ResponseEntity<String> postRealtimeCrawler(@RequestBody List<FeedRealtimeCrawlerModel> feedRealtimeCrawlerModelList);

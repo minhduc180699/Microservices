@@ -1,5 +1,6 @@
 package com.saltlux.deepsignal.feedcache.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,6 +12,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class DataListResponse<T>{
     private String result;
     private int result_code;
@@ -36,5 +38,11 @@ public class DataListResponse<T>{
         this.result = result;
         this.result_code = result_code;
         this.requestId = requestId;
+    }
+    public void mergeResponse(DataListResponse response){
+        this.setStatus(response.result_code, response.result,response.requestId);
+        this.currentPage = response.currentPage;
+        this.totalItems = response.totalItems;
+        this.totalPages = response.totalPages;
     }
 }
