@@ -17,7 +17,7 @@ import {
 import {randomEleInArray, separateArr} from '@/util/array-util';
 
 export class CardModel extends PostModel {
-  id: string;
+  _id: string;
   dataTemplate: string;
   dataSize: string;
   dataType: string;
@@ -44,9 +44,12 @@ export class CardModel extends PostModel {
   constructor(cardModel?: CardModel, component?: string) {
     super(cardModel);
     if (cardModel) {
-      this.id = cardModel.id;
-      this.favicon_url = this.favicon_url ? this.favicon_url : this.getFavicon(this.url);
-      this.favicon_base64 = this.favicon_base64 ? this.favicon_base64 : this.getFavicon(this.url);
+      this.id = cardModel._id
+      if(!this.favicon_base64 && !this.favicon_url || this.favicon_base64 == "" && this.favicon_url == ""){
+        this.favicon_url = this.favicon_url ? this.favicon_url : this.getFavicon(this.og_image_url);
+        this.favicon_base64 = this.favicon_url ? this.favicon_url : this.getFavicon(this.og_image_base64);
+
+      }
       this.buildCardByPostType(component);
     }
   }

@@ -69,18 +69,18 @@ export default class DsCardDefault extends Vue {
     if (!this.item || !this.item.search_type) {
       return;
     }
-    if (this.item.search_type === "PDF" || this.item.search_type === "PPT") {
+    if (this.item.search_type === "PDF" || this.item.search_type === "PPT" || this.item.url.toLowerCase().includes("pdf") || this.item.url.toLowerCase().includes("ppt")) {
       let iconUrl;
-      const extension = getExtensionFileBySearchType(this.item.search_type);
-      if (FILE_TYPE.EXCEL.some(v => extension.includes(v))) {
+      // const extension = getExtensionFileBySearchType(this.item.search_type);
+      if (FILE_TYPE.EXCEL.some(v =>  this.item.url.toLowerCase().includes(v))) {
         iconUrl = 'file-excel-fill.svg';
-      } else if (FILE_TYPE.COMPRESSED.some(v => extension.toLowerCase().includes(v))) {
+      } else if (FILE_TYPE.COMPRESSED.some(v => this.item.url.toLowerCase().includes(v))) {
         iconUrl = 'file-zip-fill.svg';
-      } else if (FILE_TYPE.PPT.some(v => extension.toLowerCase().includes(v))) {
+      } else if (FILE_TYPE.PPT.some(v => this.item.url.toLowerCase().includes(v))) {
         iconUrl = 'file-ppt-fill.svg';
-      } else if (FILE_TYPE.PDF.some(v => extension.toLowerCase().includes(v))) {
+      } else if (FILE_TYPE.PDF.some(v => this.item.url.toLowerCase().includes(v))) {
         iconUrl = 'file-pdf-fill.svg';
-      } else if (FILE_TYPE.DOC.some(v => extension.toLowerCase().includes(v))) {
+      } else if (FILE_TYPE.DOC.some(v => this.item.url.toLowerCase().includes(v))) {
         iconUrl = 'file-word-fill.svg';
       } else {
         return ['/content/images/empty-image.png'];
@@ -146,18 +146,18 @@ export default class DsCardDefault extends Vue {
   }
 
   errorImage(item) {
-    if (item.searchType) {
+    if (item.search_type) {
       let iconUrl;
-      const extension = getExtensionFileBySearchType(item.searchType);
-      if (FILE_TYPE.EXCEL.some(v => extension.includes(v))) {
+      const extension = getExtensionFileBySearchType(item.search_type);
+      if (FILE_TYPE.EXCEL.some(v =>  this.item.url.toLowerCase().includes(v))) {
         iconUrl = 'file-excel-fill.svg';
-      } else if (FILE_TYPE.COMPRESSED.some(v => extension.includes(v))) {
+      } else if (FILE_TYPE.COMPRESSED.some(v =>  this.item.url.toLowerCase().includes(v))) {
         iconUrl = 'file-zip-fill.svg';
-      } else if (FILE_TYPE.PPT.some(v => extension.includes(v))) {
+      } else if (FILE_TYPE.PPT.some(v =>  this.item.url.toLowerCase().includes(v))) {
         iconUrl = 'file-ppt-fill.svg';
-      } else if (FILE_TYPE.PDF.some(v => extension.includes(v))) {
+      } else if (FILE_TYPE.PDF.some(v =>  this.item.url.toLowerCase().includes(v))) {
         iconUrl = 'file-pdf-fill.svg';
-      } else if (FILE_TYPE.DOC.some(v => extension.includes(v))) {
+      } else if (FILE_TYPE.DOC.some(v =>  this.item.url.toLowerCase().includes(v))) {
         iconUrl = 'file-word-fill.svg';
       } else {
         return ['/content/images/empty-image.png'];
