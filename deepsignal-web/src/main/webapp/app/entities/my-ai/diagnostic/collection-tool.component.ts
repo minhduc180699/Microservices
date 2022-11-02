@@ -1,13 +1,10 @@
-import { Component, Vue, Watch } from 'vue-property-decorator';
-import { namespace } from 'vuex-class';
-import { ContextualMemoryCollection } from '@/shared/model/contextual-memory-collection.model';
-import { CmCollectionsItem } from '@/shared/model/cm-collections-item.model';
 import { CmCollection } from '@/shared/model/cm-collection.model';
+import { CmCollectionsItem } from '@/shared/model/cm-collections-item.model';
+import { ConnectomeNode } from '@/shared/model/connectome-node.model';
 import { documentCard } from '@/shared/model/document-card.model';
 import axios from 'axios';
-import { ShowMoreMixin } from '@/mixins/show-more';
-import { mixins } from 'vue-class-component';
-import { ConnectomeNode } from '@/shared/model/connectome-node.model';
+import { Component, Vue, Watch } from 'vue-property-decorator';
+import { namespace } from 'vuex-class';
 
 const collectionsManagerStore = namespace('collectionsManagerStore');
 

@@ -190,7 +190,7 @@ public class CollectionResource {
             return new ResponseEntity<ApiResponse>(
                 new ApiResponse(
                     false,
-                    "call of external api [" + Constants.POST_CONTEXTUAL_MEMORY_CREATE_COLLECTION_URI + "]" + e.getMessage()
+                    "call of external api [" + Constants.POST_CONTEXTUAL_MEMORY_GET_TMP_COLLECTION_URI + "]" + e.getMessage()
                 ),
                 HttpStatus.BAD_REQUEST
             );
