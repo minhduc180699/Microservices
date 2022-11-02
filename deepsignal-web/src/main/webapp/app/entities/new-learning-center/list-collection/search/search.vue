@@ -53,7 +53,7 @@
             </div>
           </div>
           <div class="elements-right">
-            <button type="button" class="btn btn-default btn-sm" @click="deleteAll">
+            <button type="button" class="btn btn-default btn-sm" @click="deleteAll" style="display: flex">
               <i class="icon-common icon-close"></i>
               {{ $t('newLearningCenter.deleteSelection') }}
             </button>

@@ -199,7 +199,7 @@
               <div class="list-info">(<strong>0</strong>/20)</div>
             </div>
             <div class="elements-right">
-              <button type="button" class="btn btn-default btn-sm">
+              <button type="button" class="btn btn-default btn-sm" style="display: flex">
                 <i class="icon-common icon-close"></i>{{ $t('newLearningCenter.deleteSelection') }}
               </button>
             </div>

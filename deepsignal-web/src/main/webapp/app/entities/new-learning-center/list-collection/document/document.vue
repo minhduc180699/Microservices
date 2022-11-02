@@ -13,7 +13,7 @@
               <li class="item-pc">
                 <a @click="openChooseFile">
                   <span class="icon-area"><i class="bi bi-tv"></i></span>
-                  <span class="name">내 컴퓨터</span>
+                  <span class="name">{{ $t('learningCenter.myComputer') }}</span>
                 </a>
                 <input
                   type="file"
@@ -29,22 +29,22 @@
               <li class="item-channel">
                 <a class="item-link" @click="googleSignin">
                   <span class="icon-area"><i class="icon-google-drive"></i></span>
-                  <span class="name">Google Drive</span>
+                  <span class="name">{{ $t('learningCenter.googleDrive') }}</span>
                 </a>
                 <div class="dropdown">
                   <button type="button" class="btn" data-toggle="dropdown" aria-expanded="false" id="dropdownMenuButton">
                     <i class="bi bi-three-dots-vertical"></i>
                   </button>
                   <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <a class="dropdown-item" href="#">수정</a>
-                    <a class="dropdown-item" href="#">삭제</a>
+                    <a class="dropdown-item" href="#">{{ $t('learningCenter.modify') }}</a>
+                    <a class="dropdown-item" href="#">{{ $t('learningCenter.delete') }}</a>
                   </div>
                 </div>
               </li>
               <li class="item-add dropdown">
                 <a type="button" class="btn" data-toggle="dropdown" aria-expanded="false">
                   <span class="icon-area"><i class="bi bi-plus-lg"></i></span>
-                  <span class="name">추가</span>
+                  <span class="name">{{ $t('learningCenter.add') }}</span>
                 </a>
                 <div class="dropdown-menu">
                   <ul>
@@ -89,7 +89,7 @@
                 aria-pressed="false"
                 @click="selectAll"
               ></button>
-              <label for="list-check-all4">전체 선택</label>
+              <label for="list-check-all4" v-text="$t('newLearningCenter.selectAll')">전체 선택</label>
             </div>
             <div class="list-info">
               (<strong>{{ totalSelected }}</strong
@@ -97,7 +97,9 @@
             </div>
           </div>
           <div class="elements-right">
-            <button type="button" class="btn btn-default btn-sm"><i class="icon-common icon-close"></i>선택 삭제</button>
+            <button type="button" class="btn btn-default btn-sm" style="display: flex">
+              <i class="icon-common icon-close"></i>{{ $t('newLearningCenter.deleteSelection') }}
+            </button>
           </div>
         </div>
         <div class="lc-list-wrap">
@@ -112,7 +114,7 @@
       </div>
       <div class="panel-footer">
         <div class="elements-right">
-          <button type="button" class="btn btn-secondary">Add to current collection</button>
+          <button type="button" class="btn btn-secondary" v-text="$t('newLearningCenter.addToStorage')">Add to current collection</button>
         </div>
       </div>
     </div>
